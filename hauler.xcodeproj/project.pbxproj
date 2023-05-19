@@ -34,6 +34,7 @@
 		83F97ED42A16F424000CB670 /* MessageDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83F97ED32A16F424000CB670 /* MessageDetailView.swift */; };
 		83F97ED62A16F7AF000CB670 /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83F97ED52A16F7AF000CB670 /* MapView.swift */; };
 		83F97ED82A16F8B2000CB670 /* PostView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83F97ED72A16F8B2000CB670 /* PostView.swift */; };
+		83F97EDA2A16F9E7000CB670 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83F97ED92A16F9E7000CB670 /* User.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -59,6 +60,7 @@
 		83F97ED32A16F424000CB670 /* MessageDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageDetailView.swift; sourceTree = "<group>"; };
 		83F97ED52A16F7AF000CB670 /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
 		83F97ED72A16F8B2000CB670 /* PostView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostView.swift; sourceTree = "<group>"; };
+		83F97ED92A16F9E7000CB670 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -118,6 +120,7 @@
 		83F97EA72A16F103000CB670 /* models */ = {
 			isa = PBXGroup;
 			children = (
+				83F97ED92A16F9E7000CB670 /* User.swift */,
 			);
 			path = models;
 			sourceTree = "<group>";
@@ -268,6 +271,7 @@
 				83F97EC72A16F359000CB670 /* ChatView.swift in Sources */,
 				83F97EC12A16F325000CB670 /* HomeView.swift in Sources */,
 				83F97ED62A16F7AF000CB670 /* MapView.swift in Sources */,
+				83F97EDA2A16F9E7000CB670 /* User.swift in Sources */,
 				83F97E8C2A16E9C0000CB670 /* haulerApp.swift in Sources */,
 				83F97ED82A16F8B2000CB670 /* PostView.swift in Sources */,
 				83F97EC52A16F34B000CB670 /* SignUpView.swift in Sources */,
