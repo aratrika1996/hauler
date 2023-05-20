@@ -21,6 +21,7 @@ class ListingController : ObservableObject{
     private let FIELD_DESC : String = "desc"
     private let FIELD_PRICE : String = "price"
     private let FIELD_IMAGE : String = "imageURI"
+    private let FIELD_CATEGORY : String = "category"
     
     
     var loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
@@ -94,6 +95,7 @@ class ListingController : ObservableObject{
                 FIELD_PRICE : listingToUpdate.price,
                 FIELD_DESC : listingToUpdate.desc,
                 FIELD_IMAGE : listingToUpdate.imageURI,
+                FIELD_CATEGORY : listingToUpdate.category,
             ]) { error in
                 if let error = error {
                     print(#function, "Unable to update document : \(error)")

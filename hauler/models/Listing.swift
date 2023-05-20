@@ -8,25 +8,40 @@
 import Foundation
 import FirebaseFirestoreSwift
 
-struct Listing: Identifiable, Codable{
+
+enum ListingCategory: String, CaseIterable, Codable {
+    case electronics = "Electronics"
+    case fashionAndClothing = "Fashion and Clothing"
+    case homeAndFurniture = "Home and Furniture"
+    case sportsAndFitness = "Sports and Fitness"
+    case other = "Other"
     
-    @DocumentID var id :String? = UUID().uuidString
-    var title : String = ""
-    var desc : String = ""
-    var price : Double = 0.0
-    var imageURI : String = ""
+    var displayName: String {
+        return self.rawValue
+    }
+}
+
+struct Listing: Identifiable, Codable {
+    
+    @DocumentID var id: String? = UUID().uuidString
+    var title: String = ""
+    var desc: String = ""
+    var price: Double = 0.0
+    var imageURI: String = ""
+    var category: ListingCategory = .other
     
     
-    init(){
+    init() {
         
     }
     
-    init(id: String? = nil, title: String, desc: String, price: Double, imageURI: String) {
+    init(id: String? = nil, title: String, desc: String, price: Double, imageURI: String, category: ListingCategory) {
         self.id = id
         self.title = title
         self.desc = desc
         self.price = price
         self.imageURI = imageURI
+        self.category = category
     }
     
     init(from decoder: Decoder) throws {
@@ -36,34 +51,43 @@ struct Listing: Identifiable, Codable{
         self.desc = try container.decode(String.self, forKey: .desc)
         self.price = try container.decode(Double.self, forKey: .price)
         self.imageURI = try container.decode(String.self, forKey: .imageURI)
+        self.category = try container.decode(ListingCategory.self, forKey: .category)
     }
     
     
-    init?(dictionary: [String:Any]){
+    init?(dictionary: [String: Any]) {
         
         guard let title = dictionary["title"] as? String else {
-         print("unable to read title")
+            print("unable to read title")
             return nil
         }
         
         guard let desc = dictionary["desc"] as? String else {
-         print("unable to read desc")
-            return nil
-        }
-        guard let price = dictionary["price"] as? Double else {
-         print("unable to read price")
-            return nil
-        }
-        guard let imageURI = dictionary["imageURI"] as? String else {
-         print("unable to read image")
+            print("unable to read desc")
             return nil
         }
         
-            self.init(title: title, desc: desc, price: price, imageURI: imageURI)
+        guard let price = dictionary["price"] as? Double else {
+            print("unable to read price")
+            return nil
         }
+        
+        guard let imageURI = dictionary["imageURI"] as? String else {
+            print("unable to read image")
+            return nil
+        }
+        
+        guard let categoryString = dictionary["category"] as? String,
+              let category = ListingCategory(rawValue: categoryString) else {
+            print("unable to read category")
+            return nil
+        }
+        
+        self.init(title: title, desc: desc, price: price, imageURI: imageURI, category: category)
+    }
     
     
-    func printInfo()-> String{
-        return("name: \(self.title)")
+    func printInfo() -> String {
+        return "name: \(self.title)"
     }
 }
