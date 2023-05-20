@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8348320C2A185FD600CE8E2D /* Listing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8348320B2A185FD600CE8E2D /* Listing.swift */; };
 		83F97E8C2A16E9C0000CB670 /* haulerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83F97E8B2A16E9C0000CB670 /* haulerApp.swift */; };
 		83F97E8E2A16E9C0000CB670 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83F97E8D2A16E9C0000CB670 /* ContentView.swift */; };
 		83F97E902A16E9C6000CB670 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 83F97E8F2A16E9C6000CB670 /* Assets.xcassets */; };
@@ -17,8 +18,8 @@
 		83F97EA12A16F075000CB670 /* FirebaseFirestoreSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 83F97EA02A16F075000CB670 /* FirebaseFirestoreSwift */; };
 		83F97EA32A16F075000CB670 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 83F97EA22A16F075000CB670 /* FirebaseStorage */; };
 		83F97EA62A16F0EB000CB670 /* URLImage in Frameworks */ = {isa = PBXBuildFile; productRef = 83F97EA52A16F0EB000CB670 /* URLImage */; };
-		83F97EAC2A16F156000CB670 /* Auth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83F97EAB2A16F156000CB670 /* Auth.swift */; };
-		83F97EAE2A16F1AE000CB670 /* PostController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83F97EAD2A16F1AE000CB670 /* PostController.swift */; };
+		83F97EAC2A16F156000CB670 /* AuthController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83F97EAB2A16F156000CB670 /* AuthController.swift */; };
+		83F97EAE2A16F1AE000CB670 /* ListingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83F97EAD2A16F1AE000CB670 /* ListingController.swift */; };
 		83F97EB02A16F1DB000CB670 /* UserProfileController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83F97EAF2A16F1DB000CB670 /* UserProfileController.swift */; };
 		83F97EB22A16F204000CB670 /* LocationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83F97EB12A16F204000CB670 /* LocationController.swift */; };
 		83F97EBF2A16F313000CB670 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83F97EBE2A16F313000CB670 /* MainView.swift */; };
@@ -34,17 +35,18 @@
 		83F97ED42A16F424000CB670 /* MessageDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83F97ED32A16F424000CB670 /* MessageDetailView.swift */; };
 		83F97ED62A16F7AF000CB670 /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83F97ED52A16F7AF000CB670 /* MapView.swift */; };
 		83F97ED82A16F8B2000CB670 /* PostView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83F97ED72A16F8B2000CB670 /* PostView.swift */; };
-		83F97EDA2A16F9E7000CB670 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83F97ED92A16F9E7000CB670 /* User.swift */; };
+		83F97EDA2A16F9E7000CB670 /* UserProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83F97ED92A16F9E7000CB670 /* UserProfile.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		8348320B2A185FD600CE8E2D /* Listing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Listing.swift; sourceTree = "<group>"; };
 		83F97E882A16E9C0000CB670 /* hauler.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = hauler.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		83F97E8B2A16E9C0000CB670 /* haulerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = haulerApp.swift; sourceTree = "<group>"; };
 		83F97E8D2A16E9C0000CB670 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		83F97E8F2A16E9C6000CB670 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		83F97E922A16E9C6000CB670 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		83F97EAB2A16F156000CB670 /* Auth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Auth.swift; sourceTree = "<group>"; };
-		83F97EAD2A16F1AE000CB670 /* PostController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostController.swift; sourceTree = "<group>"; };
+		83F97EAB2A16F156000CB670 /* AuthController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthController.swift; sourceTree = "<group>"; };
+		83F97EAD2A16F1AE000CB670 /* ListingController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListingController.swift; sourceTree = "<group>"; };
 		83F97EAF2A16F1DB000CB670 /* UserProfileController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileController.swift; sourceTree = "<group>"; };
 		83F97EB12A16F204000CB670 /* LocationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationController.swift; sourceTree = "<group>"; };
 		83F97EBE2A16F313000CB670 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
@@ -60,7 +62,7 @@
 		83F97ED32A16F424000CB670 /* MessageDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageDetailView.swift; sourceTree = "<group>"; };
 		83F97ED52A16F7AF000CB670 /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
 		83F97ED72A16F8B2000CB670 /* PostView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostView.swift; sourceTree = "<group>"; };
-		83F97ED92A16F9E7000CB670 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		83F97ED92A16F9E7000CB670 /* UserProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfile.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -120,7 +122,8 @@
 		83F97EA72A16F103000CB670 /* models */ = {
 			isa = PBXGroup;
 			children = (
-				83F97ED92A16F9E7000CB670 /* User.swift */,
+				83F97ED92A16F9E7000CB670 /* UserProfile.swift */,
+				8348320B2A185FD600CE8E2D /* Listing.swift */,
 			);
 			path = models;
 			sourceTree = "<group>";
@@ -139,8 +142,8 @@
 		83F97EAA2A16F11F000CB670 /* controllers */ = {
 			isa = PBXGroup;
 			children = (
-				83F97EAB2A16F156000CB670 /* Auth.swift */,
-				83F97EAD2A16F1AE000CB670 /* PostController.swift */,
+				83F97EAB2A16F156000CB670 /* AuthController.swift */,
+				83F97EAD2A16F1AE000CB670 /* ListingController.swift */,
 				83F97EAF2A16F1DB000CB670 /* UserProfileController.swift */,
 				83F97EB12A16F204000CB670 /* LocationController.swift */,
 			);
@@ -263,7 +266,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				83F97EAE2A16F1AE000CB670 /* PostController.swift in Sources */,
+				83F97EAE2A16F1AE000CB670 /* ListingController.swift in Sources */,
+				8348320C2A185FD600CE8E2D /* Listing.swift in Sources */,
 				83F97E8E2A16E9C0000CB670 /* ContentView.swift in Sources */,
 				83F97EBF2A16F313000CB670 /* MainView.swift in Sources */,
 				83F97ED02A16F3D2000CB670 /* productDetailView.swift in Sources */,
@@ -271,7 +275,7 @@
 				83F97EC72A16F359000CB670 /* ChatView.swift in Sources */,
 				83F97EC12A16F325000CB670 /* HomeView.swift in Sources */,
 				83F97ED62A16F7AF000CB670 /* MapView.swift in Sources */,
-				83F97EDA2A16F9E7000CB670 /* User.swift in Sources */,
+				83F97EDA2A16F9E7000CB670 /* UserProfile.swift in Sources */,
 				83F97E8C2A16E9C0000CB670 /* haulerApp.swift in Sources */,
 				83F97ED82A16F8B2000CB670 /* PostView.swift in Sources */,
 				83F97EC52A16F34B000CB670 /* SignUpView.swift in Sources */,
@@ -282,7 +286,7 @@
 				83F97ECB2A16F397000CB670 /* UserListingsView.swift in Sources */,
 				83F97ECD2A16F3AD000CB670 /* ProfileView.swift in Sources */,
 				83F97ED42A16F424000CB670 /* MessageDetailView.swift in Sources */,
-				83F97EAC2A16F156000CB670 /* Auth.swift in Sources */,
+				83F97EAC2A16F156000CB670 /* AuthController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
