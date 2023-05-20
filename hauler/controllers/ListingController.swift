@@ -105,7 +105,7 @@ class ListingController : ObservableObject{
     }
     
 
-    func deleteParking(listingToDelete : Listing){
+    func deleteListing(listingToDelete : Listing){
         loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
         self.store
             .collection(COLLECTION_HAULER).document(loggedInUserEmail)
