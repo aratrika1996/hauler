@@ -42,4 +42,38 @@ struct UserProfile: Identifiable, Codable {
         self.uLong = try container.decode(Double.self, forKey: .uLong)
         self.uLat = try container.decode(Double.self, forKey: .uLat)
     }
+    
+    init?(dictionary : [String : Any]) {
+        guard let name = dictionary["uName"] as? String else {
+            print(#function, "Unable to read name from the object")
+            return nil
+        }
+        
+        guard let address = dictionary["uAddress"] as? String else {
+            print(#function, "Unable to read address from the object")
+            return nil
+        }
+        
+        guard let email = dictionary["uEmail"] as? String else {
+            print(#function, "Unable to read email from the object")
+            return nil
+        }
+        
+        guard let phone = dictionary["uPhone"] as? String else {
+            print(#function, "Unable to read phone number from the object")
+            return nil
+        }
+        
+        guard let long = dictionary["uLong"] as? Double else {
+            print(#function, "Unable to read longitude from the object")
+            return nil
+        }
+        
+        guard let lat = dictionary["uLat"] as? Double else {
+            print(#function, "Unable to read latitude from the object")
+            return nil
+        }
+        
+        self.init(cName: name, cEmail: email, uPhone: phone, uAddress: address, uLong: long, uLat: lat)
+    }
 }

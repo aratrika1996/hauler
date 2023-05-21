@@ -6,12 +6,23 @@
 //
 
 import SwiftUI
+import Firebase
+import FirebaseAuth
+import FirebaseCore
+import FirebaseFirestore
 
 @main
 struct haulerApp: App {
+    let authController : AuthController
+    
+    init() {
+        FirebaseApp.configure()
+        authController = AuthController()
+    }
     var body: some Scene {
         WindowGroup {
-            ContentView()
+//            ContentView()
+            ContentView().environmentObject(authController)
         }
     }
 }
