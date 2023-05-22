@@ -8,11 +8,13 @@
 import SwiftUI
 
 struct ChatView: View {
+    @EnvironmentObject var authController : AuthController
+    @EnvironmentObject var userProfileController : UserProfileController
+    @Binding var rootScreen :RootView
+    
     @State private var linkSelection : Int? = nil
     var body: some View {
             VStack{
-                NavigationLink(destination: LoginView(), tag: 1, selection: self.$linkSelection){}
-                NavigationLink(destination: SignUpView(), tag: 2, selection: self.$linkSelection){}
                 Text("Chat")
                     .font(.system(size: 30))
                     .padding(.bottom, 20)
@@ -21,7 +23,7 @@ struct ChatView: View {
                 
                 Button(action: {
                     
-                    linkSelection = 1
+                    self.rootScreen = .LOGIN
                 }){
                     Text("Sign In")
                         .font(.system(size: 20))
@@ -35,7 +37,7 @@ struct ChatView: View {
                 HStack {
                     Text("Don't have an account? ")
                     Button(action: {
-                        linkSelection = 2
+                        self.rootScreen = .SIGNUP
                     }){
                         Text("Sign up")
                             .foregroundColor(Color(UIColor(named: "HaulerOrange") ?? .blue))
@@ -46,8 +48,8 @@ struct ChatView: View {
         }
 }
 
-struct ChatView_Previews: PreviewProvider {
-    static var previews: some View {
-        ChatView()
-    }
-}
+//struct ChatView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        ChatView()
+//    }
+//}

@@ -9,9 +9,14 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var tabSelection = 1
+    @EnvironmentObject var authController : AuthController
+    @EnvironmentObject var listingController : ListingController
+    @EnvironmentObject var imageController : ImageController
+    @EnvironmentObject var userProfileController : UserProfileController
+    
+    @Binding var rootScreen :RootView
     
     var body: some View {
-        NavigationView {
             TabView(selection: self.$tabSelection) {
                 HomeView().tabItem {
                     Image(systemName: "house")
@@ -19,13 +24,13 @@ struct ContentView: View {
                 }
                 .tag(1)
                 
-                ChatView().tabItem {
+                ChatView(rootScreen: $rootScreen).environmentObject(authController).environmentObject(userProfileController).tabItem {
                     Image(systemName: "text.bubble")
                     Text("Chats")
                 }
                 .tag(2)
                 
-                PostView().tabItem {
+                PostView().environmentObject(imageController).environmentObject(listingController).tabItem {
                     Image(systemName: "camera")
                     Text("Posts")
                 }
@@ -43,14 +48,11 @@ struct ContentView: View {
                 }
                 .tag(5)
             }
-        }
-        .navigationViewStyle(.stack)
-        .navigationBarBackButtonHidden(true)
     }
 }
 
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
-    }
-}
+//struct ContentView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        ContentView()
+//    }
+//}

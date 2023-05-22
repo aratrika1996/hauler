@@ -10,7 +10,9 @@ import FirebaseFirestore
 
 struct SignUpView: View {
     @EnvironmentObject var authController : AuthController
-    @ObservedObject private var userProfileController = UserProfileController.getInstance() ?? UserProfileController(store: Firestore.firestore())
+    @EnvironmentObject var userProfileController : UserProfileController
+    
+    @Binding var rootScreen :RootView
     
     @State private var email : String = ""
     @State private var password : String = ""
@@ -19,7 +21,7 @@ struct SignUpView: View {
     @State private var address : String = ""
     
     @State private var linkSelection : Int? = nil
-    @State private var authError: SignUpAuthError?
+    @State private var authError: String = ""
     @State private var showAlert : Bool = false
     @State private var isUserInputValid : Bool = false
     @State private var isSignInError : Bool = false
@@ -27,7 +29,6 @@ struct SignUpView: View {
     
     var body: some View {
         VStack {
-            NavigationLink(destination: ContentView().environmentObject(authController), tag: 1, selection: $linkSelection) {}
             Form {
                 TextField("Enter Email", text: self.$email)
                     .textInputAutocapitalization(.never)
@@ -67,7 +68,7 @@ struct SignUpView: View {
                     .alert(isPresented: self.$showAlert) {
                         if isSignInError {
                             return Alert(title: Text("Sign in failed"),
-                                         message: Text("\(self.authError?.localizedDescription ?? "Unknown error")"),
+                                         message: Text("\(self.authError )"),
                                          dismissButton: .default(Text("OK")) {
                                    })
                         }
@@ -126,24 +127,27 @@ struct SignUpView: View {
     }
     
     func signUp() {
-        self.authController.signUp(email: self.email, password: self.password) { result in
+        // Sign up the user with Firebase Auth
+        authController.signUp(email: email, password: password) { result in
             switch result {
-            case .failure(let error):
-                print("Sign up failed")
-                self.authError = error
-                self.isSignInError = true
-            case .success( _):
+            case .success(_):
+                // Navigate to the ContentView upon successful sign up
                 print("Sign up success")
                 let newUser = UserProfile(cName: "", cEmail: self.email, uPhone: self.phoneNumber, uAddress: self.address, uLong: 0.0, uLat: 0.0)
                 self.userProfileController.insertUserData(newUserData: newUser)
-                self.linkSelection = 1
+                self.rootScreen = .HOME
+            case .failure(let error):
+                // Display error message
+                self.authError = error.localizedDescription
+                self.isSignInError = true
             }
         }
+        return
     }
 }
 
-struct SignUpView_Previews: PreviewProvider {
-    static var previews: some View {
-        SignUpView()
-    }
-}
+//struct SignUpView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        SignUpView()
+//    }
+//}
