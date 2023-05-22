@@ -25,93 +25,49 @@ class AuthController : ObservableObject {
         }
     }
     
-    func signUp(email: String, password: String, completion: @escaping (Result<Bool, SignUpAuthError>) -> ()) {
-//        Auth.auth().createUser(withEmail: email, password: password){[self] authResult, error in
-//            guard let result = authResult else{
-//                print(#function, "Error while singing up the user: \(String(describing: error))")
-//                completion(.failure(error!))
-//                return
-//            }
-//
-//            print("AuthResult: \(result)")
-//
-//            switch authResult{
-//            case .none :
-//                print("Unable to create the account")
-//                completion(.failure(error!))
-//            case .some(_) :
-//                print("Successfully created the account")
-//                self.user = authResult?.user
-//
-//                UserDefaults.standard.set(user?.email, forKey: "KEY_EMAIL")
-//                UserDefaults.standard.set(password, forKey: "KEY_PASSWORD")
-//                completion(.success(authResult))
-//            }
-//        }
-        Auth.auth().createUser(withEmail: email, password: password) {
-            [self] authResult, error in
-            
-            var newError: NSError
-            if let err = error {
-             newError = err as NSError
-                var authError: SignUpAuthError?
-                switch newError.code {
-                case 17009:
-                    authError = .userAlreadyExist
-                default:
-                    authError = .unknownErr
+    func signUp(email: String, password: String, completion: @escaping (Result<AuthDataResult?, Error>) -> Void) {
+            Auth.auth().createUser(withEmail: email, password: password){[self] authResult, error in
+                guard let result = authResult else{
+                    print(#function, "Error while singing up the user: \(String(describing: error))")
+                    completion(.failure(error!))
+                    return
                 }
-                completion(.failure(authError!))
-            } else {
-                completion(.success(true))
-                UserDefaults.standard.set(email, forKey: "KEY_EMAIL")
-                UserDefaults.standard.set(password, forKey: "KEY_PASSWORD")
-            }
-        }
-    }
-    
-    func signIn(email: String, password: String, completion: @escaping (Result<Bool, SignInAuthError>) -> ()) {
-//        Auth.auth().signIn(withEmail: email, password: password) { authResult, error in
-//            if let error = error {
-//                completion(.failure(error))
-//                return
-//            }
-//
-//            guard let user = authResult?.user else {
-//                let error = NSError(domain: "SignInError", code: 0, userInfo: [NSLocalizedDescriptionKey: "Unable to get user information."])
-//                completion(.failure(error))
-//                return
-//            }
-//            print("saving the user on sign in ",user.email ?? "")
-//            UserDefaults.standard.set(user.email, forKey: "KEY_EMAIL")
-//            UserDefaults.standard.set(password, forKey: "KEY_PASSWORD")
-//            completion(.success(user))
-//        }
-        Auth.auth().signIn(withEmail: email, password: password) { (authResult, error) in
-            var newError: NSError
-            if let err = error {
-             newError = err as NSError
-                var authError: SignInAuthError?
-                switch newError.code {
-                case 17009:
-                    authError = .incorrectPassword
-                case 17008:
-                    authError = .invalidEmail
-                case 17011:
-                    authError = .accountDoesNotExist
-                default:
-                    authError = .unknownErr
-                }
-                completion(.failure(authError!))
-            } else {
-                completion(.success(true))
-                //Store email and password to UserDefaults
-                UserDefaults.standard.set(email, forKey: "KEY_EMAIL")
-                UserDefaults.standard.set(password, forKey: "KEY_PASSWORD")
                 
+                print("AuthResult: \(result)")
+                
+                switch authResult{
+                case .none :
+                    print("Unable to create the account")
+                    completion(.failure(error!))
+                case .some(_) :
+                    print("Successfully created the account")
+                    self.user = authResult?.user
+                    
+                    UserDefaults.standard.set(user?.email, forKey: "KEY_EMAIL")
+                    UserDefaults.standard.set(password, forKey: "KEY_PASSWORD")
+                    completion(.success(authResult))
+                }
             }
         }
-    }
+    
+    func signIn(email: String, password: String, completion: @escaping (Result<User, Error>) -> Void) {
+            Auth.auth().signIn(withEmail: email, password: password) { authResult, error in
+                if let error = error {
+                    completion(.failure(error))
+                    return
+                }
+                
+                guard let user = authResult?.user else {
+                    let error = NSError(domain: "SignInError", code: 0, userInfo: [NSLocalizedDescriptionKey: "Unable to get user information."])
+                    completion(.failure(error))
+                    return
+                }
+                print("saving the user on sign in ",user.email ?? "")
+                UserDefaults.standard.set(user.email, forKey: "KEY_EMAIL")
+                UserDefaults.standard.set(password, forKey: "KEY_PASSWORD")
+                completion(.success(user))
+            }
+        }
     
     func signOut(){
         do{

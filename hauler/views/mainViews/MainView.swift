@@ -6,15 +6,46 @@
 //
 
 import SwiftUI
+import Firebase
+import FirebaseFirestore
+import FirebaseAuth
+import FirebaseStorage
 
 struct MainView: View {
+    private let authController : AuthController;
+    private let listingController : ListingController;
+    private let userProfileController : UserProfileController;
+    private let imageController : ImageController;
+    @State private var root : RootView = .HOME
+    
+    
+    init(){
+        authController = AuthController()
+        listingController = ListingController(store: Firestore.firestore())
+        userProfileController = UserProfileController(store: Firestore.firestore())
+        imageController = ImageController()
+    }
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        NavigationView{
+            switch root{
+            case .HOME:
+                ContentView(rootScreen : $root).environmentObject(authController).environmentObject(listingController).environmentObject(imageController).environmentObject(userProfileController)
+            case .LOGIN:
+                LoginView(rootScreen : $root).environmentObject(authController).environmentObject(userProfileController)
+                
+            case .SIGNUP:
+                SignUpView(rootScreen : $root).environmentObject(authController).environmentObject(userProfileController)
+                
+            }
+        }//NavigationView
+        .navigationViewStyle(.stack)
+        .navigationBarBackButtonHidden(true)
     }
 }
 
-struct MainView_Previews: PreviewProvider {
-    static var previews: some View {
-        MainView()
-    }
-}
+//struct MainView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        MainView()
+//    }
+//}

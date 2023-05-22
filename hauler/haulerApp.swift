@@ -13,16 +13,14 @@ import FirebaseFirestore
 
 @main
 struct haulerApp: App {
-    let authController : AuthController
-    
-    init() {
+    init(){
         FirebaseApp.configure()
-        authController = AuthController()
     }
+        
     var body: some Scene {
         WindowGroup {
-//            ContentView()
-            ContentView().environmentObject(authController)
+            MainView()
+            
         }
     }
 }
