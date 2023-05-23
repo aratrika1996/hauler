@@ -8,6 +8,15 @@
 import Foundation
 import FirebaseFirestore
 import Firebase
+import Combine
+
+extension URL {
+    func asyncTask(Withcompletion completion: @Sendable @escaping (_ data: Data?, _ response: URLResponse?, _ error: Error?) -> ()){
+        URLSession.shared
+            .dataTask(with: self, completionHandler: completion)
+            .resume()
+    }
+}
 
 class ListingController : ObservableObject{
     
@@ -17,12 +26,29 @@ class ListingController : ObservableObject{
     private static var shared : ListingController?
     private let COLLECTION_LISTING : String = "Listing"
     private let COLLECTION_HAULER : String = "Hauler"
+    private let COLLECTION_ITEM : String = "items"
     private let FIELD_TITLE : String = "title"
     private let FIELD_DESC : String = "desc"
     private let FIELD_PRICE : String = "price"
     private let FIELD_IMAGE : String = "imageURI"
     private let FIELD_CATEGORY : String = "category"
+    private var all_listener : ListenerRegistration? = nil
+    private var user_listener : ListenerRegistration? = nil
+    @Published var searchText: String = ""
+    @Published var selectedTokens : [ListingCategory] = []
+    @Published var suggestedTokens : [ListingCategory] = ListingCategory.allCases
     
+    var filteredList: [Listing]{
+        var list = self.listingsList
+        if(searchText.count > 0){
+            list = list.filter{$0.title.localizedCaseInsensitiveContains(searchText)}
+        }
+        if(selectedTokens.count > 0){
+            let tokens = selectedTokens.map{$0.rawValue}
+            list = list.filter{selectedTokens.contains($0.category)}
+        }
+        return list
+    }
     
     var loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
     
@@ -44,7 +70,8 @@ class ListingController : ObservableObject{
         }else{
             do{
                 try self.store
-                    .collection(COLLECTION_HAULER).document(loggedInUserEmail)
+                    .collection(COLLECTION_HAULER)
+                    .document(COLLECTION_ITEM)
                     .collection(COLLECTION_LISTING)
                     .addDocument(from: listing)
             }catch let error as NSError{
@@ -53,10 +80,67 @@ class ListingController : ObservableObject{
         }
     }
     
+    func getAllListings(completion: @escaping ([Listing]?, Error?) -> Void) {
+        self.all_listener = self.store
+            .collection(COLLECTION_HAULER)
+            .document(COLLECTION_ITEM)
+            .collection(COLLECTION_LISTING)
+            .whereField("approved", isEqualTo: true)
+            .addSnapshotListener { (querySnapshot, error) in
+                if let error = error {
+                    print(#function, "Unable to retrieve data from Firestore : \(error)")
+                    completion(nil, error)
+                    return
+                }
+                
+                var listings: [Listing] = []
+                
+                querySnapshot?.documents.forEach { document in
+                    do {
+                        var listing: Listing = try document.data(as: Listing.self)
+                        listing.id = document.documentID
+                        
+                        listings.append(listing)
+                    } catch let error {
+                        print(#function, "Unable to convert the document into object : \(error)")
+                    }
+                }
+                print(listings.count)
+                
+                listings = listings.map{(li) -> Listing in
+                    let dispatchGroup = DispatchGroup()
+                    var img: UIImage? = nil
+                    print("Enter Dispatch...")
+                    dispatchGroup.enter()
+                    self.fetchImage(path: li.imageURI, completion: {picData in
+                        print("Fetching img...")
+                        if let picData = picData{
+                            if let Uiimage = UIImage(data: picData){
+                                img = Uiimage
+                                print("Fetching img success...")
+                                dispatchGroup.leave()
+                            }else{
+                                print(#function, "Cast uiImage Error")
+                            }
+                        }else{
+                            print(#function, "no picData")
+                        }
+                    })
+                    dispatchGroup.wait()
+                    return Listing(title: li.title, desc: li.desc, price: li.price, email: li.email, image: img, imageURI: li.imageURI, category: li.category)
+                }
+                
+                print("orders: \(listings.count)")
+                completion(listings, nil)
+            }
+    }
     
-    func getAllListings(completion: @escaping ([Listing]?, Error?) -> Void) -> ListenerRegistration? {
+    
+    
+    
+    func getAllUserListings(completion: @escaping ([Listing]?, Error?) -> Void) {
         loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
-        let listener = self.store.collection(COLLECTION_HAULER).document(loggedInUserEmail)
+        self.user_listener = self.store.collection(COLLECTION_HAULER).document(loggedInUserEmail)
             .collection(COLLECTION_LISTING).addSnapshotListener { (querySnapshot, error) in
                 if let error = error {
                     print(#function, "Unable to retrieve data from Firestore : \(error)")
@@ -76,21 +160,41 @@ class ListingController : ObservableObject{
                         print(#function, "Unable to convert the document into object : \(error)")
                     }
                 }
+                DispatchQueue.main.async {
+                    self.listingsList = self.listingsList.map{(li) -> Listing in
+                        let dispatchGroup = DispatchGroup()
+                        var img: UIImage? = nil
+                        dispatchGroup.enter()
+                        self.fetchImage(path: li.imageURI, completion: {picData in
+                            if let picData = picData{
+                                if let Uiimage = UIImage(data: picData){
+                                    img = Uiimage
+                                    dispatchGroup.leave()
+                                }else{
+                                    print(#function, "Cast uiImage Error")
+                                }
+                            }else{
+                                print(#function, "no picData")
+                            }
+                        })
+                        return Listing(title: li.title, desc: li.desc, price: li.price, email: li.email, image: img, imageURI: li.imageURI, category: li.category)
+                    }
+                    
+                }
                 print("orders: \(listings.count)")
                 completion(listings, nil)
             }
-        
-        return listener
     }
-
+    
+    
     func updateListing(listingToUpdate: Listing, completion: @escaping (Error?) -> Void) {
         loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
         self.store
-            .collection(COLLECTION_HAULER).document(loggedInUserEmail)
+            .collection(COLLECTION_HAULER)
+            .document(loggedInUserEmail)
             .collection(COLLECTION_LISTING)
             .document(listingToUpdate.id!)
             .updateData([
-                
                 FIELD_TITLE : listingToUpdate.title,
                 FIELD_PRICE : listingToUpdate.price,
                 FIELD_DESC : listingToUpdate.desc,
@@ -106,7 +210,7 @@ class ListingController : ObservableObject{
             }
     }
     
-
+    
     func deleteListing(listingToDelete : Listing){
         loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
         self.store
@@ -122,6 +226,31 @@ class ListingController : ObservableObject{
                 }
                 
             }
+    }
+    
+    func removeAllListener(){
+        self.all_listener?.remove()
+    }
+    func removeUserListener(){
+        self.user_listener?.remove()
+    }
+    
+    func fetchImage(path: String, completion: @escaping (Data?) -> Void) {
+        print(#function, "fetch started")
+        if let imgPath = URL(string:path){
+            imgPath.asyncTask(Withcompletion: {retrievedData, httpResponse, error in
+                guard let data = retrievedData else {
+                    print("URLSession dataTask error:", error ?? "nil")
+                    return
+                }
+                if(retrievedData != nil){
+                    print(#function, "retrieved something")
+                    completion(data)
+                }else{
+                    print(#function, "nil returned")
+                }
+            })
+        }
     }
 }
 

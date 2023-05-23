@@ -18,10 +18,12 @@ struct ContentView: View {
     
     var body: some View {
             TabView(selection: self.$tabSelection) {
-                HomeView().tabItem {
+                HomeView()
+                    .tabItem {
                     Image(systemName: "house")
                     Text("Home")
                 }
+                
                 .tag(1)
                 
                 ChatView(rootScreen: $rootScreen).environmentObject(authController).environmentObject(userProfileController).tabItem {
@@ -29,6 +31,7 @@ struct ContentView: View {
                     Text("Chats")
                 }
                 .tag(2)
+                
                 
                 PostView().environmentObject(imageController).environmentObject(listingController).tabItem {
                     Image(systemName: "camera")
