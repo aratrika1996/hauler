@@ -24,19 +24,23 @@ enum ListingCategory: String, Hashable, CaseIterable, Codable, Identifiable {
     }
     
     func icon() -> String {
-            switch self {
-                case .electronics:
-                   return "iphone.gen3"
-                case .fashionAndClothing:
-                   return "tshirt"
-                case .homeAndFurniture:
-                   return "house.fill"
-                case .sportsAndFitness:
-                   return "dumbbell"
-            case .other:
-                return "questionmark.app"
-            }
+        switch self {
+        case .electronics:
+            return "iphone.gen3"
+        case .fashionAndClothing:
+            return "tshirt"
+        case .homeAndFurniture:
+            return "house.fill"
+        case .sportsAndFitness:
+            return "dumbbell"
+        case .other:
+            return "questionmark.app"
         }
+    }
+    func containsTag(cat:ListingCategory) -> Bool{
+        return (self == cat) ? true : false
+    }
+    
 }
 
 struct Listing: Identifiable, Codable {

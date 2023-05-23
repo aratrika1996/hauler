@@ -37,15 +37,16 @@ class ListingController : ObservableObject{
     @Published var searchText: String = ""
     @Published var selectedTokens : [ListingCategory] = []
     @Published var suggestedTokens : [ListingCategory] = ListingCategory.allCases
-    
+
     var filteredList: [Listing]{
         var list = self.listingsList
+        if(selectedTokens.count > 0){
+            for token in selectedTokens {
+                    list = list.filter{$0.category.containsTag(cat: token)}
+            }
+        }
         if(searchText.count > 0){
             list = list.filter{$0.title.localizedCaseInsensitiveContains(searchText)}
-        }
-        if(selectedTokens.count > 0){
-            let tokens = selectedTokens.map{$0.rawValue}
-            list = list.filter{selectedTokens.contains($0.category)}
         }
         return list
     }
@@ -65,9 +66,9 @@ class ListingController : ObservableObject{
     }
     
     func insertListing(listing : Listing){
-        if (loggedInUserEmail.isEmpty){
-            print(#function, "Logged in user not identified")
-        }else{
+//        if (loggedInUserEmail.isEmpty){
+//            print(#function, "Logged in user not identified")
+//        }else{
             do{
                 try self.store
                     .collection(COLLECTION_HAULER)
@@ -77,7 +78,7 @@ class ListingController : ObservableObject{
             }catch let error as NSError{
                 print(#function, "Unable to add document to firestore : \(error)")
             }
-        }
+//        }
     }
     
     func getAllListings(completion: @escaping ([Listing]?, Error?) -> Void) {
@@ -99,25 +100,20 @@ class ListingController : ObservableObject{
                     do {
                         var listing: Listing = try document.data(as: Listing.self)
                         listing.id = document.documentID
-                        
                         listings.append(listing)
                     } catch let error {
                         print(#function, "Unable to convert the document into object : \(error)")
                     }
                 }
-                print(listings.count)
                 
                 listings = listings.map{(li) -> Listing in
                     let dispatchGroup = DispatchGroup()
                     var img: UIImage? = nil
-                    print("Enter Dispatch...")
                     dispatchGroup.enter()
                     self.fetchImage(path: li.imageURI, completion: {picData in
-                        print("Fetching img...")
                         if let picData = picData{
                             if let Uiimage = UIImage(data: picData){
                                 img = Uiimage
-                                print("Fetching img success...")
                                 dispatchGroup.leave()
                             }else{
                                 print(#function, "Cast uiImage Error")
@@ -127,10 +123,10 @@ class ListingController : ObservableObject{
                         }
                     })
                     dispatchGroup.wait()
-                    return Listing(title: li.title, desc: li.desc, price: li.price, email: li.email, image: img, imageURI: li.imageURI, category: li.category)
+                    return Listing(id: li.id, title: li.title, desc: li.desc, price: li.price, email: li.email, image: img, imageURI: li.imageURI, category: li.category)
                 }
                 
-                print("orders: \(listings.count)")
+                self.listingsList = listings
                 completion(listings, nil)
             }
     }

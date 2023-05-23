@@ -16,7 +16,6 @@ struct HomeView: View {
     @State var searchInput : String = ""
     @State var searchEditing : Bool = false
     @State var dummyListing : [Listing] = [Listing(id:"1",title: "1", desc: "desc", price: 100.99, email: "", imageURI: "", category: .other),Listing(id:"2",title: "2", desc: "desc", price: 999.99, email: "", imageURI: "", category: .other)]
-    @State var filterListing : [Listing] = []
     private var filteredSuggestionText: Binding<[String]> {Binding(
         get: {
             return dummyListing.map{(item) -> String in
@@ -31,49 +30,58 @@ struct HomeView: View {
     
     var body: some View {
         VStack{
-            VStack{
-                if(!filterListing.isEmpty){
-                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 20){
-                        ForEach(filterListing, id: \.self.id){item in
-                            VStack{
-                                Image(uiImage: (item.image ?? UIImage(systemName: "exclamationmark.triangle.fill"))!).resizable().frame(width: 100, height: 100)
-                                Text(item.title).padding()
-                                Text(String(item.price)).foregroundColor(Color(red: 0.702, green: 0.87, blue: 0.756, opacity: 0.756))
-                            }.padding().background(Color(red: 0.702, green: 0.87, blue: 0.756, opacity: 0.756), in: Rectangle()).cornerRadius(15)
-                        }
-                    }
-                }else{
-                    Text("Nothing To Show")
-                    Button("Go back"){
-                        filterListing = dummyListing
-                    }
-                }
-                
-                
-                Spacer()
+            
+            ScrollView(.vertical){
                 ScrollView(.horizontal){
-                    LazyHStack(alignment: .firstTextBaseline){
+                    HStack{
                         ForEach(catagories, id: \.self){item in
                             Text(item).padding().background(Color(red: 0.702, green: 0.87, blue: 0.756, opacity: 0.756), in: Rectangle()).cornerRadius(15)
+                                .onTapGesture {
+                                    listingController.selectedTokens.append(ListingCategory(rawValue: item)!)
+                                }
                         }
                         
                     }
                 }
+                VStack{
+                    if(!listingController.filteredList.isEmpty){
+                        LazyVGrid(columns: [GridItem(.fixed(150)), GridItem(.fixed(150))], alignment: .center, spacing: 50){
+                            ForEach(listingController.filteredList, id: \.self.id){item in
+                                VStack{
+                                    Image(uiImage: (item.image ?? UIImage(systemName: "exclamationmark.triangle.fill"))!).resizable().frame(width: 100, height: 100)
+                                    Text(item.title).padding()
+                                    Text("$" + String(item.price)).foregroundColor(Color(red: 0.302, green: 0.47, blue: 0.256, opacity: 0.756))
+                                }.padding().background(Color(red: 0.702, green: 0.87, blue: 0.756, opacity: 0.756), in: Rectangle()).cornerRadius(15)
+                            }
+                        }
+                    }else{
+                        Text("Nothing To Show")
+                        Button("Go back"){
+                            listingController.searchText = ""
+                            listingController.selectedTokens = []
+                        }
+                    }
+                    
+                    
+                    Spacer()
+                    
+                }
+                
             }
-        }
-        .searchable(text: $listingController.searchText,
-                    tokens: $listingController.selectedTokens,
-                    suggestedTokens: $listingController.suggestedTokens,
-                    token: { token in
-            Label(token.rawValue, systemImage: token.icon())
             
-        })
-        .onSubmit (of: .search){
-            filterListing = dummyListing.filter{
-                $0.title.contains(searchInput) || listingController.selectedTokens.contains($0.category)
-            }
-            print("Onsubmit")
+            .searchable(text: $listingController.searchText,
+                        tokens: $listingController.selectedTokens,
+                        suggestedTokens: $listingController.suggestedTokens,
+                        token: { token in
+                Label(token.rawValue, systemImage: token.icon())
+                
+            })
         }
+        
+//        .onSubmit (of: .search){
+//            filterListing = listingController.filteredList
+//            print("Onsubmit")
+//        }
         .toolbar(content: {
             ToolbarItem(content: {
                 HStack{
@@ -94,23 +102,16 @@ struct HomeView: View {
             })
             
         })
-        .onChange(of: isSearching, perform: {isSearching in
-            if(!isSearching){
-                filterListing = dummyListing
-            }
-        })
+//        .onChange(of: isSearching, perform: {isSearching in
+//            if(!isSearching){
+//                filterListing = dummyListing
+//            }
+//        })
         .onAppear(){
-            listingController.getAllListings(completion: {list, err in
+            listingController.getAllListings(completion: {_, err in
                 if let err = err{
                     print(err)
                 }
-                if let list = list{
-                    self.dummyListing = list
-                    self.filterListing = dummyListing
-                }
-                
-                
-                
             })
         }
         

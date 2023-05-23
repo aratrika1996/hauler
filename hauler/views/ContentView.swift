@@ -23,7 +23,6 @@ struct ContentView: View {
                     Image(systemName: "house")
                     Text("Home")
                 }
-                
                 .tag(1)
                 
                 ChatView(rootScreen: $rootScreen).environmentObject(authController).environmentObject(userProfileController).tabItem {
@@ -42,15 +41,22 @@ struct ContentView: View {
                 UserListingsView().tabItem {
                     Image(systemName: "list.bullet.rectangle.portrait")
                     Text("Listings")
+                        
                 }
                 .tag(4)
                 
                 ProfileView().tabItem {
                     Image(systemName: "person")
                     Text("Profile")
+                        
                 }
                 .tag(5)
             }
+            .onChange(of: tabSelection, perform: {tabint in
+                if(tabint != 1){
+                    listingController.removeAllListener()
+                }
+            })
     }
 }
 
