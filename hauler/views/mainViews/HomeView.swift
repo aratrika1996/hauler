@@ -29,7 +29,7 @@ struct HomeView: View {
     @State var select1 : Bool = true
     
     var body: some View {
-        VStack{
+        NavigationView{
             
             ScrollView(.vertical){
                 ScrollView(.horizontal){
