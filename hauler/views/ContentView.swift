@@ -18,7 +18,8 @@ struct ContentView: View {
     
     var body: some View {
             TabView(selection: self.$tabSelection) {
-                HomeView().tabItem {
+                HomeView()
+                    .tabItem {
                     Image(systemName: "house")
                     Text("Home")
                 }
@@ -30,6 +31,7 @@ struct ContentView: View {
                 }
                 .tag(2)
                 
+                
                 PostView().environmentObject(imageController).environmentObject(listingController).tabItem {
                     Image(systemName: "camera")
                     Text("Posts")
@@ -39,15 +41,22 @@ struct ContentView: View {
                 UserListingsView().tabItem {
                     Image(systemName: "list.bullet.rectangle.portrait")
                     Text("Listings")
+                        
                 }
                 .tag(4)
                 
                 ProfileView().tabItem {
                     Image(systemName: "person")
                     Text("Profile")
+                        
                 }
                 .tag(5)
             }
+            .onChange(of: tabSelection, perform: {tabint in
+                if(tabint != 1){
+                    listingController.removeAllListener()
+                }
+            })
     }
 }
 

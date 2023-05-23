@@ -73,7 +73,6 @@ struct PostView: View {
                                 print("Image uploaded successfully. URL: \(url)")
                                 // Once we get the URL, we can update the imageURI field in the listing
                                 listing.imageURI = url.absoluteString
-                                
                                 // Perform any additional operations with the completed listing
                                 saveListing()
                             case .failure(let error):
