@@ -18,40 +18,47 @@ struct ContentView: View {
     
     var body: some View {
             TabView(selection: self.$tabSelection) {
-                HomeView()
-                    .tabItem {
-                    Image(systemName: "house")
-                    Text("Home")
-                }
-                .tag(1)
-                
-                ChatView(rootScreen: $rootScreen).environmentObject(authController).environmentObject(userProfileController).tabItem {
-                    Image(systemName: "text.bubble")
-                    Text("Chats")
-                }
-                .tag(2)
-                
-                
-                PostView().environmentObject(imageController).environmentObject(listingController).tabItem {
-                    Image(systemName: "camera")
-                    Text("Posts")
-                }
-                .tag(3)
-                
-                UserListingsView().tabItem {
-                    Image(systemName: "list.bullet.rectangle.portrait")
-                    Text("Listings")
+                Group {
+                    HomeView()
+                        .tabItem {
+                            Image(systemName: "house")
+                            Text("Home")
+                        }
+                        .tag(1)
+                    
+                    ChatView(rootScreen: $rootScreen).environmentObject(authController).environmentObject(userProfileController).tabItem {
+                        Image(systemName: "text.bubble")
+                        Text("Chats")
+                    }
+                    .tag(2)
+                    
+                    
+                    PostView().environmentObject(imageController).environmentObject(listingController).tabItem {
+                        Image(systemName: "camera")
+                        Text("Posts")
+                    }
+                    .tag(3)
+                    
+                    UserListingsView().tabItem {
+                        Image(systemName: "list.bullet.rectangle.portrait")
+                        Text("Listings")
                         
-                }
-                .tag(4)
-                
-                ProfileView().tabItem {
-                    Image(systemName: "person")
-                    Text("Profile")
+                    }
+                    .tag(4)
+                    
+                    ProfileView().environmentObject(authController).environmentObject(userProfileController).tabItem {
+                        Image(systemName: "person")
+                        Text("Profile")
                         
+                    }
+                    .tag(5)
                 }
-                .tag(5)
+                
             }
+            .onAppear() {
+                    UITabBar.appearance().backgroundColor = UIColor(named: "BackgroundGray") ?? .white
+                }
+            
             .onChange(of: tabSelection, perform: {tabint in
                 if(tabint != 1){
                     listingController.removeAllListener()

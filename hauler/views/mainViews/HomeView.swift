@@ -107,13 +107,13 @@ struct HomeView: View {
 //                filterListing = dummyListing
 //            }
 //        })
-        .onAppear(){
-            listingController.getAllListings(completion: {_, err in
-                if let err = err{
-                    print(err)
-                }
-            })
-        }
+//        .onAppear(){
+//            listingController.getAllListings(completion: {_, err in
+//                if let err = err{
+//                    print(err)
+//                }
+//            })
+//        }
         
         
         
