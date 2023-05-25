@@ -22,6 +22,12 @@ class ListingController : ObservableObject{
     
     
     @Published var listingsList = [Listing]()
+    @Published var userListings = [Listing]()
+    @Published var adminMode = true
+    @Published var searchText: String = ""
+    @Published var selectedTokens : [ListingCategory] = []
+    @Published var suggestedTokens : [ListingCategory] = ListingCategory.allCases
+    
     private let store : Firestore
     private static var shared : ListingController?
     private let COLLECTION_LISTING : String = "Listing"
@@ -29,20 +35,18 @@ class ListingController : ObservableObject{
     private let COLLECTION_ITEM : String = "items"
     private let FIELD_TITLE : String = "title"
     private let FIELD_DESC : String = "desc"
+    private let FIELD_APPROVED : String = "approved"
     private let FIELD_PRICE : String = "price"
     private let FIELD_IMAGE : String = "imageURI"
     private let FIELD_CATEGORY : String = "category"
     private var all_listener : ListenerRegistration? = nil
     private var user_listener : ListenerRegistration? = nil
-    @Published var searchText: String = ""
-    @Published var selectedTokens : [ListingCategory] = []
-    @Published var suggestedTokens : [ListingCategory] = ListingCategory.allCases
-
+    
     var filteredList: [Listing]{
         var list = self.listingsList
         if(selectedTokens.count > 0){
             for token in selectedTokens {
-                    list = list.filter{$0.category.containsTag(cat: token)}
+                list = list.filter{$0.category.containsTag(cat: token)}
             }
         }
         if(searchText.count > 0){
@@ -52,6 +56,8 @@ class ListingController : ObservableObject{
     }
     
     var loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
+    
+    
     
     init(store: Firestore) {
         self.store = store
@@ -66,27 +72,23 @@ class ListingController : ObservableObject{
     }
     
     func insertListing(listing : Listing){
-//        if (loggedInUserEmail.isEmpty){
-//            print(#function, "Logged in user not identified")
-//        }else{
-            do{
-                try self.store
-                    .collection(COLLECTION_HAULER)
-                    .document(COLLECTION_ITEM)
-                    .collection(COLLECTION_LISTING)
-                    .addDocument(from: listing)
-            }catch let error as NSError{
-                print(#function, "Unable to add document to firestore : \(error)")
-            }
-//        }
+        //        if (loggedInUserEmail.isEmpty){
+        //            print(#function, "Logged in user not identified")
+        //        }else{
+        do{
+            try self.store
+                .collection(COLLECTION_LISTING)
+                .addDocument(from: listing)
+        }catch let error as NSError{
+            print(#function, "Unable to add document to firestore : \(error)")
+        }
+        //        }
     }
     
-    func getAllListings(completion: @escaping ([Listing]?, Error?) -> Void) {
+    func getAllListings(adminMode:Bool, completion: @escaping ([Listing]?, Error?) -> Void) {
         self.all_listener = self.store
-            .collection(COLLECTION_HAULER)
-            .document(COLLECTION_ITEM)
             .collection(COLLECTION_LISTING)
-            .whereField("approved", isEqualTo: true)
+            .whereField("approved", isEqualTo: !adminMode)
             .addSnapshotListener { (querySnapshot, error) in
                 if let error = error {
                     print(#function, "Unable to retrieve data from Firestore : \(error)")
@@ -105,39 +107,41 @@ class ListingController : ObservableObject{
                         print(#function, "Unable to convert the document into object : \(error)")
                     }
                 }
-                
-                listings = listings.map{(li) -> Listing in
-                    let dispatchGroup = DispatchGroup()
-                    var img: UIImage? = nil
-                    dispatchGroup.enter()
-                    self.fetchImage(path: li.imageURI, completion: {picData in
-                        if let picData = picData{
-                            if let Uiimage = UIImage(data: picData){
-                                img = Uiimage
-                                dispatchGroup.leave()
+                DispatchQueue.main.async{
+                    listings = listings.map{(li) -> Listing in
+                        let dispatchGroup = DispatchGroup()
+                        var img: UIImage? = nil
+                        dispatchGroup.enter()
+                        self.fetchImage(path: li.imageURI, completion: {picData in
+                            if let picData = picData{
+                                if let Uiimage = UIImage(data: picData){
+                                    img = Uiimage
+                                    dispatchGroup.leave()
+                                }else{
+                                    print(#function, "Cast uiImage Error")
+                                }
                             }else{
-                                print(#function, "Cast uiImage Error")
+                                print(#function, "no picData")
                             }
-                        }else{
-                            print(#function, "no picData")
-                        }
-                    })
-                    dispatchGroup.wait()
-                    return Listing(id: li.id, title: li.title, desc: li.desc, price: li.price, email: li.email, image: img, imageURI: li.imageURI, category: li.category)
+                        })
+                        dispatchGroup.wait()
+                        return Listing(id: li.id, title: li.title, desc: li.desc, price: li.price, email: li.email, image: img, imageURI: li.imageURI, category: li.category)
+                    }
+                    self.listingsList = listings
+                    completion(listings, nil)
                 }
                 
-                self.listingsList = listings
-                completion(listings, nil)
+                
             }
     }
     
-    
-    
-    
     func getAllUserListings(completion: @escaping ([Listing]?, Error?) -> Void) {
         loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
-        self.user_listener = self.store.collection(COLLECTION_HAULER).document(loggedInUserEmail)
-            .collection(COLLECTION_LISTING).addSnapshotListener { (querySnapshot, error) in
+        self.user_listener = self
+            .store
+            .collection(COLLECTION_LISTING)
+            .whereField("email", isEqualTo: loggedInUserEmail)
+            .addSnapshotListener { (querySnapshot, error) in
                 if let error = error {
                     print(#function, "Unable to retrieve data from Firestore : \(error)")
                     completion(nil, error)
@@ -157,7 +161,7 @@ class ListingController : ObservableObject{
                     }
                 }
                 DispatchQueue.main.async {
-                    self.listingsList = self.listingsList.map{(li) -> Listing in
+                    listings = listings.map{(li) -> Listing in
                         let dispatchGroup = DispatchGroup()
                         var img: UIImage? = nil
                         dispatchGroup.enter()
@@ -173,21 +177,41 @@ class ListingController : ObservableObject{
                                 print(#function, "no picData")
                             }
                         })
-                        return Listing(title: li.title, desc: li.desc, price: li.price, email: li.email, image: img, imageURI: li.imageURI, category: li.category)
+                        dispatchGroup.wait()
+                        return Listing(id: li.id, title: li.title, desc: li.desc, price: li.price, email: li.email, image: img, imageURI: li.imageURI, category: li.category)
                     }
-                    
+                    self.userListings = listings
+                    completion(listings, nil)
                 }
-                print("orders: \(listings.count)")
-                completion(listings, nil)
             }
     }
     
+    func approveListings(listingsToUpdate: [Listing], completion: @escaping (Error?) -> Void){
+        print(#function, "entered aprroving")
+//        let dispatchGroup = DispatchGroup()
+        for update in listingsToUpdate {
+//            dispatchGroup.enter()
+            self.store
+                .collection(COLLECTION_LISTING)
+                .document(update.id!)
+                .updateData([
+                    FIELD_APPROVED : true
+                ], completion: {err in
+                    if let err = err{
+                        print(#function, "Update para failed")
+                        completion(err)
+                    }
+//                    dispatchGroup.leave()
+                }
+                )
+        }
+//        dispatchGroup.wait()
+        completion(nil)
+    }
     
     func updateListing(listingToUpdate: Listing, completion: @escaping (Error?) -> Void) {
         loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
         self.store
-            .collection(COLLECTION_HAULER)
-            .document(loggedInUserEmail)
             .collection(COLLECTION_LISTING)
             .document(listingToUpdate.id!)
             .updateData([
@@ -210,7 +234,8 @@ class ListingController : ObservableObject{
     func deleteListing(listingToDelete : Listing){
         loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
         self.store
-            .collection(COLLECTION_HAULER).document(loggedInUserEmail)
+            .collection(COLLECTION_HAULER)
+            .document(loggedInUserEmail)
             .collection(COLLECTION_LISTING)
             .document(listingToDelete.id!)
             .delete{error in
@@ -238,6 +263,9 @@ class ListingController : ObservableObject{
                 guard let data = retrievedData else {
                     print("URLSession dataTask error:", error ?? "nil")
                     return
+                }
+                if let error = error{
+                    print(#function, error)
                 }
                 if(retrievedData != nil){
                     print(#function, "retrieved something")

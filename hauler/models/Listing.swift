@@ -53,6 +53,7 @@ struct Listing: Identifiable, Codable {
         case email
         case imageURI
         case category
+        case approved
     }
     
     @DocumentID var id: String? = UUID().uuidString
@@ -62,6 +63,7 @@ struct Listing: Identifiable, Codable {
     var imageURI: String = ""
     var image: UIImage? = nil
     var email: String = ""
+    var approved: Bool = false
     var category: ListingCategory = .other
     
     init() {
@@ -76,6 +78,17 @@ struct Listing: Identifiable, Codable {
         self.email = email
         self.imageURI = imageURI
         self.category = category
+    }
+    
+    init(itemToApprove: Listing) {
+        self.id = itemToApprove.id
+        self.title = itemToApprove.title
+        self.desc = itemToApprove.desc
+        self.price = itemToApprove.price
+        self.email = itemToApprove.email
+        self.imageURI = itemToApprove.imageURI
+        self.category = itemToApprove.category
+        self.approved = true
     }
     
     init(id: String? = nil, title: String, desc: String, price: Double, email:String, image: UIImage?, imageURI: String, category: ListingCategory) {
@@ -98,6 +111,7 @@ struct Listing: Identifiable, Codable {
         self.email = try container.decode(String.self, forKey: .email)
         self.imageURI = try container.decode(String.self, forKey: .imageURI)
         self.category = try container.decode(ListingCategory.self, forKey: .category)
+        self.approved = try container.decode(Bool.self, forKey: .approved)
     }
     
     
