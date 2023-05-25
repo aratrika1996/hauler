@@ -22,6 +22,12 @@ class ListingController : ObservableObject{
     
     
     @Published var listingsList = [Listing]()
+    @Published var userListings = [Listing]()
+    @Published var adminMode = true
+    @Published var searchText: String = ""
+    @Published var selectedTokens : [ListingCategory] = []
+    @Published var suggestedTokens : [ListingCategory] = ListingCategory.allCases
+    
     private let store : Firestore
     private static var shared : ListingController?
     private let COLLECTION_LISTING : String = "Listing"
@@ -35,9 +41,6 @@ class ListingController : ObservableObject{
     private let FIELD_CATEGORY : String = "category"
     private var all_listener : ListenerRegistration? = nil
     private var user_listener : ListenerRegistration? = nil
-    @Published var searchText: String = ""
-    @Published var selectedTokens : [ListingCategory] = []
-    @Published var suggestedTokens : [ListingCategory] = ListingCategory.allCases
     
     var filteredList: [Listing]{
         var list = self.listingsList
@@ -53,6 +56,8 @@ class ListingController : ObservableObject{
     }
     
     var loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
+    
+    
     
     init(store: Firestore) {
         self.store = store
@@ -102,38 +107,41 @@ class ListingController : ObservableObject{
                         print(#function, "Unable to convert the document into object : \(error)")
                     }
                 }
-                
-                listings = listings.map{(li) -> Listing in
-                    let dispatchGroup = DispatchGroup()
-                    var img: UIImage? = nil
-                    dispatchGroup.enter()
-                    self.fetchImage(path: li.imageURI, completion: {picData in
-                        if let picData = picData{
-                            if let Uiimage = UIImage(data: picData){
-                                img = Uiimage
-                                dispatchGroup.leave()
+                DispatchQueue.main.async{
+                    listings = listings.map{(li) -> Listing in
+                        let dispatchGroup = DispatchGroup()
+                        var img: UIImage? = nil
+                        dispatchGroup.enter()
+                        self.fetchImage(path: li.imageURI, completion: {picData in
+                            if let picData = picData{
+                                if let Uiimage = UIImage(data: picData){
+                                    img = Uiimage
+                                    dispatchGroup.leave()
+                                }else{
+                                    print(#function, "Cast uiImage Error")
+                                }
                             }else{
-                                print(#function, "Cast uiImage Error")
+                                print(#function, "no picData")
                             }
-                        }else{
-                            print(#function, "no picData")
-                        }
-                    })
-                    dispatchGroup.wait()
-                    return Listing(id: li.id, title: li.title, desc: li.desc, price: li.price, email: li.email, image: img, imageURI: li.imageURI, category: li.category)
+                        })
+                        dispatchGroup.wait()
+                        return Listing(id: li.id, title: li.title, desc: li.desc, price: li.price, email: li.email, image: img, imageURI: li.imageURI, category: li.category)
+                    }
+                    self.listingsList = listings
+                    completion(listings, nil)
                 }
                 
-                self.listingsList = listings
-                completion(listings, nil)
+                
             }
     }
     
     func getAllUserListings(completion: @escaping ([Listing]?, Error?) -> Void) {
         loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
         self.user_listener = self
-            .store.collection(COLLECTION_HAULER)
-            .document(loggedInUserEmail)
-            .collection(COLLECTION_LISTING).addSnapshotListener { (querySnapshot, error) in
+            .store
+            .collection(COLLECTION_LISTING)
+            .whereField("email", isEqualTo: loggedInUserEmail)
+            .addSnapshotListener { (querySnapshot, error) in
                 if let error = error {
                     print(#function, "Unable to retrieve data from Firestore : \(error)")
                     completion(nil, error)
@@ -153,7 +161,7 @@ class ListingController : ObservableObject{
                     }
                 }
                 DispatchQueue.main.async {
-                    self.listingsList = self.listingsList.map{(li) -> Listing in
+                    listings = listings.map{(li) -> Listing in
                         let dispatchGroup = DispatchGroup()
                         var img: UIImage? = nil
                         dispatchGroup.enter()
@@ -163,19 +171,18 @@ class ListingController : ObservableObject{
                                     img = Uiimage
                                     dispatchGroup.leave()
                                 }else{
-                                    img = UIImage(systemName: "questionmark")
                                     print(#function, "Cast uiImage Error")
                                 }
                             }else{
                                 print(#function, "no picData")
                             }
                         })
-                        return Listing(title: li.title, desc: li.desc, price: li.price, email: li.email, image: img, imageURI: li.imageURI, category: li.category)
+                        dispatchGroup.wait()
+                        return Listing(id: li.id, title: li.title, desc: li.desc, price: li.price, email: li.email, image: img, imageURI: li.imageURI, category: li.category)
                     }
-                    
+                    self.userListings = listings
+                    completion(listings, nil)
                 }
-                print("orders: \(listings.count)")
-                completion(listings, nil)
             }
     }
     

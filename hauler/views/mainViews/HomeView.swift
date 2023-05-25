@@ -9,18 +9,20 @@ import SwiftUI
 
 struct HomeView: View {
     @EnvironmentObject var listingController : ListingController
-    @Environment(\.isSearching) var isSearching
-    @Environment(\.dismissSearch) var dismissSearch
+//    @Environment(\.isSearching) var isSearching
+//    @Environment(\.dismissSearch) var dismissSearch
     @State var catagories : [String] = ListingCategory.allCases.map{(i) -> String in return i.displayName}
-    @State var adminMode : Bool = true
     @State var selectedApproveList : [Listing] = []
+    @State var selection : Listing?
     @State var alert : Alert? = nil
+    @State var activeLink : Bool = false
+    @State var hideParentNavigation : Visibility = .visible
     
     var body: some View {
         NavigationView{
             ScrollView(.vertical){
                 HStack{
-                    if(adminMode){
+                    if(listingController.adminMode){
                         Button("Approve"){
                             print(#function, "approve clicked")
                             if(!selectedApproveList.isEmpty){
@@ -52,25 +54,38 @@ struct HomeView: View {
                     if(!listingController.filteredList.isEmpty){
                         LazyVGrid(columns: [GridItem(.fixed(150)), GridItem(.fixed(150))], alignment: .center, spacing: 50){
                             ForEach(listingController.filteredList, id: \.self.id){item in
-                                VStack{
-                                    Image(uiImage: (item.image ?? UIImage(systemName: "exclamationmark.triangle.fill"))!).resizable().frame(width: 100, height: 100)
-                                    Text(item.title).padding()
-                                    Text("$" + String(item.price)).foregroundColor(Color(red: 0.302, green: 0.47, blue: 0.256, opacity: 0.756))
-                                }.padding().background(Color(red: 0.702, green: 0.87, blue: 0.756, opacity: 0.756), in: Rectangle()).cornerRadius(15)
-                                    .border(.red, width: ((selectedApproveList.contains(where: {$0.id == item.id})) ? 3 : 0))
-                                    .onLongPressGesture(perform: {
-                                        print("Long Pressed")
-                                        if(adminMode){
-                                            if(!selectedApproveList.contains(where: {$0.id == item.id})){
-                                                selectedApproveList.append(item)
-                                            }else{
-                                                selectedApproveList = selectedApproveList.filter{
-                                                    return $0.id != item.id
-                                                }
-                                            }
-                                        }
-                                        print("selectedApproveList: \(selectedApproveList.count)")
-                                    })
+                                NavigationLink(destination: productDetailView(listing: item)
+                                    .onAppear(){hideParentNavigation = .hidden}
+                                    .onDisappear(){hideParentNavigation = .visible}
+                                    )
+                                {
+                                    VStack{
+                                        Image(uiImage: (item.image ?? UIImage(systemName: "exclamationmark.triangle.fill"))!).resizable().frame(width: 100, height: 100)
+                                        Text(item.title).padding()
+                                        Text("$" + String(item.price)).foregroundColor(Color(red: 0.302, green: 0.47, blue: 0.256, opacity: 0.756))
+                                    }
+//                                    .onTapGesture {
+//                                        activeLink.toggle()
+//                                    }
+//                                    .onLongPressGesture(perform: {
+//                                        print("Long Pressed")
+//                                        if(listingController.adminMode){
+//                                            if(!selectedApproveList.contains(where: {$0.id == item.id})){
+//                                                selectedApproveList.append(item)
+//                                            }else{
+//                                                selectedApproveList = selectedApproveList.filter{
+//                                                    return $0.id != item.id
+//                                                }
+//                                            }
+//                                        }
+//                                        print("selectedApproveList: \(selectedApproveList.count)")
+//                                    })
+                                }
+                                
+                                .padding().background(Color(red: 0.702, green: 0.87, blue: 0.756, opacity: 0.756), in: Rectangle()).cornerRadius(15)
+                                .border(.red, width: ((selectedApproveList.contains(where: {$0.id == item.id})) ? 3 : 0))
+                                
+                                
                             }
                         }
                     }else{
@@ -91,32 +106,10 @@ struct HomeView: View {
                 
             })
         }
-        .toolbar(content: {
-            ToolbarItem(content: {
-                HStack{
-                    Text("Discover")
-                    Spacer()
-                    Image(uiImage: UIImage(systemName: "heart.fill")!)
-                        .resizable()
-                        .frame(width: 20, height: 20)
-                        .padding(15)
-                        .background(Color(red: 0.702, green: 0.87, blue: 0.756, opacity: 0.756), in: Circle())
-                    Image(uiImage: UIImage(systemName: "bell")!)
-                        .resizable()
-                        .frame(width: 20, height: 20)
-                        .padding(15)
-//                        .background((adminMode ? Color(red: 0.5, green: 0.5, blue: 0.5) : Color(red: 0.702, green: 0.87, blue: 0.756, opacity: 0.756), in: Circle()))
-                        .onTapGesture {
-                            adminMode = !adminMode
-                            listingController.removeAllListener()
-                            listingController.getAllListings(adminMode: adminMode, completion: {_, err in if let err = err{print(err)}})
-                        }
-                }
-                .padding(.horizontal, 10)
-            })
-        })
+        .toolbar(hideParentNavigation, for: .navigationBar)
+        .toolbar(hideParentNavigation, for: .tabBar)
         .onAppear(){
-            listingController.getAllListings(adminMode: adminMode,completion: {_, err in
+            listingController.getAllListings(adminMode: listingController.adminMode,completion: {_, err in
                 if let err = err{
                     print(err)
                 }
