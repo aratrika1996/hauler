@@ -8,9 +8,10 @@
 import SwiftUI
 
 struct ProfileView: View {
+    @EnvironmentObject var userProfileController : UserProfileController
     var body: some View {
-//        ScrollView(.vertical) {
-            VStack(alignment: .leading){
+        Form {
+            Section {
                 HStack(alignment: .center) {
                     ZStack(alignment: .bottomTrailing) {
                         Image(systemName: "person")
@@ -55,55 +56,47 @@ struct ProfileView: View {
                     }
                     .padding(.leading, 10)
                 }//HStack ends
-                .padding(15)
-                
-                Form {
-                    
-                    Section(header: Text("Profile details")) {
-                        NavigationLink(destination: PersonalDetailsView()) {
-                            Text("Personal details")
-                        }
-                    }
-                    
-                    Section(header: Text("Account settings")) {
-                        Text("Manage account")
-                        Text("Notification preferences")
-                    }
-                    
-                    Section(header: Text("General information")) {
-                        Text("Terms of use")
-                        Text("Privacy policy")
-                        Text("Help")
-                    }
-                    
-                    Section(header: Text("Display settings")) {
-                        Text("App theme")
-                    }
-                    
-                    Section {
-                        
-                        Button(action: {
-                            
-                            //self.rootScreen = .LOGIN
-                        }){
-                            Text("Log out")
-                                .font(.system(size: 20))
-                                .frame(maxWidth: .infinity)
-                                .foregroundColor(Color.white)
-                            
-                        }//Button ends
-                    }
-                    .listRowBackground(Color(UIColor(named: "HaulerOrange") ?? .blue))
-                    
-                    
-                    
+            }
+            .listRowBackground(Color.white.opacity(0))
+            .listRowInsets(EdgeInsets())
+            
+            Section(header: Text("Profile details")) {
+                NavigationLink(destination: PersonalDetailsView().environmentObject(userProfileController)) {
+                    Text("Personal details")
                 }
-                //.scrollContentBackground(.hidden)
+            }
+            
+            Section(header: Text("Account settings")) {
+                NavigationLink(destination: ManageAccountView().environmentObject(userProfileController)) {
+                    Text("Manage account")
+                }
+                Text("Notification preferences")
+            }
+            
+            Section(header: Text("General information")) {
+                Text("Terms of use")
+                Text("Privacy policy")
+                Text("Help")
+            }
+            
+            Section(header: Text("Display settings")) {
+                Text("App theme")
+            }
+            
+            Section {
                 
-                
-                
-            //}//VStack ends
-            //.background(Color(UIColor(named: "BackgroundGray") ?? .white))
+                Button(action: {
+                    
+                    //self.rootScreen = .LOGIN
+                }){
+                    Text("Log out")
+                        .font(.system(size: 20))
+                        .frame(maxWidth: .infinity)
+                        .foregroundColor(Color.white)
+                    
+                }//Button ends
+            }
+            .listRowBackground(Color(UIColor(named: "HaulerOrange") ?? .blue))
         }
         
     }
