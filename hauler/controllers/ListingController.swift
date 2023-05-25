@@ -130,8 +130,6 @@ class ListingController : ObservableObject{
                     self.listingsList = listings
                     completion(listings, nil)
                 }
-                
-                
             }
     }
     
@@ -188,9 +186,7 @@ class ListingController : ObservableObject{
     
     func approveListings(listingsToUpdate: [Listing], completion: @escaping (Error?) -> Void){
         print(#function, "entered aprroving")
-//        let dispatchGroup = DispatchGroup()
         for update in listingsToUpdate {
-//            dispatchGroup.enter()
             self.store
                 .collection(COLLECTION_LISTING)
                 .document(update.id!)
@@ -201,11 +197,8 @@ class ListingController : ObservableObject{
                         print(#function, "Update para failed")
                         completion(err)
                     }
-//                    dispatchGroup.leave()
-                }
-                )
+                })
         }
-//        dispatchGroup.wait()
         completion(nil)
     }
     
