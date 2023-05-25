@@ -11,37 +11,42 @@ struct HomeView: View {
     @EnvironmentObject var listingController : ListingController
     @Environment(\.isSearching) var isSearching
     @Environment(\.dismissSearch) var dismissSearch
-    @State var listOfNames : [String] = ["Apple", "Banana", "Carrot", "application", "Car", "applied mathmatics", "apppppp"]
     @State var catagories : [String] = ListingCategory.allCases.map{(i) -> String in return i.displayName}
-    @State var searchInput : String = ""
-    @State var searchEditing : Bool = false
-    @State var dummyListing : [Listing] = [Listing(id:"1",title: "1", desc: "desc", price: 100.99, email: "", imageURI: "", category: .other),Listing(id:"2",title: "2", desc: "desc", price: 999.99, email: "", imageURI: "", category: .other)]
-    private var filteredSuggestionText: Binding<[String]> {Binding(
-        get: {
-            return dummyListing.map{(item) -> String in
-                return item.title
-            }.filter{
-                $0.lowercased().contains(searchInput.lowercased())
-                //                && ($0.lowercased().prefix(1) == searchInput.lowercased().prefix(1))
-            }
-        }, set: {_ in}
-    )}
-    @State var select1 : Bool = true
+    @State var adminMode : Bool = true
+    @State var selectedApproveList : [Listing] = []
+    @State var alert : Alert? = nil
     
     var body: some View {
         NavigationView{
-            
             ScrollView(.vertical){
-                ScrollView(.horizontal){
-                    HStack{
-                        ForEach(catagories, id: \.self){item in
-                            Text(item).padding().background(Color(red: 0.702, green: 0.87, blue: 0.756, opacity: 0.756), in: Rectangle()).cornerRadius(15)
-                                .onTapGesture {
-                                    listingController.selectedTokens.append(ListingCategory(rawValue: item)!)
-                                }
-                        }
-                        
+                HStack{
+                    if(adminMode){
+                        Button("Approve"){
+                            print(#function, "approve clicked")
+                            if(!selectedApproveList.isEmpty){
+                                print(#function, "entered")
+                                listingController.approveListings(listingsToUpdate: selectedApproveList, completion: {err in
+                                    if let err = err{
+                                        alert = Alert(title: Text("Failed to approve"))
+                                    }else{
+                                        alert = Alert(title: Text("Approved"))
+                                    }
+                                })
+                                selectedApproveList.removeAll()
+                            }
+                        }.background(Color(red: 0.8, green: 0.8, blue: 0.8)).padding()
                     }
+                    ScrollView(.horizontal){
+                        HStack{
+                            ForEach(catagories, id: \.self){item in
+                                Text(item).padding().background(Color(red: 0.702, green: 0.87, blue: 0.756, opacity: 0.756), in: Rectangle()).cornerRadius(15)
+                                    .onTapGesture {
+                                        listingController.selectedTokens.append(ListingCategory(rawValue: item)!)
+                                    }
+                            }
+                        }
+                    }.padding(.horizontal,10)
+                    
                 }
                 VStack{
                     if(!listingController.filteredList.isEmpty){
@@ -52,6 +57,20 @@ struct HomeView: View {
                                     Text(item.title).padding()
                                     Text("$" + String(item.price)).foregroundColor(Color(red: 0.302, green: 0.47, blue: 0.256, opacity: 0.756))
                                 }.padding().background(Color(red: 0.702, green: 0.87, blue: 0.756, opacity: 0.756), in: Rectangle()).cornerRadius(15)
+                                    .border(.red, width: ((selectedApproveList.contains(where: {$0.id == item.id})) ? 3 : 0))
+                                    .onLongPressGesture(perform: {
+                                        print("Long Pressed")
+                                        if(adminMode){
+                                            if(!selectedApproveList.contains(where: {$0.id == item.id})){
+                                                selectedApproveList.append(item)
+                                            }else{
+                                                selectedApproveList = selectedApproveList.filter{
+                                                    return $0.id != item.id
+                                                }
+                                            }
+                                        }
+                                        print("selectedApproveList: \(selectedApproveList.count)")
+                                    })
                             }
                         }
                     }else{
@@ -61,14 +80,9 @@ struct HomeView: View {
                             listingController.selectedTokens = []
                         }
                     }
-                    
-                    
                     Spacer()
-                    
                 }
-                
             }
-            
             .searchable(text: $listingController.searchText,
                         tokens: $listingController.selectedTokens,
                         suggestedTokens: $listingController.suggestedTokens,
@@ -77,11 +91,6 @@ struct HomeView: View {
                 
             })
         }
-        
-//        .onSubmit (of: .search){
-//            filterListing = listingController.filteredList
-//            print("Onsubmit")
-//        }
         .toolbar(content: {
             ToolbarItem(content: {
                 HStack{
@@ -96,27 +105,23 @@ struct HomeView: View {
                         .resizable()
                         .frame(width: 20, height: 20)
                         .padding(15)
-                        .background(Color(red: 0.702, green: 0.87, blue: 0.756, opacity: 0.756), in: Circle())
+//                        .background((adminMode ? Color(red: 0.5, green: 0.5, blue: 0.5) : Color(red: 0.702, green: 0.87, blue: 0.756, opacity: 0.756), in: Circle()))
+                        .onTapGesture {
+                            adminMode = !adminMode
+                            listingController.removeAllListener()
+                            listingController.getAllListings(adminMode: adminMode, completion: {_, err in if let err = err{print(err)}})
+                        }
                 }
                 .padding(.horizontal, 10)
             })
-            
         })
-//        .onChange(of: isSearching, perform: {isSearching in
-//            if(!isSearching){
-//                filterListing = dummyListing
-//            }
-//        })
         .onAppear(){
-            listingController.getAllListings(completion: {_, err in
+            listingController.getAllListings(adminMode: adminMode,completion: {_, err in
                 if let err = err{
                     print(err)
                 }
             })
         }
-        
-        
-        
     }
 }
 
