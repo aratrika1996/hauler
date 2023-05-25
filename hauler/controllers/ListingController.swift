@@ -107,28 +107,31 @@ class ListingController : ObservableObject{
                         print(#function, "Unable to convert the document into object : \(error)")
                     }
                 }
-                
-                listings = listings.map{(li) -> Listing in
-                    let dispatchGroup = DispatchGroup()
-                    var img: UIImage? = nil
-                    dispatchGroup.enter()
-                    self.fetchImage(path: li.imageURI, completion: {picData in
-                        if let picData = picData{
-                            if let Uiimage = UIImage(data: picData){
-                                img = Uiimage
-                                dispatchGroup.leave()
+                DispatchQueue.main.async{
+                    listings = listings.map{(li) -> Listing in
+                        let dispatchGroup = DispatchGroup()
+                        var img: UIImage? = nil
+                        dispatchGroup.enter()
+                        self.fetchImage(path: li.imageURI, completion: {picData in
+                            if let picData = picData{
+                                if let Uiimage = UIImage(data: picData){
+                                    img = Uiimage
+                                    dispatchGroup.leave()
+                                }else{
+                                    print(#function, "Cast uiImage Error")
+                                }
                             }else{
-                                print(#function, "Cast uiImage Error")
+                                print(#function, "no picData")
                             }
-                        }else{
-                            print(#function, "no picData")
-                        }
-                    })
-                    dispatchGroup.wait()
-                    return Listing(id: li.id, title: li.title, desc: li.desc, price: li.price, email: li.email, image: img, imageURI: li.imageURI, category: li.category)
+                        })
+                        dispatchGroup.wait()
+                        return Listing(id: li.id, title: li.title, desc: li.desc, price: li.price, email: li.email, image: img, imageURI: li.imageURI, category: li.category)
+                    }
+                    self.listingsList = listings
+                    completion(listings, nil)
                 }
-                self.listingsList = listings
-                completion(listings, nil)
+                
+                
             }
     }
     
@@ -157,27 +160,29 @@ class ListingController : ObservableObject{
                         print(#function, "Unable to convert the document into object : \(error)")
                     }
                 }
-                listings = listings.map{(li) -> Listing in
-                    let dispatchGroup = DispatchGroup()
-                    var img: UIImage? = nil
-                    dispatchGroup.enter()
-                    self.fetchImage(path: li.imageURI, completion: {picData in
-                        if let picData = picData{
-                            if let Uiimage = UIImage(data: picData){
-                                img = Uiimage
-                                dispatchGroup.leave()
+                DispatchQueue.main.async {
+                    listings = listings.map{(li) -> Listing in
+                        let dispatchGroup = DispatchGroup()
+                        var img: UIImage? = nil
+                        dispatchGroup.enter()
+                        self.fetchImage(path: li.imageURI, completion: {picData in
+                            if let picData = picData{
+                                if let Uiimage = UIImage(data: picData){
+                                    img = Uiimage
+                                    dispatchGroup.leave()
+                                }else{
+                                    print(#function, "Cast uiImage Error")
+                                }
                             }else{
-                                print(#function, "Cast uiImage Error")
+                                print(#function, "no picData")
                             }
-                        }else{
-                            print(#function, "no picData")
-                        }
-                    })
-                    dispatchGroup.wait()
-                    return Listing(id: li.id, title: li.title, desc: li.desc, price: li.price, email: li.email, image: img, imageURI: li.imageURI, category: li.category)
+                        })
+                        dispatchGroup.wait()
+                        return Listing(id: li.id, title: li.title, desc: li.desc, price: li.price, email: li.email, image: img, imageURI: li.imageURI, category: li.category)
+                    }
+                    self.userListings = listings
+                    completion(listings, nil)
                 }
-                self.userListings = listings
-                completion(listings, nil)
             }
     }
     
