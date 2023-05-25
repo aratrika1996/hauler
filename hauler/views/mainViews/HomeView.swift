@@ -106,6 +106,7 @@ struct HomeView: View {
                 
             })
         }
+
         .toolbar(hideParentNavigation, for: .navigationBar)
         .toolbar(hideParentNavigation, for: .tabBar)
         .onAppear(){

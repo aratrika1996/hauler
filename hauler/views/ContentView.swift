@@ -20,6 +20,7 @@ struct ContentView: View {
     
     var body: some View {
             TabView(selection: self.$tabSelection) {
+                Group {
                 HomeView()
                     .tabItem {
                     Image(systemName: "house")
@@ -47,13 +48,16 @@ struct ContentView: View {
                 }
                 .tag(4)
                 
-                ProfileView().tabItem {
+                ProfileView().environmentObject(authController).environmentObject(userProfileController).tabItem {
                     Image(systemName: "person")
                     Text(title[5])
                         
+                    }
+                    .tag(5)
                 }
-                .tag(5)
+                
             }
+
             .navigationTitle($title[tabSelection])
             .toolbar(content: {
                 if(tabSelection == 1){
@@ -81,6 +85,9 @@ struct ContentView: View {
                     })
                 }
             })
+              .onAppear() {
+                    UITabBar.appearance().backgroundColor = UIColor(named: "BackgroundGray") ?? .white
+                }
             .onChange(of: tabSelection, perform: {tabint in
                 if(tabint != 1){
                     listingController.removeAllListener()
