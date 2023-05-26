@@ -20,45 +20,39 @@ struct ContentView: View {
     
     var body: some View {
             TabView(selection: self.$tabSelection) {
-                Group {
-                    HomeView()
-                        .tabItem {
-                            Image(systemName: "house")
-                            Text(title[1])
-                        }
-                        .tag(1)
-                    
-                    ChatView(rootScreen: $rootScreen).environmentObject(authController).environmentObject(userProfileController).tabItem {
-                        Image(systemName: "text.bubble")
-                        Text(title[2])
-                    }
-                    .tag(2)
-                    
-                    
-                    PostView().environmentObject(imageController).environmentObject(listingController).tabItem {
-                        Image(systemName: "camera")
-                        Text(title[3])
-                    }
-                    .tag(3)
-                    
-                    UserListingsView().tabItem {
-                        Image(systemName: "list.bullet.rectangle.portrait")
-                        Text(title[4])
+                HomeView()
+                    .tabItem {
+                    Image(systemName: "house")
+                    Text(title[1])
+                }
+                .tag(1)
+                
+                ChatView(rootScreen: $rootScreen).environmentObject(authController).environmentObject(userProfileController).tabItem {
+                    Image(systemName: "text.bubble")
+                    Text(title[2])
+                }
+                .tag(2)
+                
+                
+                PostView().environmentObject(imageController).environmentObject(listingController).tabItem {
+                    Image(systemName: "camera")
+                    Text(title[3])
+                }
+                .tag(3)
+                
+                UserListingsView().tabItem {
+                    Image(systemName: "list.bullet.rectangle.portrait")
+                    Text(title[4])
                         
-                    }
-                    .tag(4)
-                    
-                    ProfileView().environmentObject(authController).environmentObject(userProfileController).tabItem {
-                        Image(systemName: "person")
-                        Text(title[5])
+                }
+                .tag(4)
+                
+                ProfileView().environmentObject(authController).environmentObject(userProfileController).tabItem {
+                    Image(systemName: "person")
+                    Text(title[5])
                         
                     }
                     .tag(5)
-                }
-                
-            }
-            .onAppear() {
-                    UITabBar.appearance().backgroundColor = UIColor(named: "BackgroundGray") ?? .white
             }
             .navigationTitle($title[tabSelection])
             .toolbar(content: {
@@ -94,6 +88,10 @@ struct ContentView: View {
                     listingController.removeUserListener()
                 }
             })
+            .onAppear() {
+                    UITabBar.appearance().backgroundColor = UIColor(named: "BackgroundGray") ?? .white
+            }
+            
     }
 }
 
