@@ -40,7 +40,6 @@ struct MainView: View {
             }
         }//NavigationView
         .navigationViewStyle(.stack)
-        .navigationBarBackButtonHidden(true)
     }
 }
 
