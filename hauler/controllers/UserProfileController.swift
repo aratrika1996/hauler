@@ -15,12 +15,12 @@ class UserProfileController : ObservableObject{
     @Published var userProfile = UserProfile()
     private let store : Firestore
     private static var shared : UserProfileController?
-    private let COLLECTION_PROFILE : String = "User_Profile"
-        private let FIELD_NAME = "uName"
-        private let FIELD_CONTACT_NUMBER = "uPhone"
-        private let FIELD_ADDRESS = "uAddress"
-        private let FIELD_LONG = "uLong"
-        private let FIELD_LAT = "uLat"
+    private let COLLECTION_PROFILE : String = "UserProfile"
+    private let FIELD_NAME = "uName"
+    private let FIELD_CONTACT_NUMBER = "uPhone"
+    private let FIELD_ADDRESS = "uAddress"
+    private let FIELD_LONG = "uLong"
+    private let FIELD_LAT = "uLat"
     
     
     var loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
@@ -49,7 +49,9 @@ class UserProfileController : ObservableObject{
         else{
             do{
                 try self.store
-                    .collection(COLLECTION_PROFILE).document(loggedInUserEmail).setData(from: newUserData)
+                    .collection(COLLECTION_PROFILE)
+                    .document(loggedInUserEmail)
+                    .setData(from: newUserData)
             } catch let error as NSError {
                 print("Unable to add document to firestore: \(error)")
             }
@@ -68,15 +70,10 @@ class UserProfileController : ObservableObject{
         
         self.store
             .collection(COLLECTION_PROFILE)
-            .document(loggedInUserEmail)
-            .addSnapshotListener { documentSnapshot, error in
-                if let error = error {
-                    print("Unable to retrieve data from Firestore: ", error)
-                    return
-                }
-                
-                guard let snapshot = documentSnapshot else {
-                    print("Unable to retrieve data from Firestore.")
+            .whereField("uEmail", isEqualTo: loggedInUserEmail)
+            .addSnapshotListener({ (querySnapshot, error) in
+                guard let snapshot = querySnapshot else{
+                    print("Unable to retrieve data from Firestore: ", error ?? "")
                     return
                 }
                 
@@ -106,8 +103,7 @@ class UserProfileController : ObservableObject{
         loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
                 
         self.store
-            .collection(COLLECTION_PROFILE)
-            .document(loggedInUserEmail)
+            .collection(COLLECTION_PROFILE).document(userProfileToUpdate.id!)
             .updateData(
                 [
                     FIELD_NAME : userProfileToUpdate.uName,
@@ -120,6 +116,24 @@ class UserProfileController : ObservableObject{
                 completion(error)
             }
     }
+    
+    func deleteUserData(completion: @escaping () -> Void) {
+        loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
+        self.store
+            .collection(COLLECTION_PROFILE)
+            .document(loggedInUserEmail)
+            .delete {error in
+                if let error = error {
+                    print(#function, "Unable to delete user : \(error)")
+                }
+                else {
+                    print(#function, "Successfully deleted user from firestore")
+                }
+                completion()
+            }
+    }
 
 }
+
+
 

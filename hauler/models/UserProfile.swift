@@ -17,12 +17,13 @@ struct UserProfile: Identifiable, Codable {
     var uAddress : String = ""
     var uLong : Double = 0.0
     var uLat : Double = 0.0
+    var uProfileImageURL : String? = ""
     
     init(){
         
     }
     
-    init(id: String? = nil, cName: String, cEmail: String, uPhone: String, uAddress: String, uLong: Double, uLat: Double) {
+    init(id: String? = nil, cName: String, cEmail: String, uPhone: String, uAddress: String, uLong: Double, uLat: Double, uProfileImageURL: String? = "") {
         self.id = id
         self.uName = cName
         self.uEmail = cEmail
@@ -30,6 +31,7 @@ struct UserProfile: Identifiable, Codable {
         self.uPhone = uPhone
         self.uLong = uLong
         self.uLat = uLat
+        self.uProfileImageURL = uProfileImageURL
     }
     
     init(from decoder: Decoder) throws {
@@ -41,6 +43,7 @@ struct UserProfile: Identifiable, Codable {
         self.uPhone = try container.decode(String.self, forKey: .uPhone)
         self.uLong = try container.decode(Double.self, forKey: .uLong)
         self.uLat = try container.decode(Double.self, forKey: .uLat)
+        self.uProfileImageURL = try container.decode(String.self, forKey: .uProfileImageURL)
     }
     
     init?(dictionary : [String : Any]) {
@@ -74,6 +77,11 @@ struct UserProfile: Identifiable, Codable {
             return nil
         }
         
-        self.init(cName: name, cEmail: email, uPhone: phone, uAddress: address, uLong: long, uLat: lat)
+        guard let profileImageURL = dictionary["uProfileImageURL"] as? String else {
+            print(#function, "Unable to read latitude from the object")
+            return nil
+        }
+        
+        self.init(cName: name, cEmail: email, uPhone: phone, uAddress: address, uLong: long, uLat: lat, uProfileImageURL: profileImageURL)
     }
 }

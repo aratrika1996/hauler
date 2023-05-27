@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var tabSelection = 1
-    @State private var title : [String] = ["","Home", "Chats", "Posts", "Listings", "Profile"]
+    @State private var title : [String] = ["Hauler","Home", "Chats", "Posts", "Listings", "Profile"]
     
     @EnvironmentObject var authController : AuthController
     @EnvironmentObject var listingController : ListingController
@@ -21,7 +21,6 @@ struct ContentView: View {
     
     var body: some View {
             TabView(selection: self.$tabSelection) {
-                Group {
                 HomeView()
                     .tabItem {
                     Image(systemName: "house")
@@ -49,17 +48,15 @@ struct ContentView: View {
                 }
                 .tag(4)
                 
-                ProfileView().environmentObject(authController).environmentObject(userProfileController).tabItem {
+                ProfileView(rootScreen: $rootScreen).environmentObject(authController).environmentObject(userProfileController).tabItem {
                     Image(systemName: "person")
                     Text(title[5])
                         
                     }
                     .tag(5)
-                }
-                
             }
-
             .navigationTitle($title[tabSelection])
+            .navigationTitle(((tabSelection == 1) ? $title[0] : $title[tabSelection]))
             .toolbar(content: {
                 if(tabSelection == 1){
                     ToolbarItem(content: {
@@ -86,9 +83,6 @@ struct ContentView: View {
                     })
                 }
             })
-              .onAppear() {
-                    UITabBar.appearance().backgroundColor = UIColor(named: "BackgroundGray") ?? .white
-                }
             .onChange(of: tabSelection, perform: {tabint in
                 if(tabint != 1){
                     listingController.removeAllListener()
@@ -96,6 +90,10 @@ struct ContentView: View {
                     listingController.removeUserListener()
                 }
             })
+            .onAppear() {
+                    UITabBar.appearance().backgroundColor = UIColor(named: "BackgroundGray") ?? .white
+            }
+            
     }
 }
 

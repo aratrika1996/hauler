@@ -12,6 +12,7 @@
 		283B43162A1989380073EA1B /* SignUpAuthError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 283B43152A1989380073EA1B /* SignUpAuthError.swift */; };
 		2887806F2A1DBDB70038268E /* PersonalDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2887806E2A1DBDB70038268E /* PersonalDetailsView.swift */; };
 		288780712A1EC0520038268E /* ManageAccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 288780702A1EC0520038268E /* ManageAccountView.swift */; };
+		288780732A217E050038268E /* ChangePasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 288780722A217E050038268E /* ChangePasswordView.swift */; };
 		8348320C2A185FD600CE8E2D /* Listing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8348320B2A185FD600CE8E2D /* Listing.swift */; };
 		83678CBC2A2199A400C50603 /* ChatController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83678CBB2A2199A300C50603 /* ChatController.swift */; };
 		83678CBE2A219FC200C50603 /* message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83678CBD2A219FC200C50603 /* message.swift */; };
@@ -57,6 +58,7 @@
 		283B43152A1989380073EA1B /* SignUpAuthError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpAuthError.swift; sourceTree = "<group>"; };
 		2887806E2A1DBDB70038268E /* PersonalDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalDetailsView.swift; sourceTree = "<group>"; };
 		288780702A1EC0520038268E /* ManageAccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManageAccountView.swift; sourceTree = "<group>"; };
+		288780722A217E050038268E /* ChangePasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangePasswordView.swift; sourceTree = "<group>"; };
 		8348320B2A185FD600CE8E2D /* Listing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Listing.swift; sourceTree = "<group>"; };
 		83678CBB2A2199A300C50603 /* ChatController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatController.swift; sourceTree = "<group>"; };
 		83678CBD2A219FC200C50603 /* message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = message.swift; sourceTree = "<group>"; };
@@ -235,6 +237,7 @@
 				F8A77E682A1BFF3F005AF90A /* SearchBar.swift */,
 				2887806E2A1DBDB70038268E /* PersonalDetailsView.swift */,
 				288780702A1EC0520038268E /* ManageAccountView.swift */,
+				288780722A217E050038268E /* ChangePasswordView.swift */,
 			);
 			path = subViews;
 			sourceTree = "<group>";
@@ -322,6 +325,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				288780732A217E050038268E /* ChangePasswordView.swift in Sources */,
 				83F97EAE2A16F1AE000CB670 /* ListingController.swift in Sources */,
 				8348320C2A185FD600CE8E2D /* Listing.swift in Sources */,
 				83F97E8E2A16E9C0000CB670 /* ContentView.swift in Sources */,
@@ -486,6 +490,7 @@
 				DEVELOPMENT_TEAM = XXVRQ5LRDV;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "For taking photo ";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -516,6 +521,7 @@
 				DEVELOPMENT_TEAM = XXVRQ5LRDV;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "For taking photo ";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
