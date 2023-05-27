@@ -6,11 +6,13 @@
 //
 
 import SwiftUI
+import CoreLocation
 
 struct productDetailView: View {
+    @EnvironmentObject var locationController : LocationController
     var listing : Listing
     var body: some View {
-        VStack{
+        ScrollView(.vertical){
             Image(uiImage: (listing.image!)).resizable().aspectRatio(contentMode: .fill).cornerRadius(15)
             HStack{
                 VStack{
@@ -42,7 +44,9 @@ struct productDetailView: View {
                     Spacer()
                 }
                 //Map
-                Rectangle().background(Color(.blue))
+                MapView(location: CLLocation(latitude: locationController.userLocation?.coordinate.latitude ?? 0, longitude: locationController.userLocation?.coordinate.longitude ?? 0)).frame(height: 200)
+//                    .blur(radius: 10)
+//                Rectangle().background(Color(.blue))
             }.padding()
             VStack{
                 HStack{
@@ -78,8 +82,10 @@ struct productDetailView: View {
     }
 }
 
-//struct productDetailView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        productDetailView()
-//    }
-//}
+struct productDetailView_Previews: PreviewProvider {
+    
+    static var previews: some View {
+        let vlisting = Listing(id:"xx1",title: "test", desc: "desc", price: 100, email: "", image: UIImage(systemName: "questionmark"), imageURI: "", category: .electronics)
+        productDetailView(listing: vlisting)
+    }
+}

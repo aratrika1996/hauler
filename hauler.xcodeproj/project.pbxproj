@@ -78,6 +78,7 @@
 		83F97ED52A16F7AF000CB670 /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
 		83F97ED72A16F8B2000CB670 /* PostView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostView.swift; sourceTree = "<group>"; };
 		83F97ED92A16F9E7000CB670 /* UserProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfile.swift; sourceTree = "<group>"; };
+		F88464A92A229398007F4C64 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		F8A77E682A1BFF3F005AF90A /* SearchBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBar.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -126,6 +127,7 @@
 		83F97E8A2A16E9C0000CB670 /* hauler */ = {
 			isa = PBXGroup;
 			children = (
+				F88464A92A229398007F4C64 /* Info.plist */,
 				283B43122A1984680073EA1B /* helpers */,
 				283B43102A197DCB0073EA1B /* GoogleService-Info.plist */,
 				83F97EAA2A16F11F000CB670 /* controllers */,
@@ -458,7 +460,13 @@
 				DEVELOPMENT_TEAM = XXVRQ5LRDV;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = hauler/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "";
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_NSCameraUsageDescription = "For taking photo ";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "For knowing where you are";
+				INFOPLIST_KEY_NSLocationUsageDescription = "";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -489,7 +497,13 @@
 				DEVELOPMENT_TEAM = XXVRQ5LRDV;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = hauler/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "";
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_NSCameraUsageDescription = "For taking photo ";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "For knowing where you are";
+				INFOPLIST_KEY_NSLocationUsageDescription = "";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

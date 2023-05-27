@@ -15,6 +15,7 @@ struct ContentView: View {
     @EnvironmentObject var listingController : ListingController
     @EnvironmentObject var imageController : ImageController
     @EnvironmentObject var userProfileController : UserProfileController
+    @EnvironmentObject var locationController : LocationController
     
     @Binding var rootScreen :RootView
     
