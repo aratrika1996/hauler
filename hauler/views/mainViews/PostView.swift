@@ -21,38 +21,51 @@ extension UIImage {
 struct PostView: View {
     @State private var selectedImage: UIImage? = nil
     @State private var resizedImage: UIImage? = nil
+    @State private var aspectMode: Bool = true
+    
+    @State private var alertTitle : String = ""
+    @State private var alertIsPresented : Bool = false
+    @State private var alertObj : Alert? = nil
+    
     @EnvironmentObject var imageController : ImageController
     @EnvironmentObject var listingController : ListingController
     
     @State private var isImagePickerPresented = false
     @State private var listing: Listing = Listing()
-    @State private var aspectMode: Bool = true
+    
+    
+    @State private var imageSourceType : ImagePickerView.ImageSourceType? = nil
     
     var body: some View {
             Form {
                 Section {
-                    if let image = resizedImage {
-                        HStack {
-                            Spacer()
-                            Image(uiImage: image)
-                                .onTapGesture {
-                                    isImagePickerPresented = true
-                                }
-                            Spacer()
-                        }
-                        Toggle(isOn: $aspectMode){
-                            Text("Aspect Mode")
-                        }.onChange(of: aspectMode, perform: {_ in
-                            resizePickedImage(aspectMode: aspectMode)
-                        })
-                    } else {
-                        Button(action: openImagePicker) {
-                            Text("Select Image")
-                        }
-                        .padding()
-                        .background(Color.blue)
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
+                        if let image = resizedImage {
+                            HStack {
+                                Spacer()
+                                Image(uiImage: image)
+                                    .onTapGesture {
+                                        isImagePickerPresented = true
+                                    }
+                                Spacer()
+                            }
+                            Toggle(isOn: $aspectMode){
+                                Text("Aspect Mode")
+                            }.onChange(of: aspectMode, perform: {_ in
+                                resizePickedImage(aspectMode: aspectMode)
+                            })
+                        } else {
+                            HStack{
+                                Spacer()
+                                Image(systemName: "plus.square")
+                                    .resizable()
+                                    .frame(width: 70, height: 70)
+                                    
+                                    .padding(.vertical, 100)
+                                Spacer()
+                            }
+                            .onTapGesture {
+                                openImagePicker()
+                            }
                     }
                 }
                 
@@ -79,7 +92,7 @@ struct PostView: View {
                 
                 Section {
                     Button(action: {
-                        guard let image = resizedImage else {
+                        guard let _ = resizedImage else {
                             print("No image selected.")
                             return
                         }
@@ -93,10 +106,14 @@ struct PostView: View {
                                 listing.imageURI = url.absoluteString
                                 // Perform any additional operations with the completed listing
                                 saveListing()
+                                self.alertObj = Alert(title: Text("Success"), message: Text("Post Successful"))
+                                
                             case .failure(let error):
                                 // Handle the error case
                                 print("Error uploading image: \(error)")
+                                self.alertObj = Alert(title: Text("Failed"), message: Text("Post Failed"))
                             }
+                            alertIsPresented = true
                         }
                     }) {
                         Text("Post Listing")
@@ -110,9 +127,42 @@ struct PostView: View {
                 }
             }
             .navigationBarTitle("Post Listing")
+            .padding(.top, 5)
             .padding()
+            .alert(alertTitle, isPresented: $alertIsPresented, presenting: self.alertObj, actions: {selection in
+                
+            })
             .sheet(isPresented: $isImagePickerPresented, onDismiss: handleImagePickerDismissal) {
-                ImagePickerView(isPresented: $isImagePickerPresented, selectedImage: $selectedImage)
+                if($imageSourceType.wrappedValue != nil){
+                    ImagePickerView(isPresented: $isImagePickerPresented, imageSourceType: $imageSourceType,selectedImage: $selectedImage)
+                }else{
+                    VStack{
+                        Button("Take Photo"){
+                            self.imageSourceType = .camera
+                            ImagePickerView(isPresented: $isImagePickerPresented, imageSourceType: $imageSourceType,selectedImage: $selectedImage)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.blue)
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                        .buttonStyle(BorderlessButtonStyle())
+                        Button("Browse Library"){
+                            self.imageSourceType = .photoLibrary
+                            ImagePickerView(isPresented: $isImagePickerPresented, imageSourceType: $imageSourceType,selectedImage: $selectedImage)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.blue)
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                        .buttonStyle(BorderlessButtonStyle())
+                    }
+                    .padding(.horizontal, 50)
+                    .presentationDetents([.height(130)])
+                    
+                }
+                
             }
     }
     
@@ -125,6 +175,7 @@ struct PostView: View {
             print("Image picker dismissed with selected image.")
             resizePickedImage(aspectMode: aspectMode)
         }
+        imageSourceType = nil
         // Perform any additional handling as needed
     }
     
@@ -182,17 +233,27 @@ struct PostView: View {
 
 struct ImagePickerView: UIViewControllerRepresentable {
     @Binding var isPresented: Bool
+    @Binding var imageSourceType: ImageSourceType?
     @Binding var selectedImage: UIImage?
     
     func makeUIViewController(context: Context) -> UIImagePickerController {
         let imagePickerController = UIImagePickerController()
         imagePickerController.delegate = context.coordinator
+        switch imageSourceType{
+        case .photoLibrary:
+            imagePickerController.sourceType = .photoLibrary
+        case .camera:
+            imagePickerController.sourceType = .camera
+        case .none:
+            imagePickerController.sourceType = .photoLibrary
+        }
         return imagePickerController
     }
     
     func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {
         // No update needed
     }
+    
     
     func makeCoordinator() -> Coordinator {
         return Coordinator(parent: self)
@@ -205,6 +266,8 @@ struct ImagePickerView: UIViewControllerRepresentable {
             self.parent = parent
         }
         
+        
+        
         func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
             if let image = info[.originalImage] as? UIImage {
                 parent.selectedImage = image
@@ -213,10 +276,16 @@ struct ImagePickerView: UIViewControllerRepresentable {
             parent.isPresented = false
         }
         
+        
         func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
             parent.isPresented = false
         }
     }
+    
+    enum ImageSourceType: Int {
+            case photoLibrary
+            case camera
+        }
 }
 
 struct PostView_Previews: PreviewProvider {

@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var tabSelection = 1
-    @State private var title : [String] = ["","Home", "Chats", "Posts", "Listings", "Profile"]
+    @State private var title : [String] = ["Hauler","Home", "Chats", "Posts", "Listings", "Profile"]
     
     @EnvironmentObject var authController : AuthController
     @EnvironmentObject var listingController : ListingController
@@ -58,7 +58,7 @@ struct ContentView: View {
                 
             }
 
-            .navigationTitle($title[tabSelection])
+            .navigationTitle(((tabSelection == 1) ? $title[0] : $title[tabSelection]))
             .toolbar(content: {
                 if(tabSelection == 1){
                     ToolbarItem(content: {

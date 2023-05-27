@@ -9,49 +9,60 @@ import SwiftUI
 
 struct UserListingsView: View {
     @EnvironmentObject var listingController : ListingController
+    @State private var isLoading = true
     
     var body: some View {
-        ScrollView(.vertical){
-            VStack{
-                if(!listingController.userListings.isEmpty){
-//                    LazyHGrid(rows: [GridItem()], alignment: .center){
-                        ForEach(listingController.userListings, id: \.self.id){item in
-    //                        NavigationLink(destination: productDetailView(listing: item)){
-                                HStack{
-                                    Image(uiImage: (item.image ?? UIImage(systemName: "exclamationmark.triangle.fill"))!).resizable().frame(width: 100, height: 100)
-                                    Spacer()
-                                    VStack{
-                                        Text(item.title).padding()
-                                        Text("$" + String(item.price)).foregroundColor(Color(red: 0.302, green: 0.47, blue: 0.256, opacity: 0.756))
-                                    }
-                                    
-                                }
-                                
-    //                        }
-                                .padding().background(Color(red: 0.702, green: 0.87, blue: 0.756, opacity: 0.756), in: Rectangle()).cornerRadius(15).padding()
-                            .onLongPressGesture(perform: {
-                                print("Long Pressed")
-                            })
+        if(isLoading){
+            ProgressView()
+                .onAppear {
+                    listingController.getAllUserListings(completion: {_, err in
+                        if let err = err{
+                            print(#function, err)
+                        }else{
+                            print(#function, "good to go, counts = \(listingController.userListings)")
                         }
-//                    }
-                }else{
-                    Text("Nothing To Show")
+                        isLoading = false
+                    })
                 }
-                Spacer()
+        }
+        else{
+            if(!listingController.userListings.isEmpty){
+                List{
+                    ForEach(Array(listingController.userListings.enumerated()), id:\.element){idx, item in
+                        HStack{
+                            Image(uiImage: (item.image ?? UIImage(systemName: "exclamationmark.triangle.fill"))!).resizable().frame(width: 100, height: 100)
+                            Spacer()
+                            VStack{
+                                Text(item.title).padding()
+                                Text("$" + String(item.price)).foregroundColor(Color(red: 0.302, green: 0.47, blue: 0.256, opacity: 0.756))
+                            }
+                            
+                        }
+                        .swipeActions(){
+                            Button("Delete"){
+                                print("delete activiated")
+                            }
+                            .tint(.red)
+                        }
+                        .padding()
+                        .background(Color("HaulerOrange"))
+                        .cornerRadius(15)
+                        .padding(.horizontal, 10)
+                        
+                    }
+                }
+                .scrollContentBackground(.hidden)
+                .onDisappear(){
+                    listingController.removeUserListener()
+                }
+            }else{
+                Text("Nothing To Show")
             }
         }
-        .onAppear(){
-            listingController.getAllUserListings(completion: {_, err in
-                if let err = err{
-                    print(#function, err)
-                }
-            })
-        }
-        .onDisappear(){
-            listingController.removeUserListener()
-        }
+        
     }
 }
+
 
 struct UserListingsView_Previews: PreviewProvider {
     static var previews: some View {
