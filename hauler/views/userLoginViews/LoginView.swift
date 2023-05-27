@@ -13,7 +13,7 @@ struct LoginView: View {
     @EnvironmentObject var userProfileController : UserProfileController
     
     @Binding var rootScreen :RootView
-    
+    @Environment(\.presentationMode) var presentationMode
     
     @State private var emailAddress: String = ""
     @State private var password: String = ""
@@ -90,7 +90,9 @@ struct LoginView: View {
             
         }//VStack ends
         .padding(30)
-        
+        .onAppear(){
+            print("rootScreen", rootScreen)
+        }
     }
     
     func isUserInputValid() -> Bool {
@@ -106,12 +108,21 @@ struct LoginView: View {
             switch result {
             case .success(_):
                 print("Sign in success")
-                // TODO check if the user already has a collection for the userProfile, if not then create it
-                // Use the userProfileController for that
-//                self.userProfileController.getAllUserData {
-//                }
+                userProfileController.getUserByEmail(email: emailAddress) { user, found in
+                        DispatchQueue.main.async {
+                            if found {
+                                userProfileController.updateLoggedInUser()
+                            } else {
+                                print("User not found")
+                                var userProfile = UserProfile()
+                                userProfile.uEmail  = emailAddress
+                                userProfileController.insertUserData(newUserData: userProfile)
+                                userProfileController.updateLoggedInUser()
+                            }
+                        }
+                    }
+                presentationMode.wrappedValue.dismiss()
                 
-                rootScreen = .HOME
                 
             case .failure(let error):
                 print("Error while signing in: \(error.localizedDescription)")

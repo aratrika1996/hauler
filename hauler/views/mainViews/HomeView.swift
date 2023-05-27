@@ -20,6 +20,7 @@ struct HomeView: View {
     @State var gridFormmats : [[GridItem]] = [Array(repeating: GridItem(.flexible(), spacing: 20), count: 2) ,[GridItem(.fixed(30)), GridItem(.fixed(150)), GridItem(.fixed(30)), GridItem(.fixed(150))]]
     
     var body: some View {
+        NavigationView{
             ScrollView(.vertical){
                 HStack{
                     if(listingController.adminMode){

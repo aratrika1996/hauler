@@ -13,6 +13,7 @@ class UserProfileController : ObservableObject{
     
     
     @Published var userProfile = UserProfile()
+    @Published var loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
     private let store : Firestore
     private static var shared : UserProfileController?
     private let COLLECTION_PROFILE : String = "UserProfile"
@@ -23,10 +24,9 @@ class UserProfileController : ObservableObject{
     private let FIELD_LAT = "uLat"
     
     
-    var loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
-    
     init(store: Firestore) {
         self.store = store
+        self.loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
     }
     
     static func getInstance() -> UserProfileController?{
@@ -36,7 +36,9 @@ class UserProfileController : ObservableObject{
         
         return shared
     }
-    
+    func updateLoggedInUser(){
+        self.loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
+    }
     func insertUserData(newUserData: UserProfile){
         print(#function, "Trying to insert \(newUserData.uName) to DB")
         print(#function, "current email", loggedInUserEmail)
@@ -58,13 +60,31 @@ class UserProfileController : ObservableObject{
         }
         
     }
+
+    func getUserByEmail(email: String, completion: @escaping (UserProfile?, Bool) -> Void) {
+        let db = Firestore.firestore()
+        
+        db.collection(COLLECTION_PROFILE).document(email).getDocument { snapshot, error in
+            if let error = error {
+                print("Error fetching user document: \(error)")
+                completion(nil, false)
+                return
+            }
+            
+            if let data = snapshot?.data(), let user = try? Firestore.Decoder().decode(UserProfile.self, from: data) {
+                completion(user, true)
+            } else {
+                completion(nil, false)
+            }
+        }
+    }
+
+
     
     
     func getAllUserData(completion: @escaping () -> Void) {
-        guard let loggedInUserEmail = Auth.auth().currentUser?.email else {
-            print("Logged in user not identified")
-            return
-        }
+        
+        loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
         
         print(#function, "current email", loggedInUserEmail)
         
@@ -76,28 +96,29 @@ class UserProfileController : ObservableObject{
                     print("Unable to retrieve data from Firestore: ", error ?? "")
                     return
                 }
-                
-                do {
-                    var profileData = try snapshot.data(as: UserProfile.self)
-                    let docId = snapshot.documentID
-                    profileData.id = docId
-                    
-                    if snapshot.exists {
-                        self.userProfile = profileData
-                        self.userProfile.id = docId
-                        print("profileData has been added/modified successfully!", profileData)
-                    } else {
-                        print("Document does not exist.")
+                snapshot.documentChanges.forEach{(docChange) in
+                    do{
+                        var profileData = try docChange.document.data(as: UserProfile.self)
+                        let docId = docChange.document.documentID
+                        profileData.id = docId
+                        
+                        if docChange.type == .added{
+                            self.userProfile = profileData
+                            self.userProfile.id = docId
+                            print("profileData has been added successfully!", profileData)
+                        }
+                        
+                        if docChange.type == .modified{
+                            self.userProfile = profileData
+                        }
                     }
-                } catch let error  {
-                    print(#function, "Unable to convert the document into an object:", error)
+                    catch let err as Error{
+                        print(#function, "Unable to convert the document into object", err)
+                    }
                 }
-                
                 completion() // call completion handler when data is retrieved
-            }
+            })
     }
-
-
 
     func updateUserData(userProfileToUpdate: UserProfile, completion: @escaping (Error?) -> Void) {
         loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
@@ -134,6 +155,5 @@ class UserProfileController : ObservableObject{
     }
 
 }
-
 
 

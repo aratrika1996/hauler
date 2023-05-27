@@ -34,6 +34,12 @@ struct MainView: View {
             case .HOME:
                 ContentView(rootScreen : $root).environmentObject(authController).environmentObject(listingController).environmentObject(imageController).environmentObject(userProfileController).environmentObject(chatContoller)
                 
+            case .LOGIN:
+                LoginView(rootScreen : $root).environmentObject(authController).environmentObject(userProfileController)
+                
+            case .SIGNUP:
+                SignUpView(rootScreen : $root).environmentObject(authController).environmentObject(userProfileController)
+                
             }
         }//NavigationView
         .navigationViewStyle(.stack)

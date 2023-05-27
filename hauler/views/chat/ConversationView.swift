@@ -28,6 +28,9 @@ struct ConversationView: View {
             .padding()
         }
         .navigationTitle(chat.displayName)
+        .onAppear(){
+            print("chat ini", chat)
+        }
     }
 }
 

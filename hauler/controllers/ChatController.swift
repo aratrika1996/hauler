@@ -20,10 +20,11 @@ class ChatController: ObservableObject {
     init() {
         loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
         fetchChats()
-        sendMessage(chatId: "dasdasdasd")
+//        sendMessage(chatId: "dasdasdasd")
     }
 
     func sendMessage(chatId: String) {
+        loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
         guard let userId = loggedInUserEmail else {
             return
         }
@@ -49,11 +50,13 @@ class ChatController: ObservableObject {
 
 
     private func fetchChats() {
+        loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
         guard let userId = loggedInUserEmail else {
             return
         }
 
         db.collection(COLLECTION_CHAT).whereField("participants", arrayContains: userId).addSnapshotListener { snapshot, error in
+            print("started fetching data")
             if let error = error {
                 print("Error fetching chats: \(error.localizedDescription)")
                 return
@@ -70,10 +73,8 @@ class ChatController: ObservableObject {
             for document in documents {
                 let chatId = document.documentID
                 let displayName = "name test" // Set the display name based on your logic
-
                 dispatchGroup.enter()
                 self.fetchMessages(for: chatId) { messages in
-                    print(messages)
                     let chat = Chat(id: chatId, displayName: displayName, messages: messages)
                     fetchedChats.append(chat)
                     dispatchGroup.leave()

@@ -94,8 +94,11 @@ struct ProfileView: View {
                 Section {
                     
                     Button(action: {
+                        authController.signOut()
+                        userProfileController.updateLoggedInUser()
+                            self.rootScreen = .HOME
                         
-                        //self.rootScreen = .LOGIN
+                        
                     }){
                         Text("Log out")
                             .font(.system(size: 20))

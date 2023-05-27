@@ -25,8 +25,7 @@ struct ChatView: View {
             
             }
         .onAppear(){
-            authController.signOut()
-            print(userProfileController.loggedInUserEmail)
+            print("userProfileController.loggedInUserEmail", userProfileController.loggedInUserEmail)
         }
     }
         

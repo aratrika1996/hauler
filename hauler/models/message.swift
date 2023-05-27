@@ -8,7 +8,7 @@
 import Foundation
 import FirebaseFirestoreSwift
 import SwiftUI
-
+import FirebaseFirestore
 
 
 
@@ -17,13 +17,13 @@ struct Message: Identifiable, Codable {
     var fromId: String = ""
     var toId: String = ""
     var text: String = ""
-    var timestamp: Date
+    var timestamp: Timestamp
 
     init() {
-        self.timestamp = Date()
+        self.timestamp = Timestamp.init()
     }
 
-    init(id: String? = nil, fromId: String, toId: String, text: String, timestamp: Date) {
+    init(id: String? = nil, fromId: String, toId: String, text: String, timestamp: Timestamp) {
         self.id = id
         self.fromId = fromId
         self.toId = toId
@@ -37,7 +37,7 @@ struct Message: Identifiable, Codable {
         self.fromId = try container.decode(String.self, forKey: .fromId)
         self.toId = try container.decode(String.self, forKey: .toId)
         self.text = try container.decode(String.self, forKey: .text)
-        self.timestamp = try container.decode(Date.self, forKey: .timestamp)
+        self.timestamp = try container.decode(Timestamp.self, forKey: .timestamp)
     }
 
     init?(dictionary: [String: Any]) {
@@ -55,7 +55,7 @@ struct Message: Identifiable, Codable {
             print(#function, "Unable to read text from the object")
             return nil
         }
-        guard let timestamp = dictionary["timestamp"] as? Date else {
+        guard let timestamp = dictionary["timestamp"] as? Timestamp else {
             print(#function, "Unable to read timestamp from the object")
             return nil
         }
