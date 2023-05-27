@@ -43,7 +43,7 @@ enum ListingCategory: String, Hashable, CaseIterable, Codable, Identifiable {
     
 }
 
-struct Listing: Identifiable, Codable {
+struct Listing: Identifiable, Codable, Hashable {
     
     private enum CodingKeys: String, CodingKey {
         case id
