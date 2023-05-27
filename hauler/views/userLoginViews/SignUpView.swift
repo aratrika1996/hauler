@@ -135,6 +135,9 @@ struct SignUpView: View {
                 print("Sign up success")
                 let newUser = UserProfile(cName: "", cEmail: self.email, uPhone: self.phoneNumber, uAddress: self.address, uLong: 0.0, uLat: 0.0)
                 self.userProfileController.insertUserData(newUserData: newUser)
+                self.userProfileController.getAllUserData {
+                    print("data retrieved")
+                }
                 self.rootScreen = .HOME
             case .failure(let error):
                 // Display error message
