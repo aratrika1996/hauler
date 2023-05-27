@@ -77,4 +77,39 @@ class AuthController : ObservableObject {
             print("unable to sign out", signOutError)
         }
     }
+    
+    func updatePassword(newPassword: String, oldPassword: String) {
+        let user = Auth.auth().currentUser
+        let credential = EmailAuthProvider.credential(withEmail: user!.email!, password: oldPassword)
+
+            user?.reauthenticate(with: credential, completion: { (authResult, error) in
+               if let error = error {
+                  // Handle re-authentication error
+                   print("auth error")
+                  return
+               }
+                user?.updatePassword(to: newPassword, completion: { (error) in
+                  if let error = error {
+                     // Handle password update error
+                    print("Password update not successful")
+                     return
+                  }
+                  // Password update successful
+                    print("Password update successful")
+               })
+            })
+    }
+    
+    func deleteUser() {
+        let user = Auth.auth().currentUser
+        
+        user?.delete { error in
+          if let error = error {
+            print("could not delete user")
+          } else {
+              UserDefaults.standard.set("", forKey: "KEY_EMAIL")
+              UserDefaults.standard.set("", forKey: "KEY_PASSWORD")
+          }
+        }
+    }
 }

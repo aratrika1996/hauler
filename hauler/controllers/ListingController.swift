@@ -249,6 +249,38 @@ class ListingController : ObservableObject{
             }
     }
     
+    func deleteAllUserListing(completion: @escaping () -> Void) {
+        loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
+        let query =  self.store.collection(COLLECTION_LISTING).whereField("email", isEqualTo: loggedInUserEmail)
+        query.getDocuments { (snapshot, error) in
+            if let error = error {
+                print("Error getting documents: \(error)")
+                return
+            }
+
+            guard let snapshot = snapshot else {
+                print("No matching documents")
+                return
+            }
+
+            // Iterate through each document and delete it
+            for document in snapshot.documents {
+                let documentRef = self.store.collection(self.COLLECTION_LISTING).document(document.documentID)
+
+                documentRef.delete { error in
+                    if let error = error {
+                        print("Error deleting document \(documentRef.documentID): \(error)")
+                    } else {
+                        print("Document \(documentRef.documentID) successfully deleted")
+                    }
+                }
+            }
+            
+            completion()
+        }
+        
+    }
+    
     func removeAllListener(){
         self.all_listener?.remove()
     }

@@ -47,7 +47,7 @@ struct ContentView: View {
                 }
                 .tag(4)
                 
-                ProfileView().environmentObject(authController).environmentObject(userProfileController).tabItem {
+                ProfileView(rootScreen: $rootScreen).environmentObject(authController).environmentObject(userProfileController).tabItem {
                     Image(systemName: "person")
                     Text(title[5])
                         

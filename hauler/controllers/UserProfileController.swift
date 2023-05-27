@@ -68,7 +68,7 @@ class UserProfileController : ObservableObject{
         
         self.store
             .collection(COLLECTION_PROFILE)
-            .whereField("email", isEqualTo: loggedInUserEmail)
+            .whereField("uEmail", isEqualTo: loggedInUserEmail)
             .addSnapshotListener({ (querySnapshot, error) in
                 guard let snapshot = querySnapshot else{
                     print("Unable to retrieve data from Firestore: ", error ?? "")
@@ -115,6 +115,24 @@ class UserProfileController : ObservableObject{
                 completion(error)
             }
     }
+    
+    func deleteUserData(completion: @escaping () -> Void) {
+        loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
+        self.store
+            .collection(COLLECTION_PROFILE)
+            .document(loggedInUserEmail)
+            .delete {error in
+                if let error = error {
+                    print(#function, "Unable to delete user : \(error)")
+                }
+                else {
+                    print(#function, "Successfully deleted user from firestore")
+                }
+                completion()
+            }
+    }
 
 }
+
+
 
