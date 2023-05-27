@@ -6,3 +6,8 @@
 //
 
 import Foundation
+struct Chat: Identifiable {
+    var id: String
+    var displayName: String
+    var messages: [Message]
+}

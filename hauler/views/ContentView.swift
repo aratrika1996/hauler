@@ -15,6 +15,7 @@ struct ContentView: View {
     @EnvironmentObject var listingController : ListingController
     @EnvironmentObject var imageController : ImageController
     @EnvironmentObject var userProfileController : UserProfileController
+    @EnvironmentObject var chatController : ChatController
     
     @Binding var rootScreen :RootView
     
@@ -28,7 +29,7 @@ struct ContentView: View {
                 }
                 .tag(1)
                 
-                ChatView(rootScreen: $rootScreen).environmentObject(authController).environmentObject(userProfileController).tabItem {
+                    ChatView(rootScreen: $rootScreen).environmentObject(authController).environmentObject(userProfileController).environmentObject(chatController).tabItem {
                     Image(systemName: "text.bubble")
                     Text(title[2])
                 }

@@ -10,21 +10,31 @@ import SwiftUI
 struct ChatView: View {
     @EnvironmentObject var authController : AuthController
     @EnvironmentObject var userProfileController : UserProfileController
+    @EnvironmentObject var chatController : ChatController
     @Binding var rootScreen :RootView
     
     @State private var linkSelection : Int? = nil
     var body: some View {
-        if userProfileController.loggedInUserEmail == ""{
-            NoChatView(rootScreen: $rootScreen)
+        VStack{
+            if userProfileController.loggedInUserEmail == ""{
+                NoChatView(rootScreen: $rootScreen).environmentObject(authController).environmentObject(userProfileController)
+            }
+            else{
+                ChatListView().environmentObject(chatController)
+            }
+            
+            }
+        .onAppear(){
+            authController.signOut()
+            print(userProfileController.loggedInUserEmail)
         }
-        else{
-            Text("")
-        }
+    }
         
-        }
 }
 
 struct NoChatView: View{
+    @EnvironmentObject var authController : AuthController
+    @EnvironmentObject var userProfileController : UserProfileController
     @Binding var rootScreen :RootView
     var body :some View {
         VStack{
@@ -34,7 +44,7 @@ struct NoChatView: View{
             Text("Keep your message in one place.")
             Text("Log in to manage your chats.")
             
-            NavigationLink(destination: LoginView(rootScreen: $rootScreen)) {
+            NavigationLink(destination: LoginView(rootScreen: $rootScreen).environmentObject(authController).environmentObject(userProfileController)) {
                 Text("Login")
                     .font(.title)
                     .foregroundColor(.blue)
@@ -46,7 +56,7 @@ struct NoChatView: View{
             
             HStack {
                 Text("Don't have an account? ")
-                NavigationLink(destination: SignUpView(rootScreen: $rootScreen)) {
+                NavigationLink(destination: SignUpView(rootScreen: $rootScreen).environmentObject(authController).environmentObject(userProfileController)) {
                     Text("SignUp")
                         .font(.title)
                         .foregroundColor(.blue)

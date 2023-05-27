@@ -8,13 +8,26 @@
 import SwiftUI
 
 struct ConversationView: View {
+    let chat: Chat
+    @EnvironmentObject var chatController: ChatController
+
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        VStack {
+            List(chat.messages) { message in
+                Text(message.text)
+            }
+            HStack {
+                TextField("Type your message", text: $chatController.messageText)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                Button(action: {
+                    chatController.sendMessage(chatId: chat.id)
+                }) {
+                    Text("Send")
+                }
+            }
+            .padding()
+        }
+        .navigationTitle(chat.displayName)
     }
 }
 
-struct ConversationView_Previews: PreviewProvider {
-    static var previews: some View {
-        ConversationView()
-    }
-}

@@ -19,7 +19,6 @@ struct HomeView: View {
     @State var hideParentNavigation : Visibility = .visible
     
     var body: some View {
-        NavigationView{
             ScrollView(.vertical){
                 HStack{
                     if(listingController.adminMode){
@@ -105,7 +104,7 @@ struct HomeView: View {
                 Label(token.rawValue, systemImage: token.icon())
                 
             })
-        }
+        
 
         .toolbar(hideParentNavigation, for: .navigationBar)
         .toolbar(hideParentNavigation, for: .tabBar)

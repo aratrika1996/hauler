@@ -108,11 +108,10 @@ struct LoginView: View {
                 print("Sign in success")
                 // TODO check if the user already has a collection for the userProfile, if not then create it
                 // Use the userProfileController for that
-                self.userProfileController.getAllUserData {
-                    print("data retrieved")
-                }
+//                self.userProfileController.getAllUserData {
+//                }
                 
-                self.rootScreen = .HOME // got to home screen
+                rootScreen = .HOME
                 
             case .failure(let error):
                 print("Error while signing in: \(error.localizedDescription)")

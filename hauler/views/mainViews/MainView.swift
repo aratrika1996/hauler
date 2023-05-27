@@ -16,6 +16,7 @@ struct MainView: View {
     private let listingController : ListingController;
     private let userProfileController : UserProfileController;
     private let imageController : ImageController;
+    private let chatContoller : ChatController;
     @State private var root : RootView = .HOME
     
     
@@ -24,18 +25,14 @@ struct MainView: View {
         listingController = ListingController(store: Firestore.firestore())
         userProfileController = UserProfileController(store: Firestore.firestore())
         imageController = ImageController()
+        chatContoller = ChatController()
     }
     
     var body: some View {
         NavigationView{
             switch root{
             case .HOME:
-                ContentView(rootScreen : $root).environmentObject(authController).environmentObject(listingController).environmentObject(imageController).environmentObject(userProfileController)
-            case .LOGIN:
-                LoginView(rootScreen : $root).environmentObject(authController).environmentObject(userProfileController)
-                
-            case .SIGNUP:
-                SignUpView(rootScreen : $root).environmentObject(authController).environmentObject(userProfileController)
+                ContentView(rootScreen : $root).environmentObject(authController).environmentObject(listingController).environmentObject(imageController).environmentObject(userProfileController).environmentObject(chatContoller)
                 
             }
         }//NavigationView

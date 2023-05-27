@@ -8,13 +8,14 @@
 import SwiftUI
 
 struct ChatListView: View {
-    var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
-    }
-}
+    var chatController: ChatController = ChatController()
 
-struct ChatListView_Previews: PreviewProvider {
-    static var previews: some View {
-        ChatListView()
+    var body: some View {
+            List(chatController.chats) { chat in
+                NavigationLink(destination: ConversationView(chat: chat).environmentObject(chatController)) {
+                    Text(chat.displayName)
+                }
+            }
+            .navigationTitle("Chats")
     }
 }
