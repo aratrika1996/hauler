@@ -12,6 +12,7 @@ import Firebase
 class ChatController: ObservableObject {
     @Published var chats: [Chat] = []
     @Published var messageText: String = ""
+    private static var shared : ChatController?
     private let COLLECTION_CHAT: String = "Chat"
     private var userId: String?
     private let db = Firestore.firestore()
@@ -19,8 +20,16 @@ class ChatController: ObservableObject {
 
     init() {
         loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
-        fetchChats()
+//        fetchChats()
 //        sendMessage(chatId: "dasdasdasd")
+    }
+    
+    static func getInstance() -> ChatController?{
+        if (shared == nil){
+            shared = ChatController()
+        }
+        
+        return shared
     }
 
     func sendMessage(chatId: String) {
@@ -49,7 +58,7 @@ class ChatController: ObservableObject {
     }
 
 
-    private func fetchChats() {
+    func fetchChats() {
         loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
         guard let userId = loggedInUserEmail else {
             return
@@ -69,21 +78,25 @@ class ChatController: ObservableObject {
 
             var fetchedChats: [Chat] = []
             let dispatchGroup = DispatchGroup()
-
+            print(#function, "chatroom found: \(snapshot?.documents.count)")
             for document in documents {
                 let chatId = document.documentID
-                let displayName = "name test" // Set the display name based on your logic
+//                let displayName = "name test" // Set the display name based on your logic
                 dispatchGroup.enter()
                 self.fetchMessages(for: chatId) { messages in
-                    let chat = Chat(id: chatId, displayName: displayName, messages: messages)
+                    let chat = Chat(id: chatId, displayName: document.documentID, messages: messages)
                     fetchedChats.append(chat)
                     dispatchGroup.leave()
                 }
             }
-
-            dispatchGroup.notify(queue: .main) {
-                self.chats = fetchedChats
+            dispatchGroup.notify(queue: .main){
+                print(#function, "chatrooms fetched: \(self.chats.count)")
+                for room in self.chats{
+                    print("chatrooms name: \(room.displayName)")
+                }
+                    self.chats = fetchedChats
             }
+            
         }
     }
 
