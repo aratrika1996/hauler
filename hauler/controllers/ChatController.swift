@@ -21,7 +21,7 @@ class ChatController: ObservableObject {
     init() {
         loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
 //        fetchChats()
-//        sendMessage(chatId: "dasdasdasd")
+//        sendMessage(chatId: "32io4nkl324n")
     }
     
     static func getInstance() -> ChatController?{
@@ -33,30 +33,46 @@ class ChatController: ObservableObject {
     }
 
     func sendMessage(chatId: String) {
-        loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
-        guard let userId = loggedInUserEmail else {
-            return
-        }
-
-        // Add the participants field to the message data
-        let messageData: [String: Any] = [
-            "fromId": userId,
-            "toId": "test@email.com",
-            "text": messageText, // messageText,
-            "timestamp": Date(),
-            "participants": [userId, "test2@email.com"] // Add the participants
-        ]
-
-        db.collection(COLLECTION_CHAT).document(chatId).collection("messages").addDocument(data: messageData) { error in
-            if let error = error {
-                print("Error sending message: \(error.localizedDescription)")
-            } else {
-                self.messageText = ""
-                print("Message sent successfully")
-                self.fetchChats()
-                
+        if(messageText.trimmingCharacters(in: .whitespacesAndNewlines) != ""){
+            loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
+            guard let userId = loggedInUserEmail else {
+                return
+            }
+            var data : [String: Any] = [
+                "participants": [userId, "test2@email.com"] // Add the participants
+            ]
+            
+            db.collection(COLLECTION_CHAT).document(chatId).setData(data) { error in
+                if let error = error {
+                    print("Error sending message: \(error.localizedDescription)")
+                } else {
+                    self.messageText = ""
+                    print("Message sent successfully")
+                    self.fetchChats()
+                    
+                }
+            }
+            
+            // Add the participants field to the message data
+            let messageData: [String: Any] = [
+                "fromId": userId,
+                "toId": "test@email.com",
+                "text": messageText, // messageText,
+                "timestamp": Date()
+            ]
+            
+            db.collection(COLLECTION_CHAT).document(chatId).collection("messages").addDocument(data: messageData) { error in
+                if let error = error {
+                    print("Error sending message: \(error.localizedDescription)")
+                } else {
+                    self.messageText = ""
+                    print("Message sent successfully")
+                    self.fetchChats()
+                    
+                }
             }
         }
+        
     }
 
 
@@ -81,12 +97,12 @@ class ChatController: ObservableObject {
             var fetchedChats: [Chat] = []
             let dispatchGroup = DispatchGroup()
             print(#function, "chatroom found: \(snapshot?.documents.count)")
-            for document in documents {
+            for (index, document) in documents.enumerated() {
                 let chatId = document.documentID
-                let displayName = "name test" // Set the display name based on your logic
+                let displayName = "Room number \(index + 1)"// Set the display name based on your logic
                 dispatchGroup.enter()
-                print("we are running")
                 self.fetchMessages(for: chatId) { messages in
+                    print("chatId", chatId)
                     let chat = Chat(id: chatId, displayName: displayName, messages: messages)
                     fetchedChats.append(chat)
                     dispatchGroup.leave()
@@ -106,6 +122,7 @@ class ChatController: ObservableObject {
 
 
     private func fetchMessages(for chatId: String, completion: @escaping ([Message]) -> Void) {
+
         db.collection(COLLECTION_CHAT).document(chatId).collection("messages")
             .order(by: "timestamp", descending: false)
             .getDocuments { (snapshot, error) in
