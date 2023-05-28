@@ -112,7 +112,12 @@ struct ProfileView: View {
         }
         .onAppear {
             self.name = self.userProfileController.userProfile.uName
-            self.email = UserDefaults.standard.value(forKey: "KEY_EMAIL") as! String
+            if let email = UserDefaults.standard.value(forKey: "KEY_EMAIL"){
+                self.email = email as! String
+            }else{
+                self.email = ""
+            }
+              
         }
         
     }

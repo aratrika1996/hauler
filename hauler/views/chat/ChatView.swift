@@ -25,7 +25,8 @@ struct ChatView: View {
             
             }
         .onAppear(){
-            print("userProfileController.loggedInUserEmail", userProfileController.loggedInUserEmail)
+            chatController.fetchChats()
+            print(#function, userProfileController.loggedInUserEmail)
         }
     }
         
