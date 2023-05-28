@@ -14,7 +14,7 @@ struct ChatListView: View {
         List{
             ForEach (Array(self.chatController.chatMap.keys), id:\.self){key in
                 
-                NavigationLink(destination: ConversationView(chat: self.chatController.chatMap[key]!).environmentObject(chatController)) {
+                NavigationLink(destination: ConversationView(chat: key).environmentObject(chatController)) {
                     Text(self.chatController.chatMap[key]!.displayName)
                 }
             }

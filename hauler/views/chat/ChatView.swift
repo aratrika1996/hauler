@@ -25,7 +25,11 @@ struct ChatView: View {
             
             }
         .onAppear(){
-            chatController.fetchChats()
+            if(chatController.listener == nil){
+                chatController.fetchChats()
+            }
+//            chatController.removeListener()
+            
             print(#function, userProfileController.loggedInUserEmail)
         }
     }

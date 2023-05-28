@@ -22,8 +22,6 @@ class ChatController: ObservableObject {
 
     init() {
         loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
-//        fetchChats()
-//        sendMessage(chatId: "dasdasdasd")
     }
     
     static func getInstance() -> ChatController?{
@@ -34,7 +32,7 @@ class ChatController: ObservableObject {
         return shared
     }
 
-    func sendMessage(chatId: String) {
+    func sendMessage(chatId: String, msg: String) {
         loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
         guard let userId = loggedInUserEmail else {
             return
@@ -44,7 +42,7 @@ class ChatController: ObservableObject {
         let messageData: [String: Any] = [
             "fromId": userId,
             "toId": "test_id",
-            "text": "genkwqnd test", // messageText,
+            "text": msg, // messageText,
             "timestamp": Date(),
             "participants": [userId, "test2@email.com"] // Add the participants
         ]
