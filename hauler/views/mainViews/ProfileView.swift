@@ -94,8 +94,11 @@ struct ProfileView: View {
                 Section {
                     
                     Button(action: {
+                        authController.signOut()
+                        userProfileController.updateLoggedInUser()
+                            self.rootScreen = .HOME
                         
-                        //self.rootScreen = .LOGIN
+                        
                     }){
                         Text("Log out")
                             .font(.system(size: 20))
@@ -109,7 +112,12 @@ struct ProfileView: View {
         }
         .onAppear {
             self.name = self.userProfileController.userProfile.uName
-            self.email = UserDefaults.standard.value(forKey: "KEY_EMAIL") as! String
+            if let email = UserDefaults.standard.value(forKey: "KEY_EMAIL"){
+                self.email = email as! String
+            }else{
+                self.email = ""
+            }
+              
         }
         
     }

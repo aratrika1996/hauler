@@ -138,9 +138,11 @@ struct SignUpView: View {
                 self.userProfileController.getAllUserData {
                     print("data retrieved")
                 }
+                userProfileController.updateLoggedInUser()
                 self.rootScreen = .HOME
             case .failure(let error):
                 // Display error message
+                userProfileController.updateLoggedInUser()
                 self.authError = error.localizedDescription
                 self.isSignInError = true
             }

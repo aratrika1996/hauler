@@ -63,6 +63,7 @@ class AuthController : ObservableObject {
                     return
                 }
                 print("saving the user on sign in ",user.email ?? "")
+                
                 UserDefaults.standard.set(user.email, forKey: "KEY_EMAIL")
                 UserDefaults.standard.set(password, forKey: "KEY_PASSWORD")
                 completion(.success(user))
@@ -72,6 +73,7 @@ class AuthController : ObservableObject {
     func signOut(){
         do{
             try Auth.auth().signOut()
+            print("signed out successfully!")
         }
         catch let signOutError as NSError{
             print("unable to sign out", signOutError)

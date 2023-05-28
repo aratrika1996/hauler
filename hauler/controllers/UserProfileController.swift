@@ -13,6 +13,7 @@ class UserProfileController : ObservableObject{
     
     
     @Published var userProfile = UserProfile()
+    @Published var loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
     private let store : Firestore
     private static var shared : UserProfileController?
     private let COLLECTION_PROFILE : String = "UserProfile"
@@ -23,10 +24,9 @@ class UserProfileController : ObservableObject{
     private let FIELD_LAT = "uLat"
     
     
-    var loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
-    
     init(store: Firestore) {
         self.store = store
+        self.loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
     }
     
     static func getInstance() -> UserProfileController?{
@@ -36,7 +36,9 @@ class UserProfileController : ObservableObject{
         
         return shared
     }
-    
+    func updateLoggedInUser(){
+        self.loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
+    }
     func insertUserData(newUserData: UserProfile){
         print(#function, "Trying to insert \(newUserData.uName) to DB")
         print(#function, "current email", loggedInUserEmail)
@@ -58,6 +60,26 @@ class UserProfileController : ObservableObject{
         }
         
     }
+
+    func getUserByEmail(email: String, completion: @escaping (UserProfile?, Bool) -> Void) {
+        let db = Firestore.firestore()
+        
+        db.collection(COLLECTION_PROFILE).document(email).getDocument { snapshot, error in
+            if let error = error {
+                print("Error fetching user document: \(error)")
+                completion(nil, false)
+                return
+            }
+            
+            if let data = snapshot?.data(), let user = try? Firestore.Decoder().decode(UserProfile.self, from: data) {
+                completion(user, true)
+            } else {
+                completion(nil, false)
+            }
+        }
+    }
+
+
     
     
     func getAllUserData(completion: @escaping () -> Void) {
@@ -133,6 +155,5 @@ class UserProfileController : ObservableObject{
     }
 
 }
-
 
 
