@@ -40,7 +40,7 @@ struct Message: Identifiable, Codable {
         self.timestamp = try container.decode(Timestamp.self, forKey: .timestamp)
     }
 
-    init?(dictionary: [String: Any]) {
+    init?(id: String, dictionary: [String: Any]) {
         guard let fromId = dictionary["fromId"] as? String else {
             print(#function, "Unable to read fromId from the object")
             return nil
@@ -60,6 +60,6 @@ struct Message: Identifiable, Codable {
             return nil
         }
 
-        self.init(fromId: fromId, toId: toId, text: text, timestamp: timestamp)
+        self.init(id:id, fromId: fromId, toId: toId, text: text, timestamp: timestamp)
     }
 }

@@ -6,8 +6,14 @@
 //
 
 import Foundation
-struct Chat: Identifiable {
+class Chat: Identifiable {
     var id: String
     var displayName: String
     var messages: [Message]
+    
+    init(id: String, displayName: String, messages: [Message]) {
+        self.id = id
+        self.displayName = displayName
+        self.messages = messages
+    }
 }

@@ -12,10 +12,10 @@ struct ChatListView: View {
 
     var body: some View {
         List{
-            ForEach (self.chatController.chats, id:\.id){chat in
+            ForEach (Array(self.chatController.chatMap.keys), id:\.self){key in
                 
-                NavigationLink(destination: ConversationView(chat: chat).environmentObject(chatController)) {
-                    Text(chat.displayName)
+                NavigationLink(destination: ConversationView(chat: self.chatController.chatMap[key]!).environmentObject(chatController)) {
+                    Text(self.chatController.chatMap[key]!.displayName)
                 }
             }
         }
