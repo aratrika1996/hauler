@@ -97,8 +97,6 @@ class ChatController: ObservableObject {
                             $0.id == newmsg.id
                         })){
                             chatroom.messages.append(newmsg)
-                        }else{
-                            
                         }
                     }
                 }

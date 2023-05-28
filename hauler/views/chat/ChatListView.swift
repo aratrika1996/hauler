@@ -21,11 +21,5 @@ struct ChatListView: View {
         }
     
             .navigationTitle("Chats")
-            .onAppear(){
-                for chat in chatController.chats{
-                    print("chatController.chats", chat)
-                }
-                
-            }
     }
 }
