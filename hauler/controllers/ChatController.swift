@@ -83,11 +83,11 @@ class ChatController: ObservableObject {
             print(#function, "chatroom found: \(snapshot?.documents.count)")
             for document in documents {
                 let chatId = document.documentID
-//                let displayName = "name test" // Set the display name based on your logic
+                let displayName = "name test" // Set the display name based on your logic
                 dispatchGroup.enter()
                 print("we are running")
                 self.fetchMessages(for: chatId) { messages in
-                    let chat = Chat(id: chatId, displayName: document.documentID, messages: messages)
+                    let chat = Chat(id: chatId, displayName: displayName, messages: messages)
                     fetchedChats.append(chat)
                     dispatchGroup.leave()
                 }
