@@ -12,7 +12,7 @@ import FirebaseFirestore
 
 
 
-struct Message: Identifiable, Codable {
+struct Message: Identifiable, Codable, Equatable {
     var id: String? = UUID().uuidString
     var fromId: String = ""
     var toId: String = ""

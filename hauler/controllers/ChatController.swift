@@ -32,8 +32,8 @@ class ChatController: ObservableObject {
         // Add the participants field to the message data
         let messageData: [String: Any] = [
             "fromId": userId,
-            "toId": "test_id",
-            "text": "genkwqnd test", // messageText,
+            "toId": "test@email.com",
+            "text": messageText, // messageText,
             "timestamp": Date(),
             "participants": [userId, "test2@email.com"] // Add the participants
         ]
@@ -44,6 +44,8 @@ class ChatController: ObservableObject {
             } else {
                 self.messageText = ""
                 print("Message sent successfully")
+                self.fetchChats()
+                
             }
         }
     }
@@ -74,18 +76,23 @@ class ChatController: ObservableObject {
                 let chatId = document.documentID
                 let displayName = "name test" // Set the display name based on your logic
                 dispatchGroup.enter()
+                print("we are running")
                 self.fetchMessages(for: chatId) { messages in
                     let chat = Chat(id: chatId, displayName: displayName, messages: messages)
                     fetchedChats.append(chat)
                     dispatchGroup.leave()
                 }
             }
-
-            dispatchGroup.notify(queue: .main) {
+            dispatchGroup.notify(queue: .main){
+                print(#function, "chatrooms fetched: \(self.chats.count)")
+                for room in self.chats{
+                    print("chatrooms name: \(room.displayName)")
+                }
                 self.chats = fetchedChats
             }
         }
     }
+
 
 
     private func fetchMessages(for chatId: String, completion: @escaping ([Message]) -> Void) {
@@ -108,7 +115,10 @@ class ChatController: ObservableObject {
                     guard let messageDict = document.data() as? [String: Any] else {
                         return nil
                     }
-                    return Message(dictionary: messageDict)
+                    var message = Message(dictionary: messageDict)
+                    message?.id = document.documentID
+
+                    return message
                 }
 
                 completion(messages)
