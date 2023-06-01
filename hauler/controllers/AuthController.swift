@@ -45,6 +45,7 @@ class AuthController : ObservableObject {
                     
                     UserDefaults.standard.set(user?.email, forKey: "KEY_EMAIL")
                     UserDefaults.standard.set(password, forKey: "KEY_PASSWORD")
+                    UserDefaults.standard.set(true, forKey: "KEY_USER_LOGGEDIN_STATUS")
                     completion(.success(authResult))
                 }
             }
@@ -66,6 +67,7 @@ class AuthController : ObservableObject {
                 
                 UserDefaults.standard.set(user.email, forKey: "KEY_EMAIL")
                 UserDefaults.standard.set(password, forKey: "KEY_PASSWORD")
+                UserDefaults.standard.set(true, forKey: "KEY_USER_LOGGEDIN_STATUS")
                 completion(.success(user))
             }
         }
@@ -74,6 +76,7 @@ class AuthController : ObservableObject {
         do{
             try Auth.auth().signOut()
             print("signed out successfully!")
+            UserDefaults.standard.set(false, forKey: "KEY_USER_LOGGEDIN_STATUS")
         }
         catch let signOutError as NSError{
             print("unable to sign out", signOutError)

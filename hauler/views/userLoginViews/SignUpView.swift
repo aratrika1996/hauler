@@ -11,9 +11,11 @@ import FirebaseFirestore
 struct SignUpView: View {
     @EnvironmentObject var authController : AuthController
     @EnvironmentObject var userProfileController : UserProfileController
+    @Environment(\.presentationMode) var presentationMode
     
     @Binding var rootScreen :RootView
     
+    @State private var name : String = ""
     @State private var email : String = ""
     @State private var password : String = ""
     @State private var confirmPassword : String = ""
@@ -30,6 +32,9 @@ struct SignUpView: View {
     var body: some View {
         VStack {
             Form {
+                TextField("Enter Name", text: self.$name)
+                    .textInputAutocapitalization(.never)
+                
                 TextField("Enter Email", text: self.$email)
                     .textInputAutocapitalization(.never)
                 
@@ -133,13 +138,13 @@ struct SignUpView: View {
             case .success(_):
                 // Navigate to the ContentView upon successful sign up
                 print("Sign up success")
-                let newUser = UserProfile(cName: "", cEmail: self.email, uPhone: self.phoneNumber, uAddress: self.address, uLong: 0.0, uLat: 0.0)
+                let newUser = UserProfile(cName: self.name, cEmail: self.email, uPhone: self.phoneNumber, uAddress: self.address, uLong: 0.0, uLat: 0.0)
                 self.userProfileController.insertUserData(newUserData: newUser)
                 self.userProfileController.getAllUserData {
                     print("data retrieved")
                 }
                 userProfileController.updateLoggedInUser()
-                self.rootScreen = .HOME
+                presentationMode.wrappedValue.dismiss()
             case .failure(let error):
                 // Display error message
                 userProfileController.updateLoggedInUser()
