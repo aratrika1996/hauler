@@ -108,19 +108,24 @@ struct LoginView: View {
             switch result {
             case .success(_):
                 print("Sign in success")
-                userProfileController.getUserByEmail(email: emailAddress) { user, found in
-                        DispatchQueue.main.async {
-                            if found {
-                                userProfileController.updateLoggedInUser()
-                            } else {
-                                print("User not found")
-                                var userProfile = UserProfile()
-                                userProfile.uEmail  = emailAddress
-                                userProfileController.insertUserData(newUserData: userProfile)
-                                userProfileController.updateLoggedInUser()
-                            }
-                        }
-                    }
+//                userProfileController.getUserByEmail(email: emailAddress) { user, found in
+//                        DispatchQueue.main.async {
+//                            if found {
+//                                userProfileController.updateLoggedInUser()
+//
+//                            } else {
+//                                print("User not found")
+//                                var userProfile = UserProfile()
+//                                userProfile.uEmail  = emailAddress
+//                                userProfileController.insertUserData(newUserData: userProfile)
+//                                userProfileController.updateLoggedInUser()
+//
+//                            }
+//                        }
+//                    }
+                self.userProfileController.getAllUserData {
+                    print("data retrieved")
+                }
                 presentationMode.wrappedValue.dismiss()
                 
                 

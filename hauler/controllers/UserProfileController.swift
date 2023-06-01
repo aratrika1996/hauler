@@ -22,6 +22,7 @@ class UserProfileController : ObservableObject{
     private let FIELD_ADDRESS = "uAddress"
     private let FIELD_LONG = "uLong"
     private let FIELD_LAT = "uLat"
+    private let FIELD_PROFILE_IMAGE = "uProfileImageURL"
     
     
     init(store: Firestore) {
@@ -132,6 +133,19 @@ class UserProfileController : ObservableObject{
                     FIELD_ADDRESS : userProfileToUpdate.uAddress,
                     FIELD_LONG : userProfileToUpdate.uLong,
                     FIELD_LAT : userProfileToUpdate.uLat,
+                ]
+            ) { error in
+                completion(error)
+            }
+    }
+    
+    func updateUserProfileImage(imageURLToUpdate: String, completion: @escaping (Error?) -> Void) {
+        loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
+        self.store
+            .collection(COLLECTION_PROFILE).document(loggedInUserEmail)
+            .updateData(
+                [
+                    FIELD_PROFILE_IMAGE : imageURLToUpdate
                 ]
             ) { error in
                 completion(error)
