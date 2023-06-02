@@ -13,6 +13,7 @@ class UserProfileController : ObservableObject{
     
     
     @Published var userProfile = UserProfile()
+    @Published var userDict : [String:UserProfile] = [:]
     @Published var loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
     private let store : Firestore
     private static var shared : UserProfileController?

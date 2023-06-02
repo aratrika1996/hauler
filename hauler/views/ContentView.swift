@@ -10,7 +10,7 @@ import SwiftUI
 struct ContentView: View {
     @State private var tabSelection = 1
     @State private var title : [String] = ["Hauler","Home", "Chats", "Posts", "Listings", "Profile"]
-    
+    @State var newChatId : String?
     @EnvironmentObject var authController : AuthController
     @EnvironmentObject var listingController : ListingController
     @EnvironmentObject var imageController : ImageController
@@ -21,14 +21,20 @@ struct ContentView: View {
     
     var body: some View {
             TabView(selection: self.$tabSelection) {
-                HomeView()
+                HomeView(toChatPage: {id in
+                    if let id = id{
+                        newChatId = id
+                        tabSelection = 2
+                    }
+                })
                     .tabItem {
                     Image(systemName: "house")
                     Text(title[1])
                 }
                 .tag(1)
                 
-                    ChatView(rootScreen: $rootScreen).environmentObject(authController).environmentObject(userProfileController).environmentObject(chatController).tabItem {
+                    ChatView(startNewChatWithId: newChatId,rootScreen: $rootScreen)
+                    .environmentObject(authController).environmentObject(userProfileController).environmentObject(chatController).tabItem {
                     Image(systemName: "text.bubble")
                     Text(title[2])
                 }

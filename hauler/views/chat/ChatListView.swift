@@ -9,23 +9,36 @@ import SwiftUI
 
 struct ChatListView: View {
     @EnvironmentObject var chatController: ChatController
+    @EnvironmentObject var userProfileController: UserProfileController
+    @State var selectedChat : Chat?
+    @State var navigateToChat : Bool = false
 
     var body: some View {
-        List{
-            ForEach (self.chatController.chats, id:\.id){chat in
-                
-                NavigationLink(destination: ConversationView(chat: chat).environmentObject(chatController)) {
-                    Text(chat.displayName)
+        List(self.chatController.chats){chat in
+            NavigationLink(destination: ConversationView(chat: chat).environmentObject(chatController)) {
+                Text(chat.displayName)
+            }
+        }
+        .navigationTitle("Chats")
+        .onAppear(){
+        }
+    }
+    
+    func updateName (emailAddress: String){
+        userProfileController.getUserByEmail(email: emailAddress) { user, found in
+            DispatchQueue.main.async {
+                if found {
+                    userProfileController.updateLoggedInUser()
+                    
+                } else {
+                    print("User not found")
+                    var userProfile = UserProfile()
+                    userProfile.uEmail  = emailAddress
+                    userProfileController.insertUserData(newUserData: userProfile)
+                    userProfileController.updateLoggedInUser()
+                    
                 }
             }
         }
-    
-            .navigationTitle("Chats")
-            .onAppear(){
-                for chat in chatController.chats{
-                    print("chatController.chats", chat)
-                }
-                
-            }
     }
 }
