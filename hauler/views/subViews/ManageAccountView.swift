@@ -51,7 +51,7 @@ struct ManageAccountView: View {
         self.userProfileController.deleteUserData() {
             self.listingController.deleteAllUserListing() {
                 self.authController.deleteUser()
-                self.rootScreen = .LOGIN
+                self.rootScreen = .HOME
             }
         }
         
