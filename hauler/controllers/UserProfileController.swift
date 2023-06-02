@@ -13,7 +13,7 @@ class UserProfileController : ObservableObject{
     
     
     @Published var userProfile = UserProfile()
-    @Published var userDict : [String:UserProfile] = [:]
+    @Published var userDict : [String : UserProfile] = [:]
     @Published var loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
     private let store : Firestore
     private static var shared : UserProfileController?
@@ -23,6 +23,7 @@ class UserProfileController : ObservableObject{
     private let FIELD_ADDRESS = "uAddress"
     private let FIELD_LONG = "uLong"
     private let FIELD_LAT = "uLat"
+    private let FIELD_PROFILE_IMAGE = "uProfileImageURL"
     
     
     init(store: Firestore) {
@@ -73,6 +74,9 @@ class UserProfileController : ObservableObject{
             }
             
             if let data = snapshot?.data(), let user = try? Firestore.Decoder().decode(UserProfile.self, from: data) {
+                self.userProfile = user
+                self.userDict[email] = user
+                print(self.userDict)
                 completion(user, true)
             } else {
                 completion(nil, false)
@@ -102,6 +106,8 @@ class UserProfileController : ObservableObject{
                         var profileData = try docChange.document.data(as: UserProfile.self)
                         let docId = docChange.document.documentID
                         profileData.id = docId
+                        self.userDict[self.loggedInUserEmail] = profileData
+                        print(self.userDict)
                         
                         if docChange.type == .added{
                             self.userProfile = profileData
@@ -133,6 +139,19 @@ class UserProfileController : ObservableObject{
                     FIELD_ADDRESS : userProfileToUpdate.uAddress,
                     FIELD_LONG : userProfileToUpdate.uLong,
                     FIELD_LAT : userProfileToUpdate.uLat,
+                ]
+            ) { error in
+                completion(error)
+            }
+    }
+    
+    func updateUserProfileImage(imageURLToUpdate: String, completion: @escaping (Error?) -> Void) {
+        loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
+        self.store
+            .collection(COLLECTION_PROFILE).document(loggedInUserEmail)
+            .updateData(
+                [
+                    FIELD_PROFILE_IMAGE : imageURLToUpdate
                 ]
             ) { error in
                 completion(error)

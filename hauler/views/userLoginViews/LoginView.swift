@@ -112,12 +112,14 @@ struct LoginView: View {
                         DispatchQueue.main.async {
                             if found {
                                 userProfileController.updateLoggedInUser()
+
                             } else {
                                 print("User not found")
                                 var userProfile = UserProfile()
                                 userProfile.uEmail  = emailAddress
                                 userProfileController.insertUserData(newUserData: userProfile)
                                 userProfileController.updateLoggedInUser()
+
                             }
                         }
                     }
