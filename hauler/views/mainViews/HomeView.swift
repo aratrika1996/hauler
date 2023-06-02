@@ -9,8 +9,9 @@ import SwiftUI
 
 struct HomeView: View {
     @EnvironmentObject var listingController : ListingController
-    //    @Environment(\.isSearching) var isSearching
-    //    @Environment(\.dismissSearch) var dismissSearch
+    @Environment(\.dismiss) var dismiss
+    var toChatPage : (String?) -> Void
+    
     @State var catagories : [String] = ListingCategory.allCases.map{(i) -> String in return i.displayName}
     @State var selectedApproveList : [Listing] = []
     @State var selection : Listing?
@@ -19,24 +20,28 @@ struct HomeView: View {
     @State var hideParentNavigation : Visibility = .visible
     @State var gridFormmats : [[GridItem]] = [Array(repeating: GridItem(.flexible(), spacing: 20), count: 2) ,[GridItem(.fixed(30)), GridItem(.fixed(150)), GridItem(.fixed(30)), GridItem(.fixed(150))]]
     
+    func approveBtn(){
+        print(#function, "approve clicked")
+        if(!selectedApproveList.isEmpty){
+            print(#function, "entered")
+            listingController.approveListings(listingsToUpdate: selectedApproveList, completion: {err in
+                if let _ = err{
+                    alert = Alert(title: Text("Failed to approve"))
+                }else{
+                    alert = Alert(title: Text("Approved"))
+                }
+            })
+            selectedApproveList.removeAll()
+        }
+    }
+    
     var body: some View {
         NavigationView{
             ScrollView(.vertical){
                 HStack{
                     if(listingController.adminMode){
                         Button("Approve"){
-                            print(#function, "approve clicked")
-                            if(!selectedApproveList.isEmpty){
-                                print(#function, "entered")
-                                listingController.approveListings(listingsToUpdate: selectedApproveList, completion: {err in
-                                    if let _ = err{
-                                        alert = Alert(title: Text("Failed to approve"))
-                                    }else{
-                                        alert = Alert(title: Text("Approved"))
-                                    }
-                                })
-                                selectedApproveList.removeAll()
-                            }
+                            approveBtn()
                         }.background(Color(red: 0.8, green: 0.8, blue: 0.8)).padding()
                     }
                     ScrollView(.horizontal){
@@ -72,7 +77,12 @@ struct HomeView: View {
                                             })
                                     }
                                 }
-                                NavigationLink(destination: productDetailView(listing: item)
+                                NavigationLink(destination: productDetailView(listing: item, toChat:{chatid in
+                                    if let chatid = chatid{
+                                        toChatPage(chatid)
+//                                        dismiss()
+                                    }
+                                })
                                     .onAppear(){hideParentNavigation = .hidden}
                                     .onDisappear(){hideParentNavigation = .visible}
                                 ){
@@ -85,16 +95,11 @@ struct HomeView: View {
                                                 VStack(alignment:.leading){
                                                     Text(item.title)
                                                     Text("$" + String(item.price)).foregroundColor(Color(red: 0.302, green: 0.47, blue: 0.256, opacity: 0.756))
-                                                    
                                                 }
-                                                
                                                 Spacer()
                                             }
                                             .padding()
                                         }
-                                        
-                                    
-                                    
                                 }
                                 .background(Color.white)
                                 .cornerRadius(15)
@@ -133,9 +138,9 @@ struct HomeView: View {
         }
     }
 }
-
-struct HomeView_Previews: PreviewProvider {
-    static var previews: some View {
-        HomeView()
-    }
-}
+//
+//struct HomeView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        HomeView()
+//    }
+//}

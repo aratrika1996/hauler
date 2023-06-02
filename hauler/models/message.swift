@@ -12,7 +12,7 @@ import FirebaseFirestore
 
 
 
-struct Message: Identifiable, Codable, Equatable {
+struct Message: Identifiable, Codable, Equatable, Hashable {
     var id: String? = UUID().uuidString
     var fromId: String = ""
     var toId: String = ""
@@ -61,5 +61,13 @@ struct Message: Identifiable, Codable, Equatable {
         }
 
         self.init(fromId: fromId, toId: toId, text: text, timestamp: timestamp)
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+        hasher.combine(fromId)
+        hasher.combine(toId)
+        hasher.combine(text)
+        hasher.combine(timestamp.dateValue())
     }
 }

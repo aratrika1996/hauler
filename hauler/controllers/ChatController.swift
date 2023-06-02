@@ -12,6 +12,8 @@ import Firebase
 class ChatController: ObservableObject {
     @Published var chats: [Chat] = []
     @Published var messageText: String = ""
+    @Published var toId : String? = nil
+    @Published var selectedChar : Chat? = nil
     private static var shared : ChatController?
     private let COLLECTION_CHAT: String = "Chat"
     private var userId: String?
@@ -32,31 +34,31 @@ class ChatController: ObservableObject {
         return shared
     }
 
-    func sendMessage(chatId: String) {
+    func sendMessage(chatId: String, toId: String) {
         if(messageText.trimmingCharacters(in: .whitespacesAndNewlines) != ""){
             loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
             guard let userId = loggedInUserEmail else {
                 return
             }
-            var data : [String: Any] = [
-                "participants": [userId, "test2@email.com"] // Add the participants
-            ]
-            
-            db.collection(COLLECTION_CHAT).document(chatId).setData(data) { error in
-                if let error = error {
-                    print("Error sending message: \(error.localizedDescription)")
-                } else {
-                    self.messageText = ""
-                    print("Message sent successfully")
-                    self.fetchChats()
-                    
-                }
-            }
+//            let data : [String: Any] = [
+//                "participants": [userId, toId] // Add the participants
+//            ]
+//
+//            db.collection(COLLECTION_CHAT).document(chatId).setData(data) { error in
+//                if let error = error {
+//                    print("Error sending message: \(error.localizedDescription)")
+//                } else {
+//                    self.messageText = ""
+//                    print("Message sent successfully")
+//                    self.fetchChats()
+//
+//                }
+//            }
             
             // Add the participants field to the message data
             let messageData: [String: Any] = [
                 "fromId": userId,
-                "toId": "test@email.com",
+                "toId": toId,
                 "text": messageText, // messageText,
                 "timestamp": Date()
             ]
@@ -71,6 +73,42 @@ class ChatController: ObservableObject {
                     
                 }
             }
+        }
+        
+    }
+    
+    func newChatRoom(id: String) {
+        loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
+        guard let userId = loggedInUserEmail else {
+            return
+        }
+        let data : [String: Any] = [
+            "participants": [userId, id] // Add the participants
+        ]
+        
+        let newchatroom = db.collection(COLLECTION_CHAT).addDocument(data: data){error in
+            if let error = error {
+                print("Error sending message: \(error.localizedDescription)")
+            } else {
+                self.messageText = ""
+                print("Message sent successfully")
+            }
+            
+            
+        }
+        let messageData: [String: Any] = [
+            "fromId": userId,
+            "toId": id,
+            "text": self.messageText, // messageText,
+            "timestamp": Date()
+        ]
+        self.db.collection(self.COLLECTION_CHAT).document(newchatroom.documentID).collection("messages").addDocument(data: messageData){err in
+            if let err = err {
+                print("Error sending message: \(err.localizedDescription)")
+            } else {
+                print("Message sent successfully")
+            }
+            
         }
         
     }
@@ -99,10 +137,10 @@ class ChatController: ObservableObject {
             print(#function, "chatroom found: \(snapshot?.documents.count)")
             for (index, document) in documents.enumerated() {
                 let chatId = document.documentID
-                let displayName = "Room number \(index + 1)"// Set the display name based on your logic
                 dispatchGroup.enter()
                 self.fetchMessages(for: chatId) { messages in
                     print("chatId", chatId)
+                    let displayName = messages[0].toId == userId ? messages[0].fromId : messages[0].toId
                     let chat = Chat(id: chatId, displayName: displayName, messages: messages)
                     fetchedChats.append(chat)
                     dispatchGroup.leave()
@@ -113,6 +151,7 @@ class ChatController: ObservableObject {
                 for room in self.chats{
                     print("chatrooms name: \(room.displayName)")
                 }
+                self.chats = []
                     self.chats = fetchedChats
             }
             

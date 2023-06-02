@@ -35,6 +35,7 @@ struct ConversationView: View {
                     }
                     .onAppear {
                         // Scroll to the bottom initially
+                        chatController.toId = chat.messages[0].toId == chatController.loggedInUserEmail ? chat.messages[0].fromId : chat.messages[0].toId
                         withAnimation {
                             scrollViewProxy.scrollTo(chat.messages.last?.id, anchor: .bottom)
                         }
@@ -46,7 +47,10 @@ struct ConversationView: View {
                 TextField("Type your message", text: $chatController.messageText)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                 Button(action: {
-                    chatController.sendMessage(chatId: chat.id)
+                    guard let toId = chatController.toId else{
+                        return
+                    }
+                    chatController.sendMessage(chatId: chat.id, toId: toId)
                     shouldScrollToBottom = true // Set shouldScrollToBottom to true after sending a message
                     messageCount += 1 // Update the message count
                 }) {
