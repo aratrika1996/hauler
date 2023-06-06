@@ -13,6 +13,10 @@
 		2887806F2A1DBDB70038268E /* PersonalDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2887806E2A1DBDB70038268E /* PersonalDetailsView.swift */; };
 		288780712A1EC0520038268E /* ManageAccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 288780702A1EC0520038268E /* ManageAccountView.swift */; };
 		288780732A217E050038268E /* ChangePasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 288780722A217E050038268E /* ChangePasswordView.swift */; };
+		288780752A29B7D60038268E /* AvailableListingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 288780742A29B7D60038268E /* AvailableListingsView.swift */; };
+		288780772A29B7E80038268E /* SoldListingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 288780762A29B7E80038268E /* SoldListingsView.swift */; };
+		288780792A29B8080038268E /* TopTabBarButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 288780782A29B8080038268E /* TopTabBarButton.swift */; };
+		2887807B2A29B8210038268E /* CustomTopTabBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2887807A2A29B8210038268E /* CustomTopTabBarView.swift */; };
 		8348320C2A185FD600CE8E2D /* Listing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8348320B2A185FD600CE8E2D /* Listing.swift */; };
 		83678CBC2A2199A400C50603 /* ChatController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83678CBB2A2199A300C50603 /* ChatController.swift */; };
 		83678CBE2A219FC200C50603 /* message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83678CBD2A219FC200C50603 /* message.swift */; };
@@ -59,6 +63,10 @@
 		2887806E2A1DBDB70038268E /* PersonalDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalDetailsView.swift; sourceTree = "<group>"; };
 		288780702A1EC0520038268E /* ManageAccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManageAccountView.swift; sourceTree = "<group>"; };
 		288780722A217E050038268E /* ChangePasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangePasswordView.swift; sourceTree = "<group>"; };
+		288780742A29B7D60038268E /* AvailableListingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvailableListingsView.swift; sourceTree = "<group>"; };
+		288780762A29B7E80038268E /* SoldListingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoldListingsView.swift; sourceTree = "<group>"; };
+		288780782A29B8080038268E /* TopTabBarButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopTabBarButton.swift; sourceTree = "<group>"; };
+		2887807A2A29B8210038268E /* CustomTopTabBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTopTabBarView.swift; sourceTree = "<group>"; };
 		8348320B2A185FD600CE8E2D /* Listing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Listing.swift; sourceTree = "<group>"; };
 		83678CBB2A2199A300C50603 /* ChatController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatController.swift; sourceTree = "<group>"; };
 		83678CBD2A219FC200C50603 /* message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = message.swift; sourceTree = "<group>"; };
@@ -238,6 +246,10 @@
 				2887806E2A1DBDB70038268E /* PersonalDetailsView.swift */,
 				288780702A1EC0520038268E /* ManageAccountView.swift */,
 				288780722A217E050038268E /* ChangePasswordView.swift */,
+				288780742A29B7D60038268E /* AvailableListingsView.swift */,
+				288780762A29B7E80038268E /* SoldListingsView.swift */,
+				288780782A29B8080038268E /* TopTabBarButton.swift */,
+				2887807A2A29B8210038268E /* CustomTopTabBarView.swift */,
 			);
 			path = subViews;
 			sourceTree = "<group>";
@@ -331,10 +343,12 @@
 				83F97E8E2A16E9C0000CB670 /* ContentView.swift in Sources */,
 				288780712A1EC0520038268E /* ManageAccountView.swift in Sources */,
 				83678CC32A21B5B000C50603 /* ChatListView.swift in Sources */,
+				288780752A29B7D60038268E /* AvailableListingsView.swift in Sources */,
 				283B43162A1989380073EA1B /* SignUpAuthError.swift in Sources */,
 				83F97EBF2A16F313000CB670 /* MainView.swift in Sources */,
 				83F97ED02A16F3D2000CB670 /* productDetailView.swift in Sources */,
 				83F97EC32A16F33D000CB670 /* LoginView.swift in Sources */,
+				288780792A29B8080038268E /* TopTabBarButton.swift in Sources */,
 				83F97EC72A16F359000CB670 /* ChatView.swift in Sources */,
 				83F97EC12A16F325000CB670 /* HomeView.swift in Sources */,
 				83F97ED62A16F7AF000CB670 /* MapView.swift in Sources */,
@@ -347,10 +361,12 @@
 				83F97EC52A16F34B000CB670 /* SignUpView.swift in Sources */,
 				83F97EC92A16F36E000CB670 /* FavoritesView.swift in Sources */,
 				83678CC52A21B5CC00C50603 /* ConversationView.swift in Sources */,
+				288780772A29B7E80038268E /* SoldListingsView.swift in Sources */,
 				83F97ED22A16F3E4000CB670 /* CommentView.swift in Sources */,
 				83F97EB02A16F1DB000CB670 /* UserProfileController.swift in Sources */,
 				2887806F2A1DBDB70038268E /* PersonalDetailsView.swift in Sources */,
 				83F97EB22A16F204000CB670 /* LocationController.swift in Sources */,
+				2887807B2A29B8210038268E /* CustomTopTabBarView.swift in Sources */,
 				83F97ECB2A16F397000CB670 /* UserListingsView.swift in Sources */,
 				83F97ECD2A16F3AD000CB670 /* ProfileView.swift in Sources */,
 				83F97ED42A16F424000CB670 /* MessageDetailView.swift in Sources */,

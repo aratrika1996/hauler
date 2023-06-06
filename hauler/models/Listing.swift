@@ -54,6 +54,9 @@ struct Listing: Identifiable, Codable, Hashable {
         case imageURI
         case category
         case approved
+        case available
+        case createDate
+        case sellDate
     }
     
     @DocumentID var id: String? = UUID().uuidString
@@ -65,12 +68,15 @@ struct Listing: Identifiable, Codable, Hashable {
     var email: String = ""
     var approved: Bool = false
     var category: ListingCategory = .other
+    var available : Bool = true
+    var createDate : Date = Date.now
+    var sellDate : Date = Date.now
     
     init() {
         
     }
     
-    init(id: String? = nil, title: String, desc: String, price: Double, email:String, imageURI: String, category: ListingCategory) {
+    init(id: String? = nil, title: String, desc: String, price: Double, email:String, imageURI: String, category: ListingCategory, available: Bool, createDate: Date, sellDate: Date) {
         self.id = id
         self.title = title
         self.desc = desc
@@ -78,6 +84,9 @@ struct Listing: Identifiable, Codable, Hashable {
         self.email = email
         self.imageURI = imageURI
         self.category = category
+        self.available = available
+        self.createDate = createDate
+        self.sellDate = sellDate
     }
     
     init(itemToApprove: Listing) {
@@ -89,9 +98,12 @@ struct Listing: Identifiable, Codable, Hashable {
         self.imageURI = itemToApprove.imageURI
         self.category = itemToApprove.category
         self.approved = true
+        self.available = itemToApprove.available
+        self.createDate = itemToApprove.createDate
+        self.sellDate = itemToApprove.sellDate
     }
     
-    init(id: String? = nil, title: String, desc: String, price: Double, email:String, image: UIImage?, imageURI: String, category: ListingCategory) {
+    init(id: String? = nil, title: String, desc: String, price: Double, email:String, image: UIImage?, imageURI: String, category: ListingCategory, available: Bool, createDate: Date, sellDate: Date) {
         self.id = id
         self.title = title
         self.desc = desc
@@ -100,6 +112,9 @@ struct Listing: Identifiable, Codable, Hashable {
         self.email = email
         self.imageURI = imageURI
         self.category = category
+        self.available = available
+        self.createDate = createDate
+        self.sellDate = sellDate
     }
     
     init(from decoder: Decoder) throws {
@@ -112,6 +127,9 @@ struct Listing: Identifiable, Codable, Hashable {
         self.imageURI = try container.decode(String.self, forKey: .imageURI)
         self.category = try container.decode(ListingCategory.self, forKey: .category)
         self.approved = try container.decode(Bool.self, forKey: .approved)
+        self.available = try container.decode(Bool.self, forKey: .available)
+        self.createDate = try container.decode(Date.self, forKey: .createDate)
+        self.sellDate = try container.decode(Date.self, forKey: .sellDate)
     }
     
     
@@ -148,7 +166,22 @@ struct Listing: Identifiable, Codable, Hashable {
             return nil
         }
         
-        self.init(title: title, desc: desc, price: price, email: email, imageURI: imageURI, category: category)
+        guard let available = dictionary["available"] as? Bool else {
+            print("unable to read listing status")
+            return nil
+        }
+        
+        guard let createDate = dictionary["createDate"] as? Date else {
+            print("unable to read creation date")
+            return nil
+        }
+        
+        guard let sellDate = dictionary["sellDate"] as? Date else {
+            print("unable to read selling date")
+            return nil
+        }
+        
+        self.init(title: title, desc: desc, price: price, email: email, imageURI: imageURI, category: category, available: available, createDate: createDate, sellDate: sellDate)
     }
     
     
