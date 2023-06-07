@@ -24,15 +24,18 @@ class ListingController : ObservableObject{
     
     private let store : Firestore
     private static var shared : ListingController?
+    
     private let COLLECTION_LISTING : String = "Listing"
-    private let COLLECTION_HAULER : String = "Hauler"
-    private let COLLECTION_ITEM : String = "items"
     private let FIELD_TITLE : String = "title"
     private let FIELD_DESC : String = "desc"
     private let FIELD_APPROVED : String = "approved"
     private let FIELD_PRICE : String = "price"
     private let FIELD_IMAGE : String = "imageURI"
     private let FIELD_CATEGORY : String = "category"
+    private let FIELD_AVAILABLE : String = "available"
+    private let FIELD_CREATEDATE : String = "createDate"
+    private let FIELD_SELLDATE : String = "sellDate"
+    
     private var all_listener : ListenerRegistration? = nil
     private var user_listener : ListenerRegistration? = nil
     
@@ -122,7 +125,7 @@ class ListingController : ObservableObject{
                             })
                         }
                         dispatchGroup.wait()
-                        return Listing(id: li.id, title: li.title, desc: li.desc, price: li.price, email: li.email, image: img, imageURI: li.imageURI, category: li.category)
+                        return Listing(id: li.id, title: li.title, desc: li.desc, price: li.price, email: li.email, image: img, imageURI: li.imageURI, category: li.category, available: li.available, createDate: li.createDate, sellDate: li.sellDate)
                     }
                     self.listingsList = listings
                     completion(listings, nil)
@@ -179,9 +182,116 @@ class ListingController : ObservableObject{
                             }
                             
                             dispatchGroup.wait()
-                            return Listing(id: li.id, title: li.title, desc: li.desc, price: li.price, email: li.email, image: img, imageURI: li.imageURI, category: li.category)
+                            return Listing(id: li.id, title: li.title, desc: li.desc, price: li.price, email: li.email, image: img, imageURI: li.imageURI, category: li.category, available: li.available, createDate: li.createDate, sellDate: li.sellDate)
                         }
                         self.userListings = listings
+                        print(self.userListings)
+                        completion(listings, nil)
+                    }
+        }
+    }
+    
+    func getAllUserAvailableListings(completion: @escaping ([Listing]?, Error?) -> Void){
+        loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
+            self.user_listener = self
+                .store
+                .collection(COLLECTION_LISTING)
+                .whereField("email", isEqualTo: loggedInUserEmail)
+                .whereField("available", isEqualTo: true)
+                .addSnapshotListener { (querySnapshot, error) in
+                    if let error = error {
+                        print(#function, "Unable to retrieve data from Firestore : \(error)")
+                        completion(nil, error)
+                        return
+                    }
+                    
+                    var listings: [Listing] = []
+                    
+                    querySnapshot?.documents.forEach { document in
+                        do {
+                            var listing: Listing = try document.data(as: Listing.self)
+                            listing.id = document.documentID
+                            
+                            listings.append(listing)
+                        } catch let error {
+                            print(#function, "Unable to convert the document into object : \(error)")
+                        }
+                    }
+                    DispatchQueue.main.async {
+                        listings = listings.map{(li) -> Listing in
+                            let dispatchGroup = DispatchGroup()
+                            var img: UIImage? = nil
+                            dispatchGroup.enter()
+                            self.fetchImage(path: li.imageURI, completion: {picData in
+                                if let picData = picData{
+                                    if let Uiimage = UIImage(data: picData){
+                                        img = Uiimage
+                                        dispatchGroup.leave()
+                                    }else{
+                                        print(#function, "Cast uiImage Error")
+                                    }
+                                }else{
+                                    print(#function, "no picData")
+                                }
+                            })
+                            dispatchGroup.wait()
+                            return Listing(id: li.id, title: li.title, desc: li.desc, price: li.price, email: li.email, image: img, imageURI: li.imageURI, category: li.category, available: li.available, createDate: li.createDate, sellDate: li.sellDate)
+                        }
+                        self.userAvailableListings = listings
+                        //print(self.userListings)
+                        completion(listings, nil)
+                    }
+        }
+    }
+    
+    func getAllUserSoldListings(completion: @escaping ([Listing]?, Error?) -> Void){
+        loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
+            self.user_listener = self
+                .store
+                .collection(COLLECTION_LISTING)
+                .whereField("email", isEqualTo: loggedInUserEmail)
+                .whereField("available", isEqualTo: false)
+                .addSnapshotListener { (querySnapshot, error) in
+                    if let error = error {
+                        print(#function, "Unable to retrieve data from Firestore : \(error)")
+                        completion(nil, error)
+                        return
+                    }
+                    
+                    var listings: [Listing] = []
+                    
+                    querySnapshot?.documents.forEach { document in
+                        do {
+                            var listing: Listing = try document.data(as: Listing.self)
+                            listing.id = document.documentID
+                            
+                            listings.append(listing)
+                        } catch let error {
+                            print(#function, "Unable to convert the document into object : \(error)")
+                        }
+                    }
+                    DispatchQueue.main.async {
+                        listings = listings.map{(li) -> Listing in
+                            let dispatchGroup = DispatchGroup()
+                            var img: UIImage? = nil
+                            dispatchGroup.enter()
+                            self.fetchImage(path: li.imageURI, completion: {picData in
+                                if let picData = picData{
+                                    if let Uiimage = UIImage(data: picData){
+                                        img = Uiimage
+                                        dispatchGroup.leave()
+                                    }else{
+                                        print(#function, "Cast uiImage Error")
+                                    }
+                                }else{
+                                    print(#function, "no picData")
+                                }
+                            })
+                            dispatchGroup.wait()
+                            return Listing(id: li.id, title: li.title, desc: li.desc, price: li.price, email: li.email, image: img, imageURI: li.imageURI, category: li.category, available: li.available, createDate: li.createDate, sellDate: li.sellDate)
+                        }
+                        self.userSoldListings = listings
+                        //print(self.userListings)
                         completion(listings, nil)
                     }
         }
@@ -235,8 +345,6 @@ class ListingController : ObservableObject{
     func deleteListing(listingToDelete : Listing){
         loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
         self.store
-            .collection(COLLECTION_HAULER)
-            .document(loggedInUserEmail)
             .collection(COLLECTION_LISTING)
             .document(listingToDelete.id!)
             .delete{error in
@@ -280,6 +388,23 @@ class ListingController : ObservableObject{
             completion()
         }
         
+    }
+    
+    func changeItemAvailabilityStatus(listingToUpdate: Listing, completion: @escaping (Error?) -> Void) {
+        loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
+        self.store
+            .collection(COLLECTION_LISTING)
+            .document(listingToUpdate.id!)
+            .updateData([
+                FIELD_AVAILABLE : !listingToUpdate.available,
+            ]) { error in
+                if let error = error {
+                    print(#function, "Unable to update document : \(error)")
+                } else {
+                    print(#function, "Successfully updated \(listingToUpdate) in the firestore")
+                }
+                completion(error)
+            }
     }
     
     func removeAllListener(){
