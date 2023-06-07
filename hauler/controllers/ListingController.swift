@@ -17,10 +17,13 @@ class ListingController : ObservableObject{
     
     @Published var listingsList = [Listing]()
     @Published var userListings = [Listing]()
+    @Published var userAvailableListings = [Listing]()
+    @Published var userSoldListings = [Listing]()
     @Published var adminMode = false
     @Published var searchText: String = ""
     @Published var selectedTokens : [ListingCategory] = []
     @Published var suggestedTokens : [ListingCategory] = ListingCategory.allCases
+    
     
     private let store : Firestore
     private static var shared : ListingController?
@@ -222,18 +225,21 @@ class ListingController : ObservableObject{
                             let dispatchGroup = DispatchGroup()
                             var img: UIImage? = nil
                             dispatchGroup.enter()
-                            self.fetchImage(path: li.imageURI, completion: {picData in
-                                if let picData = picData{
-                                    if let Uiimage = UIImage(data: picData){
-                                        img = Uiimage
-                                        dispatchGroup.leave()
-                                    }else{
-                                        print(#function, "Cast uiImage Error")
-                                    }
-                                }else{
-                                    print(#function, "no picData")
-                                }
-                            })
+                            if let link = URL(string: li.imageURI){
+                                link.fetchImage(completion: {
+                                    picData in
+                                        if let picData = picData{
+                                            if let Uiimage = UIImage(data: picData){
+                                                img = Uiimage
+                                                dispatchGroup.leave()
+                                            }else{
+                                                print(#function, "Cast uiImage Error")
+                                            }
+                                        }else{
+                                            print(#function, "no picData")
+                                        }
+                                })
+                            }
                             dispatchGroup.wait()
                             return Listing(id: li.id, title: li.title, desc: li.desc, price: li.price, email: li.email, image: img, imageURI: li.imageURI, category: li.category, available: li.available, createDate: li.createDate, sellDate: li.sellDate)
                         }
@@ -275,18 +281,21 @@ class ListingController : ObservableObject{
                             let dispatchGroup = DispatchGroup()
                             var img: UIImage? = nil
                             dispatchGroup.enter()
-                            self.fetchImage(path: li.imageURI, completion: {picData in
-                                if let picData = picData{
-                                    if let Uiimage = UIImage(data: picData){
-                                        img = Uiimage
-                                        dispatchGroup.leave()
-                                    }else{
-                                        print(#function, "Cast uiImage Error")
-                                    }
-                                }else{
-                                    print(#function, "no picData")
-                                }
-                            })
+                            if let link = URL(string: li.imageURI){
+                                link.fetchImage(completion: {
+                                    picData in
+                                        if let picData = picData{
+                                            if let Uiimage = UIImage(data: picData){
+                                                img = Uiimage
+                                                dispatchGroup.leave()
+                                            }else{
+                                                print(#function, "Cast uiImage Error")
+                                            }
+                                        }else{
+                                            print(#function, "no picData")
+                                        }
+                                })
+                            }
                             dispatchGroup.wait()
                             return Listing(id: li.id, title: li.title, desc: li.desc, price: li.price, email: li.email, image: img, imageURI: li.imageURI, category: li.category, available: li.available, createDate: li.createDate, sellDate: li.sellDate)
                         }
