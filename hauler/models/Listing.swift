@@ -56,7 +56,7 @@ struct Listing: Identifiable, Codable, Hashable {
         case approved
     }
     
-    @DocumentID var id: String? = UUID().uuidString
+    @DocumentID var id: String? = nil
     var title: String = ""
     var desc: String = ""
     var price: Double = 0.0

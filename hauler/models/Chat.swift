@@ -6,7 +6,8 @@
 //
 
 import Foundation
-struct Chat: Identifiable, Hashable {
+struct Chat: Codable, Identifiable, Hashable {
+    var participants: [String]
     var id: String
     var displayName: String
     var messages: [Message]

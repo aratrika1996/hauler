@@ -20,86 +20,83 @@ struct ContentView: View {
     @Binding var rootScreen :RootView
     
     var body: some View {
-            TabView(selection: self.$tabSelection) {
-                HomeView(toChatPage: {id in
-                    if let id = id{
-                        newChatId = id
-                        tabSelection = 2
-                    }
-                })
-                    .tabItem {
-                    Image(systemName: "house")
-                    Text(title[1])
-                }
-                .tag(1)
-                
-                    ChatView(startNewChatWithId: newChatId,rootScreen: $rootScreen)
-                    .environmentObject(authController).environmentObject(userProfileController).environmentObject(chatController).tabItem {
-                    Image(systemName: "text.bubble")
-                    Text(title[2])
-                }
-                .tag(2)
-                
-                
-                PostView().environmentObject(imageController).environmentObject(listingController).tabItem {
-                    Image(systemName: "camera")
-                    Text(title[3])
-                }
-                .tag(3)
-                
-                UserListingsView().tabItem {
-                    Image(systemName: "list.bullet.rectangle.portrait")
-                    Text(title[4])
-                        
-                }
-                .tag(4)
-                
-                ProfileView(rootScreen: $rootScreen).environmentObject(authController).environmentObject(userProfileController).tabItem {
-                    Image(systemName: "person")
-                    Text(title[5])
-                        
-                    }
-                    .tag(5)
-            }
-            .navigationTitle($title[tabSelection])
-            .navigationTitle(((tabSelection == 1) ? $title[0] : $title[tabSelection]))
-            .toolbar(content: {
-                if(tabSelection == 1){
-                    ToolbarItem(content: {
-                        HStack{
-    //                        Text(title[tabSelection])
-                            Spacer()
-                            Image(uiImage: UIImage(systemName: "heart.fill")!)
-                                .resizable()
-                                .frame(width: 20, height: 20)
-                                .padding(15)
-                                .background(Color(red: 0.702, green: 0.87, blue: 0.756, opacity: 0.756), in: Circle())
-                            Image(uiImage: UIImage(systemName: "bell")!)
-                                .resizable()
-                                .frame(width: 20, height: 20)
-                                .padding(15)
-                            //                        .background((adminMode ? Color(red: 0.5, green: 0.5, blue: 0.5) : Color(red: 0.702, green: 0.87, blue: 0.756, opacity: 0.756), in: Circle()))
-                                .onTapGesture {
-                                    listingController.adminMode = !listingController.adminMode
-                                    listingController.removeAllListener()
-                                    listingController.getAllListings(adminMode: listingController.adminMode, completion: {_, err in if let err = err{print(err)}})
-                                }
-                        }
-                        .padding(.horizontal, 10)
-                    })
+        TabView(selection: self.$tabSelection) {
+            HomeView(toChatPage: {id in
+                if let id = id{
+                    newChatId = id
+                    tabSelection = 2
                 }
             })
-            .onChange(of: tabSelection, perform: {tabint in
-                if(tabint != 1){
-                    listingController.removeAllListener()
-                }else if(tabint != 4){
-                    listingController.removeUserListener()
-                }
-            })
-            .onAppear() {
-                    UITabBar.appearance().backgroundColor = UIColor(named: "BackgroundGray") ?? .white
+            .tabItem {
+                Image(systemName: "house")
+                Text(title[1])
             }
+            .tag(1)
             
+            ChatView(startNewChatWithId: newChatId,rootScreen: $rootScreen).tabItem {
+                Image(systemName: "text.bubble")
+                Text(title[2])
+            }
+            .tag(2)
+            
+            
+            PostView().tabItem {
+                Image(systemName: "camera")
+                Text(title[3])
+            }
+            .tag(3)
+            
+            UserListingsView().tabItem{
+                Image(systemName: "list.bullet.rectangle.portrait")
+                Text(title[4])
+                
+            }
+            .tag(4)
+            
+            ProfileView(rootScreen: $rootScreen).tabItem{
+                Image(systemName: "person")
+                Text(title[5])
+            }
+            .tag(5)
+        }
+        .navigationTitle($title[tabSelection])
+        .navigationTitle(((tabSelection == 1) ? $title[0] : $title[tabSelection]))
+        .toolbar(content: {
+            if(tabSelection == 1){
+                ToolbarItem(content: {
+                    HStack{
+                        //                        Text(title[tabSelection])
+                        Spacer()
+                        Image(uiImage: UIImage(systemName: "heart.fill")!)
+                            .resizable()
+                            .frame(width: 20, height: 20)
+                            .padding(15)
+                            .background(Color(red: 0.702, green: 0.87, blue: 0.756, opacity: 0.756), in: Circle())
+                        Image(uiImage: UIImage(systemName: "bell")!)
+                            .resizable()
+                            .frame(width: 20, height: 20)
+                            .padding(15)
+                        //                        .background((adminMode ? Color(red: 0.5, green: 0.5, blue: 0.5) : Color(red: 0.702, green: 0.87, blue: 0.756, opacity: 0.756), in: Circle()))
+                            .onTapGesture {
+                                listingController.adminMode = !listingController.adminMode
+                                listingController.removeAllListener()
+                                listingController.getAllListings(adminMode: listingController.adminMode, completion: {_, err in if let err = err{print(err)}})
+                            }
+                    }
+                    .padding(.horizontal, 10)
+                })
+            }
+        })
+        .onAppear() {
+            UITabBar.appearance().backgroundColor = UIColor(named: "BackgroundGray") ?? .white
+            
+        }
+        .environmentObject(authController)
+        .environmentObject(listingController)
+        .environmentObject(imageController)
+        .environmentObject(userProfileController)
+        .environmentObject(chatController)
+        
     }
 }
 

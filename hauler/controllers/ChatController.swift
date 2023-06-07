@@ -10,6 +10,7 @@ import FirebaseFirestore
 import Firebase
 
 class ChatController: ObservableObject {
+    @Published var chatDict : [String:Chat] = [:]
     @Published var chats: [Chat] = []
     @Published var messageText: String = ""
     @Published var toId : String? = nil
@@ -40,20 +41,6 @@ class ChatController: ObservableObject {
             guard let userId = loggedInUserEmail else {
                 return
             }
-//            let data : [String: Any] = [
-//                "participants": [userId, toId] // Add the participants
-//            ]
-//
-//            db.collection(COLLECTION_CHAT).document(chatId).setData(data) { error in
-//                if let error = error {
-//                    print("Error sending message: \(error.localizedDescription)")
-//                } else {
-//                    self.messageText = ""
-//                    print("Message sent successfully")
-//                    self.fetchChats()
-//
-//                }
-//            }
             
             // Add the participants field to the message data
             let messageData: [String: Any] = [
@@ -69,8 +56,7 @@ class ChatController: ObservableObject {
                 } else {
                     self.messageText = ""
                     print("Message sent successfully")
-                    self.fetchChats()
-                    
+                    self.fetchChats(completion: {})
                 }
             }
         }
@@ -91,10 +77,8 @@ class ChatController: ObservableObject {
                 print("Error sending message: \(error.localizedDescription)")
             } else {
                 self.messageText = ""
-                print("Message sent successfully")
+                print("New Chatroom created successfully")
             }
-            
-            
         }
         let messageData: [String: Any] = [
             "fromId": userId,
@@ -106,7 +90,7 @@ class ChatController: ObservableObject {
             if let err = err {
                 print("Error sending message: \(err.localizedDescription)")
             } else {
-                print("Message sent successfully")
+                print("Message sent after chatroom creation successfully")
             }
             
         }
@@ -114,7 +98,7 @@ class ChatController: ObservableObject {
     }
 
 
-    func fetchChats() {
+    func fetchChats(completion: @escaping () -> Void){
         loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
         guard let userId = loggedInUserEmail else {
             return
@@ -131,28 +115,32 @@ class ChatController: ObservableObject {
                 print("No chats found")
                 return
             }
-
-            var fetchedChats: [Chat] = []
             let dispatchGroup = DispatchGroup()
-            print(#function, "chatroom found: \(snapshot?.documents.count)")
-            for (index, document) in documents.enumerated() {
+            documents.forEach{document in
                 let chatId = document.documentID
+                do{
+                    var chatroom = try document.data(as: Chat.self)
+                    print(chatroom.participants)
+                }catch{
+                    
+                }
                 dispatchGroup.enter()
                 self.fetchMessages(for: chatId) { messages in
-                    print("chatId", chatId)
                     let displayName = messages[0].toId == userId ? messages[0].fromId : messages[0].toId
-                    let chat = Chat(id: chatId, displayName: displayName, messages: messages)
-                    fetchedChats.append(chat)
+                    let participants = [messages[0].toId, messages[0].fromId]
+//                    let participants = chatroom
+                    let chat = Chat(participants: participants, id: chatId, displayName: displayName, messages: messages)
+                    print(#function, "chatId : \(chatId), name = \(displayName)")
+                    self.chatDict[displayName] = chat
                     dispatchGroup.leave()
                 }
             }
             dispatchGroup.notify(queue: .main){
-                print(#function, "chatrooms fetched: \(self.chats.count)")
-                for room in self.chats{
-                    print("chatrooms name: \(room.displayName)")
+                print(#function, "chatrooms fetched: \(self.chatDict.count)")
+                self.chatDict.forEach{
+                    print($0.value.displayName)
                 }
-                self.chats = []
-                    self.chats = fetchedChats
+                completion()
             }
             
         }

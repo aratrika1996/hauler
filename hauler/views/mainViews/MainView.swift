@@ -29,20 +29,25 @@ struct MainView: View {
     }
     
     var body: some View {
-        NavigationView{
+        NavigationStack{
             switch root{
             case .HOME:
-                ContentView(rootScreen : $root).environmentObject(authController).environmentObject(listingController).environmentObject(imageController).environmentObject(userProfileController).environmentObject(chatContoller)
+                ContentView(rootScreen : $root)
                 
             case .LOGIN:
-                LoginView(rootScreen : $root).environmentObject(authController).environmentObject(userProfileController)
+                LoginView(rootScreen : $root)
                 
             case .SIGNUP:
-                SignUpView(rootScreen : $root).environmentObject(authController).environmentObject(userProfileController)
+                SignUpView(rootScreen : $root)
                 
             }
         }//NavigationView
         .navigationViewStyle(.stack)
+        .environmentObject(authController)
+        .environmentObject(listingController)
+        .environmentObject(imageController)
+        .environmentObject(userProfileController)
+        .environmentObject(chatContoller)
     }
 }
 

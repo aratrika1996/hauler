@@ -49,6 +49,7 @@
 		83F97ED62A16F7AF000CB670 /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83F97ED52A16F7AF000CB670 /* MapView.swift */; };
 		83F97ED82A16F8B2000CB670 /* PostView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83F97ED72A16F8B2000CB670 /* PostView.swift */; };
 		83F97EDA2A16F9E7000CB670 /* UserProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83F97ED92A16F9E7000CB670 /* UserProfile.swift */; };
+		F88464AB2A2A7C50007F4C64 /* SplashScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88464AA2A2A7C50007F4C64 /* SplashScreenView.swift */; };
 		F8A77E692A1BFF3F005AF90A /* SearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8A77E682A1BFF3F005AF90A /* SearchBar.swift */; };
 /* End PBXBuildFile section */
 
@@ -90,6 +91,7 @@
 		83F97ED52A16F7AF000CB670 /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
 		83F97ED72A16F8B2000CB670 /* PostView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostView.swift; sourceTree = "<group>"; };
 		83F97ED92A16F9E7000CB670 /* UserProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfile.swift; sourceTree = "<group>"; };
+		F88464AA2A2A7C50007F4C64 /* SplashScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashScreenView.swift; sourceTree = "<group>"; };
 		F8A77E682A1BFF3F005AF90A /* SearchBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBar.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -238,6 +240,7 @@
 				2887806E2A1DBDB70038268E /* PersonalDetailsView.swift */,
 				288780702A1EC0520038268E /* ManageAccountView.swift */,
 				288780722A217E050038268E /* ChangePasswordView.swift */,
+				F88464AA2A2A7C50007F4C64 /* SplashScreenView.swift */,
 			);
 			path = subViews;
 			sourceTree = "<group>";
@@ -332,6 +335,7 @@
 				288780712A1EC0520038268E /* ManageAccountView.swift in Sources */,
 				83678CC32A21B5B000C50603 /* ChatListView.swift in Sources */,
 				283B43162A1989380073EA1B /* SignUpAuthError.swift in Sources */,
+				F88464AB2A2A7C50007F4C64 /* SplashScreenView.swift in Sources */,
 				83F97EBF2A16F313000CB670 /* MainView.swift in Sources */,
 				83F97ED02A16F3D2000CB670 /* productDetailView.swift in Sources */,
 				83F97EC32A16F33D000CB670 /* LoginView.swift in Sources */,

@@ -18,6 +18,7 @@ struct HomeView: View {
     @State var alert : Alert? = nil
     @State var activeLink : Bool = false
     @State var hideParentNavigation : Visibility = .visible
+    @State var isLoading : Bool = true
     @State var gridFormmats : [[GridItem]] = [Array(repeating: GridItem(.flexible(), spacing: 20), count: 2) ,[GridItem(.fixed(30)), GridItem(.fixed(150)), GridItem(.fixed(30)), GridItem(.fixed(150))]]
     
     func approveBtn(){
@@ -37,55 +38,58 @@ struct HomeView: View {
     
     var body: some View {
         NavigationView{
-            ScrollView(.vertical){
-                HStack{
-                    if(listingController.adminMode){
-                        Button("Approve"){
-                            approveBtn()
-                        }.background(Color(red: 0.8, green: 0.8, blue: 0.8)).padding()
-                    }
-                    ScrollView(.horizontal){
-                        HStack{
-                            ForEach(catagories, id: \.self){item in
-                                Text(item)
-                                    .foregroundColor(Color.white)
-                                    .padding().background(Color("HaulerOrange"), in: Rectangle()).cornerRadius(15)
-                                    .onTapGesture {
-                                        listingController.selectedTokens.append(ListingCategory(rawValue: item)!)
-                                    }
-                            }
-                        }
-                    }.padding(.horizontal,10)
-                    
-                }
-                VStack{
-                    if(!listingController.filteredList.isEmpty){
-                        LazyVGrid(columns: listingController.adminMode ? gridFormmats[1] : gridFormmats[0] , alignment: .center, spacing: 50){
-                            ForEach(listingController.filteredList, id: \.self.id){item in
-                                if(listingController.adminMode){
-                                    if(!selectedApproveList.contains(where: {$0.id == item.id})){
-                                        Image(systemName: "square")
-                                            .onTapGesture(perform: {
-                                                selectedApproveList.append(item)
-                                            })
-                                    }else{
-                                        Image(systemName: "checkmark.square")
-                                            .onTapGesture(perform:{
-                                                selectedApproveList = selectedApproveList.filter{
-                                                    return $0.id != item.id
-                                                }
-                                            })
-                                    }
+            if(isLoading){
+                SplashScreenView()
+            }else{
+                ScrollView(.vertical){
+                    HStack{
+                        //                    if(listingController.adminMode){
+                        //                        Button("Approve"){
+                        //                            approveBtn()
+                        //                        }.background(Color(red: 0.8, green: 0.8, blue: 0.8)).padding()
+                        //                    }
+                        ScrollView(.horizontal){
+                            HStack{
+                                ForEach(catagories, id: \.self){item in
+                                    Text(item)
+                                        .foregroundColor(Color.white)
+                                        .padding().background(Color("HaulerOrange"), in: Rectangle()).cornerRadius(15)
+                                        .onTapGesture {
+                                            listingController.selectedTokens.append(ListingCategory(rawValue: item)!)
+                                        }
                                 }
-                                NavigationLink(destination: productDetailView(listing: item, toChat:{chatid in
-                                    if let chatid = chatid{
-                                        toChatPage(chatid)
-//                                        dismiss()
+                            }
+                        }.padding(.horizontal,10)
+                        
+                    }
+                    VStack{
+                        if(!listingController.filteredList.isEmpty){
+                            LazyVGrid(columns: listingController.adminMode ? gridFormmats[1] : gridFormmats[0] , alignment: .center, spacing: 50){
+                                ForEach(listingController.filteredList, id: \.self.id){item in
+                                    if(listingController.adminMode){
+                                        if(!selectedApproveList.contains(where: {$0.id == item.id})){
+                                            Image(systemName: "square")
+                                                .onTapGesture(perform: {
+                                                    selectedApproveList.append(item)
+                                                })
+                                        }else{
+                                            Image(systemName: "checkmark.square")
+                                                .onTapGesture(perform:{
+                                                    selectedApproveList = selectedApproveList.filter{
+                                                        return $0.id != item.id
+                                                    }
+                                                })
+                                        }
                                     }
-                                })
-                                    .onAppear(){hideParentNavigation = .hidden}
-                                    .onDisappear(){hideParentNavigation = .visible}
-                                ){
+                                    NavigationLink(destination: productDetailView(listing: item, toChat:{chatid in
+                                        if let chatid = chatid{
+                                            toChatPage(chatid)
+                                            //                                        dismiss()
+                                        }
+                                    })
+                                        .onAppear(){hideParentNavigation = .hidden}
+                                        .onDisappear(){hideParentNavigation = .visible}
+                                    ){
                                         VStack{
                                             Image(uiImage: (item.image ?? UIImage(systemName: "exclamationmark.triangle.fill"))!)
                                                 .resizable()
@@ -100,41 +104,48 @@ struct HomeView: View {
                                             }
                                             .padding()
                                         }
+                                    }
+                                    .background(Color.white)
+                                    .cornerRadius(15)
+                                    .padding(.horizontal, 10)
+                                    .shadow(radius: 15, x:15, y:15)
+                                    
                                 }
-                                .background(Color.white)
-                                .cornerRadius(15)
-                                .padding(5)
-                                .shadow(radius: 15, x:15, y:15)
-                                
+                            }
+                            Spacer(minLength: 0)
+                        }else{
+                            Text("Item No Found")
+                            Button("Go back"){
+                                listingController.searchText = ""
+                                listingController.selectedTokens = []
                             }
                         }
-                        Spacer(minLength: 0)
-                    }else{
-                        Text("Nothing To Show")
-                        Button("Go back"){
-                            listingController.searchText = ""
-                            listingController.selectedTokens = []
-                        }
+                        Spacer()
                     }
-                    Spacer()
                 }
+                .searchable(text: $listingController.searchText,
+                            tokens: $listingController.selectedTokens,
+                            suggestedTokens: $listingController.suggestedTokens,
+                            token: { token in
+                    Label(token.rawValue, systemImage: token.icon())
+                    
+                })
             }
-            .searchable(text: $listingController.searchText,
-                        tokens: $listingController.selectedTokens,
-                        suggestedTokens: $listingController.suggestedTokens,
-                        token: { token in
-                Label(token.rawValue, systemImage: token.icon())
-                
-            })
         }
         .toolbar(hideParentNavigation, for: .navigationBar)
         .toolbar(hideParentNavigation, for: .tabBar)
         .onAppear(){
-            listingController.getAllListings(adminMode: listingController.adminMode,completion: {_, err in
-                if let err = err{
-                    print(err)
-                }
-            })
+            if(listingController.listingsList.isEmpty){
+                listingController.getAllListings(adminMode: listingController.adminMode,completion: {_, err in
+                    if let err = err{
+                        print(err)
+                    }
+                    isLoading = false
+                })
+            }else{
+                isLoading = false
+            }
+            
         }
     }
 }

@@ -13,6 +13,7 @@ struct ChatView: View {
     @EnvironmentObject var userProfileController : UserProfileController
     @EnvironmentObject var chatController : ChatController
     @Binding var rootScreen :RootView
+    @State var isLoading : Bool = true
     
     @State private var linkSelection : Int? = nil
     var body: some View {
@@ -24,10 +25,11 @@ struct ChatView: View {
                 if let newChatid = startNewChatWithId {
                     if(!chatController.chats.isEmpty){
                         
-                        if(!chatController.chats.contains(where: {
-                            $0.messages[0].toId == newChatid
+                        if(!chatController.chatDict.keys.contains(where: {
+                            $0 == newChatid
                         })){
-                            ChatListView().environmentObject(chatController).onAppear(){
+                            ChatListView().environmentObject(chatController).onAppear{
+                                print("Creating new chatroom")
                                 chatController.newChatRoom(id: newChatid)
                             }
                         }else{
@@ -37,16 +39,15 @@ struct ChatView: View {
                     
                     
                 }
+                
                 ChatListView().environmentObject(chatController)
+                
             }
             
-            }
-        .onAppear(){
-            chatController.fetchChats()
-            print(#function, userProfileController.loggedInUserEmail)
         }
-    }
         
+    }
+    
 }
 
 struct NoChatView: View{

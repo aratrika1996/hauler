@@ -10,20 +10,14 @@ import FirebaseFirestore
 import Firebase
 import Combine
 
-extension URL {
-    func asyncTask(Withcompletion completion: @Sendable @escaping (_ data: Data?, _ response: URLResponse?, _ error: Error?) -> ()){
-        URLSession.shared
-            .dataTask(with: self, completionHandler: completion)
-            .resume()
-    }
-}
+
 
 class ListingController : ObservableObject{
     
     
     @Published var listingsList = [Listing]()
     @Published var userListings = [Listing]()
-    @Published var adminMode = true
+    @Published var adminMode = false
     @Published var searchText: String = ""
     @Published var selectedTokens : [ListingCategory] = []
     @Published var suggestedTokens : [ListingCategory] = ListingCategory.allCases
@@ -112,18 +106,21 @@ class ListingController : ObservableObject{
                         let dispatchGroup = DispatchGroup()
                         var img: UIImage? = nil
                         dispatchGroup.enter()
-                        self.fetchImage(path: li.imageURI, completion: {picData in
-                            if let picData = picData{
-                                if let Uiimage = UIImage(data: picData){
-                                    img = Uiimage
-                                    dispatchGroup.leave()
-                                }else{
-                                    print(#function, "Cast uiImage Error")
-                                }
-                            }else{
-                                print(#function, "no picData")
-                            }
-                        })
+                        if let path = URL(string:li.imageURI){
+                            path.fetchImage(completion: {
+                                picData in
+                                    if let picData = picData{
+                                        if let Uiimage = UIImage(data: picData){
+                                            img = Uiimage
+                                            dispatchGroup.leave()
+                                        }else{
+                                            print(#function, "Cast uiImage Error")
+                                        }
+                                    }else{
+                                        print(#function, "no picData")
+                                    }
+                            })
+                        }
                         dispatchGroup.wait()
                         return Listing(id: li.id, title: li.title, desc: li.desc, price: li.price, email: li.email, image: img, imageURI: li.imageURI, category: li.category)
                     }
@@ -165,18 +162,22 @@ class ListingController : ObservableObject{
                             let dispatchGroup = DispatchGroup()
                             var img: UIImage? = nil
                             dispatchGroup.enter()
-                            self.fetchImage(path: li.imageURI, completion: {picData in
-                                if let picData = picData{
-                                    if let Uiimage = UIImage(data: picData){
-                                        img = Uiimage
-                                        dispatchGroup.leave()
+                            if let path = URL(string: li.imageURI){
+                                path.fetchImage(completion: {
+                                    picData in
+                                    if let picData = picData{
+                                        if let Uiimage = UIImage(data: picData){
+                                            img = Uiimage
+                                            dispatchGroup.leave()
+                                        }else{
+                                            print(#function, "Cast uiImage Error")
+                                        }
                                     }else{
-                                        print(#function, "Cast uiImage Error")
+                                        print(#function, "no picData")
                                     }
-                                }else{
-                                    print(#function, "no picData")
-                                }
-                            })
+                                })
+                            }
+                            
                             dispatchGroup.wait()
                             return Listing(id: li.id, title: li.title, desc: li.desc, price: li.price, email: li.email, image: img, imageURI: li.imageURI, category: li.category)
                         }
@@ -288,25 +289,25 @@ class ListingController : ObservableObject{
         self.user_listener?.remove()
     }
     
-    func fetchImage(path: String, completion: @escaping (Data?) -> Void) {
-        print(#function, "fetch started")
-        if let imgPath = URL(string:path){
-            imgPath.asyncTask(Withcompletion: {retrievedData, httpResponse, error in
-                guard let data = retrievedData else {
-                    print("URLSession dataTask error:", error ?? "nil")
-                    return
-                }
-                if let error = error{
-                    print(#function, error)
-                }
-                if(retrievedData != nil){
-                    print(#function, "retrieved something")
-                    completion(data)
-                }else{
-                    print(#function, "nil returned")
-                }
-            })
-        }
-    }
+//    func fetchImage(path: String, completion: @escaping (Data?) -> Void) {
+//        print(#function, "fetch started")
+//        if let imgPath = URL(string:path){
+//            imgPath.asyncTask(Withcompletion: {retrievedData, httpResponse, error in
+//                guard let data = retrievedData else {
+//                    print("URLSession dataTask error:", error ?? "nil")
+//                    return
+//                }
+//                if let error = error{
+//                    print(#function, error)
+//                }
+//                if(retrievedData != nil){
+//                    print(#function, "retrieved something")
+//                    completion(data)
+//                }else{
+//                    print(#function, "nil returned")
+//                }
+//            })
+//        }
+//    }
 }
 

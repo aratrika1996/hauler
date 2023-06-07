@@ -8,6 +8,7 @@
 import Foundation
 import FirebaseFirestore
 import Firebase
+import Combine
 
 class UserProfileController : ObservableObject{
     
@@ -24,6 +25,7 @@ class UserProfileController : ObservableObject{
     private let FIELD_LONG = "uLong"
     private let FIELD_LAT = "uLat"
     private let FIELD_PROFILE_IMAGE = "uProfileImageURL"
+    private let db = Firestore.firestore()
     
     
     init(store: Firestore) {
@@ -62,30 +64,125 @@ class UserProfileController : ObservableObject{
         }
         
     }
+    
+    func getUserInfoAndStore (email: [String], completion: @escaping(Bool) -> Void) async{
+        print(#function, "email got: \(email.count)")
+        DispatchQueue.main.async {
+            let dispatchgroup = DispatchGroup()
+            email.forEach{uemail in
+                dispatchgroup.enter()
+                self.db.collection(self.COLLECTION_PROFILE).document(uemail).getDocument(as: UserProfile.self, completion: {data in
+                    do {
+                        var user = try data.get()
+                        if let userimgpath = user.uProfileImageURL {
+                            if !userimgpath.isEmpty && userimgpath != "" {
+                                if let userimgurl = URL(string: userimgpath) {
+                                    userimgurl.fetchImage(completion: { [weak self] data in
+                                        guard let self = self else { return } // Make sure self is captured weakly
+                                        if let data = data {
+                                            if let userimg = UIImage(data: data) {
+                                                user = UserProfile(up: user, img: userimg)
+                                                DispatchQueue.main.sync {
+                                                    self.userDict[uemail] = user
+                                                }
+                                                completion(true)
+                                            }
+                                        }
+                                    })
+                                }
+                            }
+                        }
+                        user = UserProfile(up: user, img: UIImage(systemName: "person")!)
+                        self.userDict[uemail] = user
+                        print(#function, "added new profile:\(user.uName)")
+                        
+                        dispatchgroup.leave()
+                    }catch{
+                        completion(false)
+                    }
+                })
+            }
+            dispatchgroup.notify(queue: .main, execute: {
+                completion(true)
+            })
+        }
+    }
+    
 
     func getUserByEmail(email: String, completion: @escaping (UserProfile?, Bool) -> Void) {
+        if let localprofile = self.userDict[email]{
+            completion(localprofile, true)
+        }
         let db = Firestore.firestore()
-        
-        db.collection(COLLECTION_PROFILE).document(email).getDocument { snapshot, error in
+        db.collection(COLLECTION_PROFILE).document(email).getDocument { [weak self] snapshot, error in
+            guard let self = self else { return } // Make sure self is captured weakly
+            
             if let error = error {
                 print("Error fetching user document: \(error)")
-                completion(nil, false)
+                DispatchQueue.main.async {
+                    completion(nil, false)
+                }
                 return
             }
             
-            if let data = snapshot?.data(), let user = try? Firestore.Decoder().decode(UserProfile.self, from: data) {
-                self.userProfile = user
-                self.userDict[email] = user
-                print(self.userDict)
-                completion(user, true)
-            } else {
-                completion(nil, false)
+            DispatchQueue.main.async {
+                if let snapshot = snapshot {
+                    print(#function, "got snapshot, id=\(snapshot.documentID)")
+                } else {
+                    print(#function, "Cannot get snapshot")
+                    completion(nil, false)
+                    return
+                }
+                
+                if let data = snapshot?.data() {
+                    if let tempuser = UserProfile(dictionary: data) {
+                        var user = tempuser
+                        if email == self.loggedInUserEmail && self.userProfile.uProfileImage != nil {
+                            self.userProfile = user
+                            DispatchQueue.main.sync {
+                                self.userDict[email] = user
+                            }
+                            completion(user, true)
+                        } else {
+                            self.putUserInDict(userIn: user, completion: {userWithPic in
+                                completion(userWithPic, true)
+                            })
+                        }
+                        
+                    }
+                } else {
+                    print(#function, "Return with nil, reason: data = nil")
+                    completion(nil, false)
+                }
             }
         }
     }
-
-
     
+    func putUserInDict(userIn: UserProfile, completion: @escaping (UserProfile) -> Void){
+        var user = userIn
+        if let userimgpath = user.uProfileImageURL {
+            if !userimgpath.isEmpty && userimgpath != "" {
+                if let userimgurl = URL(string: userimgpath) {
+                    userimgurl.fetchImage(completion: { [weak self] data in
+                        guard let self = self else { return } // Make sure self is captured weakly
+                        if let data = data {
+                            if let userimg = UIImage(data: data) {
+                                user = UserProfile(up: user, img: userimg)
+                                DispatchQueue.main.sync {
+                                    self.userDict[user.uEmail] = user
+                                }
+                                completion(user)
+                            }
+                        }
+                    })
+                }
+            }
+        }
+        user = UserProfile(up: user, img: UIImage(systemName: "person")!)
+        self.userDict[user.uEmail] = user
+        completion(user)
+    }
+
     
     func getAllUserData(completion: @escaping () -> Void) {
         
@@ -106,7 +203,9 @@ class UserProfileController : ObservableObject{
                         var profileData = try docChange.document.data(as: UserProfile.self)
                         let docId = docChange.document.documentID
                         profileData.id = docId
-                        self.userDict[self.loggedInUserEmail] = profileData
+                        self.putUserInDict(userIn: profileData, completion: {userWithPic in
+                            self.userDict[self.loggedInUserEmail] = userWithPic
+                        })
                         print(self.userDict)
                         
                         if docChange.type == .added{

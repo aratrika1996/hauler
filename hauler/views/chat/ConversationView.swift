@@ -9,7 +9,7 @@ import SwiftUI
 
 
 struct ConversationView: View {
-    let chat: Chat
+    let chat: String
     @EnvironmentObject var chatController: ChatController
     @State private var shouldScrollToBottom = true
     @State private var messageCount = 0
@@ -17,9 +17,9 @@ struct ConversationView: View {
     var body: some View {
         VStack {
             ScrollViewReader { scrollViewProxy in
-                ScrollView {
+                ScrollView(.vertical) {
                     VStack(alignment: .leading, spacing: 10) {
-                        ForEach(chat.messages) { message in
+                        ForEach(chatController.chatDict[chat]!.messages) { message in
                             ChatMessageView(message: message, isSender: message.fromId == chatController.loggedInUserEmail)
                                 .padding(.horizontal)
                                 .id(message.id) // Assign a unique identifier to each message
@@ -27,16 +27,17 @@ struct ConversationView: View {
                                     // Automatically scroll to the bottom when a new message arrives
                                     if shouldScrollToBottom {
                                         withAnimation {
-                                            scrollViewProxy.scrollTo(chat.messages.last?.id, anchor: .bottom)
+                                            scrollViewProxy.scrollTo(chatController.chatDict[chat]!.messages.last?.id, anchor: .bottom)
                                         }
                                     }
                                 }
                         }
                     }
                     .onAppear {
+                        print("Got Chat")
                         // Scroll to the bottom initially
                         withAnimation {
-                            scrollViewProxy.scrollTo(chat.messages.last?.id, anchor: .bottom)
+                            scrollViewProxy.scrollTo(chatController.chatDict[chat]!.messages.last?.id, anchor: .bottom)
                         }
                     }
                 }
@@ -46,7 +47,7 @@ struct ConversationView: View {
                 TextField("Type your message", text: $chatController.messageText)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                 Button(action: {
-                    chatController.sendMessage(chatId: chat.id)
+                    chatController.sendMessage(chatId: chatController.chatDict[chat]!.id, toId: chatController.toId!)
                     shouldScrollToBottom = true // Set shouldScrollToBottom to true after sending a message
                     messageCount += 1 // Update the message count
                 }) {
@@ -55,7 +56,10 @@ struct ConversationView: View {
             }
             .padding()
         }
-        .navigationTitle(chat.displayName)
+        .onAppear{
+            print("entered")
+        }
+        .navigationTitle(chatController.chatDict[chat]!.displayName)
     }
 }
 
