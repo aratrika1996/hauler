@@ -99,7 +99,7 @@
 		83F97ED52A16F7AF000CB670 /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
 		83F97ED72A16F8B2000CB670 /* PostView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostView.swift; sourceTree = "<group>"; };
 		83F97ED92A16F9E7000CB670 /* UserProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfile.swift; sourceTree = "<group>"; };
-		F88464AA2A2A7C50007F4C64 /* SplashScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashScreenView.swift; sourceTree = "<group>"; };
+		F88464AA2A2A7C50007F4C64 /* SplashScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SplashScreenView.swift; path = ../../../SplashScreenView.swift; sourceTree = "<group>"; };
 		F8A77E682A1BFF3F005AF90A /* SearchBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBar.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -144,6 +144,7 @@
 			children = (
 				83F97E8A2A16E9C0000CB670 /* hauler */,
 				83F97E892A16E9C0000CB670 /* Products */,
+				F8E7529C2A30171300829362 /* Recovered References */,
 			);
 			sourceTree = "<group>";
 		};
@@ -252,8 +253,16 @@
 				288780762A29B7E80038268E /* SoldListingsView.swift */,
 				288780782A29B8080038268E /* TopTabBarButton.swift */,
 				2887807A2A29B8210038268E /* CustomTopTabBarView.swift */,
+				F88464AA2A2A7C50007F4C64 /* SplashScreenView.swift */,
 			);
 			path = subViews;
+			sourceTree = "<group>";
+		};
+		F8E7529C2A30171300829362 /* Recovered References */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = "Recovered References";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
