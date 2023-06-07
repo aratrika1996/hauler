@@ -36,6 +36,7 @@ struct ConversationView: View {
                     .onAppear {
                         print("Got Chat")
                         // Scroll to the bottom initially
+                        chatController.toId = chat.messages[0].toId == chatController.loggedInUserEmail ? chat.messages[0].fromId : chat.messages[0].toId
                         withAnimation {
                             scrollViewProxy.scrollTo(chatController.chatDict[chat]!.messages.last?.id, anchor: .bottom)
                         }

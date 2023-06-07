@@ -41,6 +41,20 @@ class ChatController: ObservableObject {
             guard let userId = loggedInUserEmail else {
                 return
             }
+//            let data : [String: Any] = [
+//                "participants": [userId, toId] // Add the participants
+//            ]
+//
+//            db.collection(COLLECTION_CHAT).document(chatId).setData(data) { error in
+//                if let error = error {
+//                    print("Error sending message: \(error.localizedDescription)")
+//                } else {
+//                    self.messageText = ""
+//                    print("Message sent successfully")
+//                    self.fetchChats()
+//
+//                }
+//            }
             
             // Add the participants field to the message data
             let messageData: [String: Any] = [
@@ -79,6 +93,8 @@ class ChatController: ObservableObject {
                 self.messageText = ""
                 print("New Chatroom created successfully")
             }
+            
+            
         }
         let messageData: [String: Any] = [
             "fromId": userId,
@@ -126,6 +142,7 @@ class ChatController: ObservableObject {
                 }
                 dispatchGroup.enter()
                 self.fetchMessages(for: chatId) { messages in
+                    print("chatId", chatId)
                     let displayName = messages[0].toId == userId ? messages[0].fromId : messages[0].toId
                     let participants = [messages[0].toId, messages[0].fromId]
 //                    let participants = chatroom

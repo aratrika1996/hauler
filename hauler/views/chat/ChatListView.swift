@@ -11,6 +11,7 @@ import Combine
 struct ChatListView: View {
     @EnvironmentObject var chatController: ChatController
     @EnvironmentObject var userProfileController: UserProfileController
+    @State var selectedChat : Chat?
     @State var navigateToChat : Bool = false
     @State var selectedChat : String? = nil
     @State var isLoading : Bool = true
