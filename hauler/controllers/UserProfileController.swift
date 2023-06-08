@@ -8,13 +8,22 @@
 import Foundation
 import FirebaseFirestore
 import Firebase
-import Combine
+//import Combine
 
 class UserProfileController : ObservableObject{
     
     
     @Published var userProfile = UserProfile()
-    @Published var userDict : [String : UserProfile] = [:]
+    var userDict : [String : UserProfile]{
+        set{
+            _userDict = newValue
+//            objectWillChange.send()
+        }
+        get{
+            return _userDict
+        }
+    }
+    private var _userDict : [String : UserProfile] = [ : ]
     @Published var loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
     private let store : Firestore
     private static var shared : UserProfileController?
@@ -93,7 +102,7 @@ class UserProfileController : ObservableObject{
                             }
                         }
                         user = UserProfile(up: user, img: UIImage(systemName: "person")!)
-                        self.userDict[uemail] = user
+                            self.userDict[uemail] = user
                         print(#function, "added new profile:\(user.uName)")
                         
                         dispatchgroup.leave()
@@ -108,30 +117,29 @@ class UserProfileController : ObservableObject{
         }
     }
     
-
+    
     func getUserByEmail(email: String, completion: @escaping (UserProfile?, Bool) -> Void) {
         if let localprofile = self.userDict[email]{
+            print(#function, "finished with local userdict")
             completion(localprofile, true)
         }
-        let db = Firestore.firestore()
-        db.collection(COLLECTION_PROFILE).document(email).getDocument { [weak self] snapshot, error in
-            guard let self = self else { return } // Make sure self is captured weakly
-            
-            if let error = error {
-                print("Error fetching user document: \(error)")
-                DispatchQueue.main.async {
+        print(#function, "fetch new up: \(email)")
+        self.store.collection(self.COLLECTION_PROFILE).document(email).getDocument { [weak self] snapshot, error in
+            DispatchQueue.main.async{
+                print(#function, "start fetching")
+                guard let self = self else { return } // Make sure self is captured weakly
+                if let error = error {
+                    print("Error fetching user document: \(error)")
                     completion(nil, false)
+                    return
                 }
-                return
-            }
-            
-            DispatchQueue.main.async {
+                
+                
                 if let snapshot = snapshot {
                     print(#function, "got snapshot, id=\(snapshot.documentID)")
                 } else {
                     print(#function, "Cannot get snapshot")
                     completion(nil, false)
-                    return
                 }
                 
                 if let data = snapshot?.data() {
@@ -139,9 +147,6 @@ class UserProfileController : ObservableObject{
                         var user = tempuser
                         if email == self.loggedInUserEmail && self.userProfile.uProfileImage != nil {
                             self.userProfile = user
-                            DispatchQueue.main.sync {
-                                self.userDict[email] = user
-                            }
                             completion(user, true)
                         } else {
                             self.putUserInDict(userIn: user, completion: {userWithPic in
@@ -156,6 +161,7 @@ class UserProfileController : ObservableObject{
                 }
             }
         }
+        
     }
     
     func putUserInDict(userIn: UserProfile, completion: @escaping (UserProfile) -> Void){
@@ -182,7 +188,7 @@ class UserProfileController : ObservableObject{
         self.userDict[user.uEmail] = user
         completion(user)
     }
-
+    
     
     func getAllUserData(completion: @escaping () -> Void) {
         
@@ -204,7 +210,8 @@ class UserProfileController : ObservableObject{
                         let docId = docChange.document.documentID
                         profileData.id = docId
                         self.putUserInDict(userIn: profileData, completion: {userWithPic in
-                            self.userDict[self.loggedInUserEmail] = userWithPic
+                                self.userDict[self.loggedInUserEmail] = userWithPic
+                            
                         })
                         print(self.userDict)
                         
@@ -225,10 +232,10 @@ class UserProfileController : ObservableObject{
                 completion() // call completion handler when data is retrieved
             })
     }
-
+    
     func updateUserData(userProfileToUpdate: UserProfile, completion: @escaping (Error?) -> Void) {
         loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
-                
+        
         self.store
             .collection(COLLECTION_PROFILE).document(userProfileToUpdate.id!)
             .updateData(
@@ -272,7 +279,7 @@ class UserProfileController : ObservableObject{
                 completion()
             }
     }
-
+    
 }
 
 

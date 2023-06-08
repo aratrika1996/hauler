@@ -18,6 +18,7 @@ struct MainView: View {
     private let imageController : ImageController;
     private let chatContoller : ChatController;
     @State private var root : RootView = .HOME
+    @ObservedObject var pageController = ViewRouter()
     
     
     init(){
@@ -29,7 +30,7 @@ struct MainView: View {
     }
     
     var body: some View {
-        NavigationStack{
+        NavigationStack(){
             switch root{
             case .HOME:
                 ContentView(rootScreen : $root)
@@ -42,7 +43,9 @@ struct MainView: View {
                 
             }
         }//NavigationView
+        
         .navigationViewStyle(.stack)
+        .environmentObject(pageController)
         .environmentObject(authController)
         .environmentObject(listingController)
         .environmentObject(imageController)

@@ -9,32 +9,17 @@ import SwiftUI
 
 struct HomeView: View {
     @EnvironmentObject var listingController : ListingController
+    @EnvironmentObject private var viewRouter: ViewRouter
     @Environment(\.dismiss) var dismiss
-    var toChatPage : (String?) -> Void
-    
     @State var catagories : [String] = ListingCategory.allCases.map{(i) -> String in return i.displayName}
-    @State var selectedApproveList : [Listing] = []
     @State var selection : Listing?
     @State var alert : Alert? = nil
     @State var activeLink : Bool = false
+//    @State var path : NavigationPath = NavigationPath()
     @State var hideParentNavigation : Visibility = .visible
     @State var isLoading : Bool = true
-    @State var gridFormmats : [[GridItem]] = [Array(repeating: GridItem(.flexible(), spacing: 20), count: 2) ,[GridItem(.fixed(30)), GridItem(.fixed(150)), GridItem(.fixed(30)), GridItem(.fixed(150))]]
     
-    func approveBtn(){
-        print(#function, "approve clicked")
-        if(!selectedApproveList.isEmpty){
-            print(#function, "entered")
-            listingController.approveListings(listingsToUpdate: selectedApproveList, completion: {err in
-                if let _ = err{
-                    alert = Alert(title: Text("Failed to approve"))
-                }else{
-                    alert = Alert(title: Text("Approved"))
-                }
-            })
-            selectedApproveList.removeAll()
-        }
-    }
+    @State var gridFormmats : [[GridItem]] = [Array(repeating: GridItem(.flexible(), spacing: 20), count: 2) ,[GridItem(.fixed(30)), GridItem(.fixed(150)), GridItem(.fixed(30)), GridItem(.fixed(150))]]
     
     var body: some View {
         NavigationView{
@@ -43,11 +28,6 @@ struct HomeView: View {
             }else{
                 ScrollView(.vertical){
                     HStack{
-                        //                    if(listingController.adminMode){
-                        //                        Button("Approve"){
-                        //                            approveBtn()
-                        //                        }.background(Color(red: 0.8, green: 0.8, blue: 0.8)).padding()
-                        //                    }
                         ScrollView(.horizontal){
                             HStack{
                                 ForEach(catagories, id: \.self){item in
@@ -64,31 +44,11 @@ struct HomeView: View {
                     }
                     VStack{
                         if(!listingController.filteredList.isEmpty){
-                            LazyVGrid(columns: listingController.adminMode ? gridFormmats[1] : gridFormmats[0] , alignment: .center, spacing: 50){
+                            LazyVGrid(columns: gridFormmats[0] , alignment: .center, spacing: 50){
                                 ForEach(listingController.filteredList, id: \.self.id){item in
-                                    if(listingController.adminMode){
-                                        if(!selectedApproveList.contains(where: {$0.id == item.id})){
-                                            Image(systemName: "square")
-                                                .onTapGesture(perform: {
-                                                    selectedApproveList.append(item)
-                                                })
-                                        }else{
-                                            Image(systemName: "checkmark.square")
-                                                .onTapGesture(perform:{
-                                                    selectedApproveList = selectedApproveList.filter{
-                                                        return $0.id != item.id
-                                                    }
-                                                })
-                                        }
-                                    }
-                                    NavigationLink(destination: productDetailView(listing: item, toChat:{chatid in
-                                        if let chatid = chatid{
-                                            toChatPage(chatid)
-                                            //                                        dismiss()
-                                        }
-                                    })
-                                        .onAppear(){hideParentNavigation = .hidden}
-                                        .onDisappear(){hideParentNavigation = .visible}
+                                    NavigationLink(destination:
+                                        ProductDetailView(listing: item)
+                                        .environmentObject(viewRouter)
                                     ){
                                         VStack{
                                             Image(uiImage: (item.image ?? UIImage(systemName: "exclamationmark.triangle.fill"))!)
@@ -131,9 +91,7 @@ struct HomeView: View {
                     
                 })
             }
-        }
-        .toolbar(hideParentNavigation, for: .navigationBar)
-        .toolbar(hideParentNavigation, for: .tabBar)
+        }//NS
         .onAppear(){
             if(listingController.listingsList.isEmpty){
                 listingController.getAllListings(adminMode: listingController.adminMode,completion: {_, err in

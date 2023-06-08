@@ -17,35 +17,52 @@ struct ChatView: View {
     
     @State private var linkSelection : Int? = nil
     var body: some View {
-        VStack{
-            if userProfileController.loggedInUserEmail == ""{
-                NoChatView(rootScreen: $rootScreen).environmentObject(authController).environmentObject(userProfileController)
-            }
-            else{
-                if let newChatid = startNewChatWithId {
-                    if(!chatController.chats.isEmpty){
-                        
-                        if(!chatController.chatDict.keys.contains(where: {
-                            $0 == newChatid
-                        })){
-                            ChatListView().environmentObject(chatController).onAppear{
-                                print("Creating new chatroom")
-                                chatController.newChatRoom(id: newChatid)
+        if(isLoading){
+            SplashScreenView()
+                .onAppear{
+                    if(chatController.chatDict.isEmpty){
+                        chatController.fetchChats(completion: {
+                            Task{
+                                await userProfileController.getUserInfoAndStore(email: Array(chatController.chatDict.keys), completion: {success in
+                                    if(success){
+                                        isLoading = false
+                                    }
+                                })
                             }
-                        }else{
                             
+                        })
+                    }else{
+                        Task{
+                            await userProfileController.getUserInfoAndStore(email: Array(chatController.chatDict.keys), completion: {success in
+                                if(success){
+                                    isLoading = false
+                                }
+                            })
                         }
                     }
-                    
-                    
+                }
+        }else{
+            VStack{
+                if userProfileController.loggedInUserEmail == ""{
+                    NoChatView(rootScreen: $rootScreen)
+                }
+                else{
+                    if let newChatid = startNewChatWithId {
+                        if(!chatController.chatDict.keys.contains(where: {
+                            $0 == newChatid
+                        })){ChatListView().onAppear{
+                            chatController.newChatRoom(id: newChatid)
+                        }
+                        }else{
+                            ChatListView()
+                        }
+                    }else{
+                        ChatListView()
+                    }
                 }
                 
-                ChatListView().environmentObject(chatController)
-                
             }
-            
         }
-        
     }
     
 }

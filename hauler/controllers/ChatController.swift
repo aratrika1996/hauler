@@ -20,6 +20,7 @@ class ChatController: ObservableObject {
     private var userId: String?
     private let db = Firestore.firestore()
     var loggedInUserEmail: String?
+    var redirect : Bool = false
 
     init() {
         loggedInUserEmail = Auth.auth().currentUser?.email ?? ""

@@ -11,52 +11,65 @@ import Combine
 struct ChatListView: View {
     @EnvironmentObject var chatController: ChatController
     @EnvironmentObject var userProfileController: UserProfileController
-//    @State var selectedChat : Chat?
-    @State var navigateToChat : Bool = false
-    @State var selectedChat : String? = nil
-    @State var isLoading : Bool = true
+    @State var localDict : [String:UserProfile] = [:]
+    @State private var selectedChat : String? = nil
+    @State private var path : NavigationPath = NavigationPath()
     
     var body: some View {
-        VStack{
-            if(isLoading){
-                SplashScreenView()
-                    .onAppear{
-                        if(chatController.chatDict.isEmpty){
-                            chatController.fetchChats(completion: {
-                                Task{
-                                    await userProfileController.getUserInfoAndStore(email: Array(chatController.chatDict.keys), completion: {success in
-                                        if(success){
-                                            isLoading = false
-                                        }
-                                    })
+        let currentDict = CurrentValueSubject<[String:UserProfile], Never>(userProfileController.userDict)
+        NavigationStack(path:$path){
+            VStack{
+                List(Array(self.chatController.chatDict.keys), id:\.self, selection:$selectedChat){key in
+                        Button(action: {
+                            self.selectedChat = key
+                            redirect(local: true)
+                        })
+                        {
+                            NavigationLink(value:key as String)
+                            {
+                                HStack{
+                                    Image(uiImage: localDict[key]?.uProfileImage ?? UIImage(systemName: "person")!)
+                                        .resizable().frame(width: 50, height: 50)
+                                    Spacer()
+                                    Text(localDict[key]?.uName ?? "Unknown")
                                 }
                                 
-                            })
-                        }else{
-                            Task{
-                                await userProfileController.getUserInfoAndStore(email: Array(chatController.chatDict.keys), completion: {success in
-                                    if(success){
-                                        isLoading = false
-                                    }
-                                })
                             }
                         }
-                    }
-            }else{
-                List(Array(self.chatController.chatDict.keys), id:\.self, selection:$selectedChat){key in
-                    
-                    NavigationLink(destination: ConversationView(chat: key), tag: key, selection: $selectedChat) {
-                        HStack{
-                            Image(uiImage: userProfileController.userDict[key]?.uProfileImage ?? UIImage(systemName: "person")!)
-                                .resizable().frame(width: 50, height: 50)
-                            Spacer()
-                            Text(userProfileController.userDict[key]?.uName ?? "Unknown")
-                        }
-                    }
                 }
+                .navigationDestination(for: Optional<String>.self, destination: {key in
+                    if let key = key{
+                        ConversationView(chat: key)
+                    }
+                })
+                .onReceive(currentDict, perform: {dict in
+                    localDict = dict
+                })
+                .onAppear{
+                    redirect(local: false)
+                }
+                
             }
         }
         .navigationTitle("Chats")
-        
+    }
+    
+    func redirect(local: Bool){
+        if(!local){
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                if (self.chatController.redirect){
+                    if(!path.isEmpty){
+                        path.removeLast(path.count)
+                    }
+                    path.append(self.chatController.toId)
+                    self.chatController.redirect = false
+                }
+            }
+        }else{
+            if(!path.isEmpty){
+                path.removeLast(path.count)
+            }
+            path.append(self.selectedChat)
+        }
     }
 }

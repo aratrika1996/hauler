@@ -9,7 +9,7 @@ import SwiftUI
 
 
 struct ConversationView: View {
-    let chat: String
+    var chat: String
     @EnvironmentObject var chatController: ChatController
     @State private var shouldScrollToBottom = true
     @State private var messageCount = 0
@@ -56,9 +56,6 @@ struct ConversationView: View {
                 }
             }
             .padding()
-        }
-        .onAppear{
-            print("entered")
         }
         .navigationTitle(chatController.chatDict[chat]!.displayName)
     }

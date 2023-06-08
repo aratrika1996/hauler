@@ -10,23 +10,21 @@ import SwiftUI
 struct ContentView: View {
     @State private var tabSelection = 1
     @State private var title : [String] = ["Hauler","Home", "Chats", "Posts", "Listings", "Profile"]
-    @State var newChatId : String?
+    @State var newChatId : String? = nil
+    
     @EnvironmentObject var authController : AuthController
     @EnvironmentObject var listingController : ListingController
     @EnvironmentObject var imageController : ImageController
     @EnvironmentObject var userProfileController : UserProfileController
     @EnvironmentObject var chatController : ChatController
-    
+    @EnvironmentObject var pageController : ViewRouter
+//    @StateObject private var viewRouter = ViewRouter()
     @Binding var rootScreen :RootView
     
     var body: some View {
         TabView(selection: self.$tabSelection) {
-            HomeView(toChatPage: {id in
-                if let id = id{
-                    newChatId = id
-                    tabSelection = 2
-                }
-            })
+            HomeView()
+            .environmentObject(pageController)
             .tabItem {
                 Image(systemName: "house")
                 Text(title[1])
@@ -59,8 +57,24 @@ struct ContentView: View {
             }
             .tag(5)
         }
+        .onReceive(pageController.objectWillChange, perform: {_ in
+            switch(self.pageController.currentView){
+            case .main:
+                self.tabSelection = 1
+            case .chat:
+                self.tabSelection = 2
+            case .post:
+                self.tabSelection = 3
+            case .list:
+                self.tabSelection = 4
+            case .profile:
+                self.tabSelection = 5
+            }
+            
+        })
         .navigationTitle($title[tabSelection])
         .navigationTitle(((tabSelection == 1) ? $title[0] : $title[tabSelection]))
+        
         .toolbar(content: {
             if(tabSelection == 1){
                 ToolbarItem(content: {
@@ -69,14 +83,14 @@ struct ContentView: View {
                         Spacer()
                         Image(uiImage: UIImage(systemName: "heart.fill")!)
                             .resizable()
-                            .frame(width: 20, height: 20)
+                            .frame(width: 15, height: 15)
                             .padding(15)
-                            .background(Color(red: 0.702, green: 0.87, blue: 0.756, opacity: 0.756), in: Circle())
+                            .background(Color("HaulerOrange"), in:Circle())
                         Image(uiImage: UIImage(systemName: "bell")!)
                             .resizable()
-                            .frame(width: 20, height: 20)
+                            .frame(width: 15, height: 15)
                             .padding(15)
-                        //                        .background((adminMode ? Color(red: 0.5, green: 0.5, blue: 0.5) : Color(red: 0.702, green: 0.87, blue: 0.756, opacity: 0.756), in: Circle()))
+                            .background(Color("HaulerOrange"), in:Circle())
                             .onTapGesture {
                                 listingController.adminMode = !listingController.adminMode
                                 listingController.removeAllListener()
