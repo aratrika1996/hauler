@@ -79,7 +79,7 @@ struct NoChatView: View{
             Text("Keep your message in one place.")
             Text("Log in to manage your chats.")
             
-            NavigationLink(destination: LoginView(rootScreen: $rootScreen).environmentObject(authController).environmentObject(userProfileController)) {
+            NavigationLink(destination: LoginView(rootScreen: $rootScreen)) {
                 Text("Login")
                     .font(.title)
                     .foregroundColor(.blue)
@@ -91,7 +91,7 @@ struct NoChatView: View{
             
             HStack {
                 Text("Don't have an account? ")
-                NavigationLink(destination: SignUpView(rootScreen: $rootScreen).environmentObject(authController).environmentObject(userProfileController)) {
+                NavigationLink(destination: SignUpView(rootScreen: $rootScreen)) {
                     Text("SignUp")
                         .font(.title)
                         .foregroundColor(.blue)

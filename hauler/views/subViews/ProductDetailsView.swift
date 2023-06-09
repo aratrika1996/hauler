@@ -56,7 +56,7 @@ struct ProductDetailView: View {
                                 Text("$\(listing.price.formatted())").foregroundColor(Color("HaulerOrange"))
                             }
                             Spacer()
-                            if(listing.email != chatController.loggedInUserEmail){
+                            if(listing.email != chatController.loggedInUserEmail && userProfileController.loggedInUserEmail != ""){
                                 Image(uiImage: UIImage(systemName: "envelope")!)
                                     .resizable()
                                     .frame(width: 20, height: 20)
@@ -65,26 +65,20 @@ struct ProductDetailView: View {
                                     .cornerRadius(5)
                                     .shadow(radius: 5, x: 5,y: 5)
                                     .onTapGesture {
-                                        if(userProfileController.loggedInUserEmail.isEmpty){
-                                            gotoLogin()
-                                        }else{
-                                            if(
-                                                chatController.chatDict.keys.contains(where: {
-                                                    $0 == listing.email
-                                                })){
-                                                viewRouter.currentView = .chat
-                                                chatController.toId = listing.email
-                                                chatController.redirect = true
-                                                dismiss()
-                                            }
-                                            else{
-                                                showAlert = true
-                                            }
-                                        }
+                                    if(
+                                        chatController.chatDict.keys.contains(where: {
+                                            $0 == listing.email
+                                        })){
+                                        viewRouter.currentView = .chat
+                                        chatController.toId = listing.email
+                                        chatController.redirect = true
+                                        dismiss()
                                     }
-                                
+                                    else{
+                                        showAlert = true
+                                    }
+                                }
                             }
-                            
                             Image(uiImage: UIImage(systemName: "heart.fill")!)
                                 .resizable()
                                 .frame(width: 20, height: 20)
@@ -183,25 +177,64 @@ struct ProductDetailView: View {
                 .toolbar(){
                     ToolbarItemGroup(placement: .bottomBar){
                         
-                        Button(action: {
-                            
-                        }){
-                            Text("Buy Now")
-                        }
-                        .padding()
-                        .background(Color(.black), in: RoundedRectangle(cornerRadius: 8))
-                        .padding()
-                        if(userProfileController.loggedInUserEmail.isEmpty){
-                            Spacer()
-                            Button(action: {
-                                authController.user != nil ? startChat() : gotoLogin()
-                            }){
-                                Text(authController.user != nil ? "Chat with seller" : "Log in to chat with seller")
-                                    .foregroundColor(.white)
+                        if(listing.email == chatController.loggedInUserEmail){
+                            Button(action:{}){
+                                NavigationLink(destination: ManageItemView()) {
+                                    Text("Manage Item")
+                                        .font(.system(size: 20))
+                                        .foregroundColor(Color("HaulerOrange"))
+                                        .frame(maxWidth: .infinity)
+                                }
+                               
                             }
-                            .padding()
-                            .background(Color("HaulerOrange"), in: RoundedRectangle(cornerRadius: 8))
-                            .padding()
+                            .padding(.horizontal, 20)
+                            .padding([.top], 10)
+                            .buttonStyle(.borderedProminent)
+                            .tint(.black)
+                        }else if(userProfileController.loggedInUserEmail != ""){
+                            
+                            Button(action:{}){
+                                NavigationLink(destination: BuyPageView()) {
+                                    Text("Buy Now")
+                                        .font(.system(size: 20))
+                                        .foregroundColor(Color("HaulerOrange"))
+                                        .frame(maxWidth: .infinity)
+                                }
+                                
+                            }
+                            .padding(.horizontal, 20)
+                            .padding([.top], 10)
+                            .buttonStyle(.borderedProminent)
+                            .tint(.black)
+                        }
+                        else{
+                            Button(action:{}){
+                                NavigationLink(destination: BuyPageView()) {
+                                    Text("Buy Now")
+                                        .font(.system(size: 20))
+                                        .foregroundColor(Color("HaulerOrange"))
+                                        .frame(maxWidth: .infinity)
+                                }
+                               
+                            }
+                            .padding(.horizontal, 20)
+                            .padding([.top], 10)
+                            .buttonStyle(.borderedProminent)
+                            .tint(.black)
+                            Spacer()
+                            Button(action:{}){
+                                NavigationLink(destination: LoginView(rootScreen: $rootScreen)) {
+                                    Text("Login to Chat")
+                                        .font(.system(size: 20))
+                                        .foregroundColor(.white)
+                                        .frame(maxWidth: .infinity)
+                                }
+                               
+                            }
+                            .padding(.horizontal, 20)
+                            .padding([.top], 10)
+                            .buttonStyle(.borderedProminent)
+                            .tint(Color(UIColor(named: "HaulerOrange") ?? .blue))
                         }
                     }
                     
@@ -211,7 +244,7 @@ struct ProductDetailView: View {
     }
     
     func startChat(){
-        
+        self.showAlert = true
     }
     
     func gotoLogin(){
