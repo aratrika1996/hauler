@@ -90,6 +90,16 @@ struct LoginView: View {
             }//HStack ends
             
         }//VStack ends
+        .toolbar(){
+            ToolbarItem(placement: .navigationBarLeading){
+                Text("< Back")
+                    .onTapGesture {
+                        rootScreen = .HOME
+                    }
+            }
+        }
+        .navigationTitle(Text("Login"))
+        
         .padding(30)
         .onAppear(){
             print("rootScreen", rootScreen)

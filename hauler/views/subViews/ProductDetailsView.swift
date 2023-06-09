@@ -14,11 +14,15 @@ struct ProductDetailView: View {
     @EnvironmentObject var authController : AuthController
     @EnvironmentObject var viewRouter : ViewRouter
     @Environment(\.dismiss) var dismiss
+    
     @State var isLoading : Bool = true
     @State var showAlert : Bool = false
     @State var showMore : Bool = false
     @State var path : NavigationPath = NavigationPath()
     @State var inputText : String = "Hi, I am interested in the product with name "
+    
+    @Binding var rootScreen :RootView
+    
     var listing : Listing
     
     var body: some View {
@@ -30,7 +34,7 @@ struct ProductDetailView: View {
                             print(#function, "task start")
                             if userProfileController.userDict[listing.email] == nil{
                                 print(#function, "email not found, load profile")
-                                await userProfileController.getUserInfoAndStore(email: [listing.email], completion: {success in
+                                await userProfileController.getUsersByEmail(email: [listing.email], completion: {success in
                                     if(success){
                                         isLoading = false
                                     }
@@ -57,23 +61,30 @@ struct ProductDetailView: View {
                                     .resizable()
                                     .frame(width: 20, height: 20)
                                     .padding(15)
-                                    .background(.white, in: RoundedRectangle(cornerRadius: 8))
+                                    .background(.white, in: RoundedRectangle(cornerRadius: 5))
+                                    .cornerRadius(5)
+                                    .shadow(radius: 5, x: 5,y: 5)
                                     .onTapGesture {
-                                        if(
-                                            chatController.chatDict.keys.contains(where: {
-                                                $0 == listing.email
-                                            })){
-                                            
-                                            viewRouter.currentView = .chat
-                                            chatController.toId = listing.email
-                                            chatController.redirect = true
-                                            dismiss()
-                                        }
-                                        else{
-                                            showAlert = true
+                                        if(userProfileController.loggedInUserEmail.isEmpty){
+                                            gotoLogin()
+                                        }else{
+                                            if(
+                                                chatController.chatDict.keys.contains(where: {
+                                                    $0 == listing.email
+                                                })){
+                                                viewRouter.currentView = .chat
+                                                chatController.toId = listing.email
+                                                chatController.redirect = true
+                                                dismiss()
+                                            }
+                                            else{
+                                                showAlert = true
+                                            }
                                         }
                                     }
+                                
                             }
+                            
                             Image(uiImage: UIImage(systemName: "heart.fill")!)
                                 .resizable()
                                 .frame(width: 20, height: 20)
@@ -81,7 +92,8 @@ struct ProductDetailView: View {
                                 .background(.white, in: RoundedRectangle(cornerRadius: 5))
                                 .cornerRadius(5)
                                 .shadow(radius: 5, x: 5,y: 5)
-                        }.padding()
+                        }
+                        .padding()
                         VStack(alignment: .leading){
                             HStack(){
                                 Text("Description").bold()
@@ -112,7 +124,8 @@ struct ProductDetailView: View {
                                 Text("About Seller").bold()
                                 Spacer()
                                 Button("View Profile"){
-                                    
+                                    viewRouter.currentView = .list
+                                    self.dismiss()
                                 }
                             }
                             
@@ -169,6 +182,7 @@ struct ProductDetailView: View {
                 }
                 .toolbar(){
                     ToolbarItemGroup(placement: .bottomBar){
+                        
                         Button(action: {
                             
                         }){
@@ -177,16 +191,18 @@ struct ProductDetailView: View {
                         .padding()
                         .background(Color(.black), in: RoundedRectangle(cornerRadius: 8))
                         .padding()
-                        Spacer()
-                        Button(action: {
-                            authController.user != nil ? startChat() : gotoLogin()
-                        }){
-                            Text(authController.user != nil ? "Chat with seller" : "Log in to chat with seller")
-                                .foregroundColor(.white)
+                        if(userProfileController.loggedInUserEmail.isEmpty){
+                            Spacer()
+                            Button(action: {
+                                authController.user != nil ? startChat() : gotoLogin()
+                            }){
+                                Text(authController.user != nil ? "Chat with seller" : "Log in to chat with seller")
+                                    .foregroundColor(.white)
+                            }
+                            .padding()
+                            .background(Color("HaulerOrange"), in: RoundedRectangle(cornerRadius: 8))
+                            .padding()
                         }
-                        .padding()
-                        .background(Color("HaulerOrange"), in: RoundedRectangle(cornerRadius: 8))
-                        .padding()
                     }
                     
                 }
@@ -199,7 +215,8 @@ struct ProductDetailView: View {
     }
     
     func gotoLogin(){
-        
+        rootScreen = .LOGIN
+        self.dismiss()
     }
 }
 

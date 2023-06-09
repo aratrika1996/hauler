@@ -23,7 +23,7 @@ struct ChatView: View {
                     if(chatController.chatDict.isEmpty){
                         chatController.fetchChats(completion: {
                             Task{
-                                await userProfileController.getUserInfoAndStore(email: Array(chatController.chatDict.keys), completion: {success in
+                                await userProfileController.getUsersByEmail(email: Array(chatController.chatDict.keys), completion: {success in
                                     if(success){
                                         isLoading = false
                                     }
@@ -33,7 +33,7 @@ struct ChatView: View {
                         })
                     }else{
                         Task{
-                            await userProfileController.getUserInfoAndStore(email: Array(chatController.chatDict.keys), completion: {success in
+                            await userProfileController.getUsersByEmail(email: Array(chatController.chatDict.keys), completion: {success in
                                 if(success){
                                     isLoading = false
                                 }

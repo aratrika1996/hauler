@@ -11,13 +11,15 @@ struct HomeView: View {
     @EnvironmentObject var listingController : ListingController
     @EnvironmentObject private var viewRouter: ViewRouter
     @Environment(\.dismiss) var dismiss
+    
     @State var catagories : [String] = ListingCategory.allCases.map{(i) -> String in return i.displayName}
     @State var selection : Listing?
     @State var alert : Alert? = nil
     @State var activeLink : Bool = false
-//    @State var path : NavigationPath = NavigationPath()
     @State var hideParentNavigation : Visibility = .visible
     @State var isLoading : Bool = true
+    
+    @Binding var rootScreen :RootView
     
     @State var gridFormmats : [[GridItem]] = [Array(repeating: GridItem(.flexible(), spacing: 20), count: 2) ,[GridItem(.fixed(30)), GridItem(.fixed(150)), GridItem(.fixed(30)), GridItem(.fixed(150))]]
     
@@ -47,7 +49,7 @@ struct HomeView: View {
                             LazyVGrid(columns: gridFormmats[0] , alignment: .center, spacing: 50){
                                 ForEach(listingController.filteredList, id: \.self.id){item in
                                     NavigationLink(destination:
-                                        ProductDetailView(listing: item)
+                                                    ProductDetailView(rootScreen: $rootScreen, listing: item)
                                         .environmentObject(viewRouter)
                                     ){
                                         VStack{
@@ -92,7 +94,7 @@ struct HomeView: View {
                 })
             }
         }//NS
-        .onAppear(){
+        .onAppear{
             if(listingController.listingsList.isEmpty){
                 listingController.getAllListings(adminMode: listingController.adminMode,completion: {_, err in
                     if let err = err{
@@ -103,6 +105,7 @@ struct HomeView: View {
             }else{
                 isLoading = false
             }
+            
             
         }
     }

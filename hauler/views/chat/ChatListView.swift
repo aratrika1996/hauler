@@ -20,22 +20,21 @@ struct ChatListView: View {
         NavigationStack(path:$path){
             VStack{
                 List(Array(self.chatController.chatDict.keys), id:\.self, selection:$selectedChat){key in
-                        Button(action: {
-                            self.selectedChat = key
-                            redirect(local: true)
-                        })
+                    Button(action: {
+                        self.selectedChat = key
+                        redirect(local: true)
+                    }){
+                        NavigationLink(value:key as String)
                         {
-                            NavigationLink(value:key as String)
-                            {
-                                HStack{
-                                    Image(uiImage: localDict[key]?.uProfileImage ?? UIImage(systemName: "person")!)
-                                        .resizable().frame(width: 50, height: 50)
-                                    Spacer()
-                                    Text(localDict[key]?.uName ?? "Unknown")
-                                }
-                                
+                            HStack{
+                                Image(uiImage: localDict[key]?.uProfileImage ?? UIImage(systemName: "person")!)
+                                    .resizable().frame(width: 50, height: 50)
+                                Spacer()
+                                Text(localDict[key]?.uName ?? "Unknown")
                             }
+
                         }
+                    }
                 }
                 .navigationDestination(for: Optional<String>.self, destination: {key in
                     if let key = key{
@@ -48,7 +47,7 @@ struct ChatListView: View {
                 .onAppear{
                     redirect(local: false)
                 }
-                
+
             }
         }
         .navigationTitle("Chats")

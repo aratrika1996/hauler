@@ -23,7 +23,7 @@ struct ContentView: View {
     
     var body: some View {
         TabView(selection: self.$tabSelection) {
-            HomeView()
+            HomeView(rootScreen: $rootScreen)
             .environmentObject(pageController)
             .tabItem {
                 Image(systemName: "house")
@@ -103,7 +103,13 @@ struct ContentView: View {
         })
         .onAppear() {
             UITabBar.appearance().backgroundColor = UIColor(named: "BackgroundGray") ?? .white
-            
+            chatController.fetchChats(completion: {
+                Task{
+                    await userProfileController.getUsersByEmail(email: Array(chatController.chatDict.keys), completion: {_ in
+                        
+                    })
+                }
+            })
         }
         .environmentObject(authController)
         .environmentObject(listingController)

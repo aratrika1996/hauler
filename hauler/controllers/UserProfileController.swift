@@ -74,7 +74,7 @@ class UserProfileController : ObservableObject{
         
     }
     
-    func getUserInfoAndStore (email: [String], completion: @escaping(Bool) -> Void) async{
+    func getUsersByEmail (email: [String], completion: @escaping(Bool) -> Void) async{
         print(#function, "email got: \(email.count)")
         DispatchQueue.main.async {
             let dispatchgroup = DispatchGroup()
@@ -102,7 +102,7 @@ class UserProfileController : ObservableObject{
                             }
                         }
                         user = UserProfile(up: user, img: UIImage(systemName: "person")!)
-                            self.userDict[uemail] = user
+                        self.userDict[uemail] = user
                         print(#function, "added new profile:\(user.uName)")
                         
                         dispatchgroup.leave()
