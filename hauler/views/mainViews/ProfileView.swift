@@ -153,7 +153,8 @@ struct ProfileView: View {
                         Button(action: {
                             authController.signOut()
                             userProfileController.updateLoggedInUser()
-                                self.rootScreen = .HOME
+                            userProfileController.userDict = [:]
+                            self.rootScreen = .HOME
                             
                             
                         }){

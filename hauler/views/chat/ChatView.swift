@@ -8,28 +8,63 @@
 import SwiftUI
 
 struct ChatView: View {
+    var startNewChatWithId : String?
     @EnvironmentObject var authController : AuthController
     @EnvironmentObject var userProfileController : UserProfileController
     @EnvironmentObject var chatController : ChatController
     @Binding var rootScreen :RootView
+    @State var isLoading : Bool = true
     
     @State private var linkSelection : Int? = nil
     var body: some View {
-        VStack{
-            if userProfileController.loggedInUserEmail == ""{
-                NoChatView(rootScreen: $rootScreen).environmentObject(authController).environmentObject(userProfileController)
+        if(isLoading){
+            SplashScreenView()
+                .onAppear{
+                    if(chatController.chatDict.isEmpty){
+                        chatController.fetchChats(completion: {
+                            Task{
+                                await userProfileController.getUsersByEmail(email: Array(chatController.chatDict.keys), completion: {success in
+                                    if(success){
+                                        isLoading = false
+                                    }
+                                })
+                            }
+                            
+                        })
+                    }else{
+                        Task{
+                            await userProfileController.getUsersByEmail(email: Array(chatController.chatDict.keys), completion: {success in
+                                if(success){
+                                    isLoading = false
+                                }
+                            })
+                        }
+                    }
+                }
+        }else{
+            VStack{
+                if userProfileController.loggedInUserEmail == ""{
+                    NoChatView(rootScreen: $rootScreen)
+                }
+                else{
+                    if let newChatid = startNewChatWithId {
+                        if(!chatController.chatDict.keys.contains(where: {
+                            $0 == newChatid
+                        })){ChatListView().onAppear{
+                            chatController.newChatRoom(id: newChatid)
+                        }
+                        }else{
+                            ChatListView()
+                        }
+                    }else{
+                        ChatListView()
+                    }
+                }
+                
             }
-            else{
-                ChatListView().environmentObject(chatController)
-            }
-            
-            }
-        .onAppear(){
-            chatController.fetchChats()
-            print(#function, userProfileController.loggedInUserEmail)
         }
     }
-        
+    
 }
 
 struct NoChatView: View{
@@ -44,7 +79,7 @@ struct NoChatView: View{
             Text("Keep your message in one place.")
             Text("Log in to manage your chats.")
             
-            NavigationLink(destination: LoginView(rootScreen: $rootScreen).environmentObject(authController).environmentObject(userProfileController)) {
+            NavigationLink(destination: LoginView(rootScreen: $rootScreen)) {
                 Text("Login")
                     .font(.title)
                     .foregroundColor(.blue)
@@ -56,7 +91,7 @@ struct NoChatView: View{
             
             HStack {
                 Text("Don't have an account? ")
-                NavigationLink(destination: SignUpView(rootScreen: $rootScreen).environmentObject(authController).environmentObject(userProfileController)) {
+                NavigationLink(destination: SignUpView(rootScreen: $rootScreen)) {
                     Text("SignUp")
                         .font(.title)
                         .foregroundColor(.blue)

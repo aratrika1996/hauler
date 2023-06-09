@@ -8,6 +8,29 @@
 import Foundation
 import FirebaseStorage
 import UIKit
+extension URL{
+    func asyncTask(Withcompletion completion: @Sendable @escaping (_ data: Data?, _ response: URLResponse?, _ error: Error?) -> ()){
+        URLSession.shared
+            .dataTask(with: self, completionHandler: completion)
+            .resume()
+    }
+    
+    func fetchImage(completion: @escaping (Data?) -> Void) {
+            self.asyncTask(Withcompletion: {retrievedData, httpResponse, error in
+                guard let data = retrievedData else {
+                    return
+                }
+                if let error = error{
+                    print(#function, error)
+                }
+                if(retrievedData != nil){
+                    completion(data)
+                }else{
+                }
+            })
+    }
+}
+
 
 class ImageController : ObservableObject {
     let storage = Storage.storage()

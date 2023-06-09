@@ -6,8 +6,15 @@
 //
 
 import Foundation
-struct Chat: Identifiable {
+struct Chat: Codable, Identifiable, Hashable {
+    var participants: [String]
     var id: String
     var displayName: String
     var messages: [Message]
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+        hasher.combine(displayName)
+        hasher.combine(messages)
+    }
 }
