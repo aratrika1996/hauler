@@ -18,25 +18,25 @@ struct ContentView: View {
     @EnvironmentObject var userProfileController : UserProfileController
     @EnvironmentObject var chatController : ChatController
     @EnvironmentObject var pageController : ViewRouter
-//    @StateObject private var viewRouter = ViewRouter()
+    //    @StateObject private var viewRouter = ViewRouter()
     @Binding var rootScreen :RootView
     
     var body: some View {
         TabView(selection: self.$tabSelection) {
             HomeView(rootScreen: $rootScreen)
-            .environmentObject(pageController)
-            .tabItem {
-                Image(systemName: "house")
-                Text(title[1])
-            }
-            .tag(1)
+                .environmentObject(pageController)
+                .tabItem {
+                    Image(systemName: "house")
+                    Text(title[1])
+                }
+                .tag(1)
             
-            ChatView(startNewChatWithId: newChatId,rootScreen: $rootScreen).tabItem {
+            ChatView(rootScreen: $rootScreen).tabItem {
                 Image(systemName: "text.bubble")
                 Text(title[2])
             }
             .tag(2)
-            
+            .badge(chatController.msgCount)
             
             PostView().tabItem {
                 Image(systemName: "camera")
@@ -75,12 +75,14 @@ struct ContentView: View {
         .navigationTitle($title[tabSelection])
         .navigationTitle(((tabSelection == 1) ? $title[0] : $title[tabSelection]))
         
-        .toolbar(content: {
+        .toolbar(){
             if(tabSelection == 1){
-                ToolbarItem(content: {
+                ToolbarItem(placement:.navigationBarLeading){
+                    Text("Hello! \(userProfileController.userProfile.uName)")
+                        .lineLimit(1)
+                }
+                ToolbarItem(placement:.navigationBarTrailing){
                     HStack{
-                        //                        Text(title[tabSelection])
-                        Spacer()
                         Image(uiImage: UIImage(systemName: "heart.fill")!)
                             .resizable()
                             .frame(width: 15, height: 15)
@@ -91,16 +93,10 @@ struct ContentView: View {
                             .frame(width: 15, height: 15)
                             .padding(15)
                             .background(Color("HaulerOrange"), in:Circle())
-                            .onTapGesture {
-                                listingController.adminMode = !listingController.adminMode
-                                listingController.removeAllListener()
-                                listingController.getAllListings(adminMode: listingController.adminMode, completion: {_, err in if let err = err{print(err)}})
-                            }
                     }
-                    .padding(.horizontal, 10)
-                })
+                }
             }
-        })
+        }
         .onAppear() {
             UITabBar.appearance().backgroundColor = UIColor(named: "BackgroundGray") ?? .white
             chatController.fetchChats(completion: {

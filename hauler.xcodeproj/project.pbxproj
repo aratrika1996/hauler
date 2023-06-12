@@ -54,6 +54,9 @@
 		83F97EDA2A16F9E7000CB670 /* UserProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83F97ED92A16F9E7000CB670 /* UserProfile.swift */; };
 		F81B0A282A32C36A008C2942 /* BuyPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F81B0A272A32C36A008C2942 /* BuyPageView.swift */; };
 		F81B0A2A2A32C3E5008C2942 /* ManageItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F81B0A292A32C3E5008C2942 /* ManageItemView.swift */; };
+		F81B0A2D2A36C286008C2942 /* ChatImageLogo.swift in Sources */ = {isa = PBXBuildFile; fileRef = F81B0A2C2A36C286008C2942 /* ChatImageLogo.swift */; };
+		F81B0A2F2A36C7AB008C2942 /* NoChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F81B0A2E2A36C7AB008C2942 /* NoChatView.swift */; };
+		F81B0A312A36C7D7008C2942 /* ZeroChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F81B0A302A36C7D7008C2942 /* ZeroChatView.swift */; };
 		F871F7642A3018D4003E1019 /* SplashScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88464AA2A2A7C50007F4C64 /* SplashScreenView.swift */; };
 		F871F7652A302BD2003E1019 /* ProductDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83F97ECF2A16F3D2000CB670 /* ProductDetailsView.swift */; };
 		F89F712D2A312B4F00051BFF /* ExpandbleTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89F712C2A312B4F00051BFF /* ExpandbleTextView.swift */; };
@@ -108,6 +111,9 @@
 		83F97ED92A16F9E7000CB670 /* UserProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfile.swift; sourceTree = "<group>"; };
 		F81B0A272A32C36A008C2942 /* BuyPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuyPageView.swift; sourceTree = "<group>"; };
 		F81B0A292A32C3E5008C2942 /* ManageItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManageItemView.swift; sourceTree = "<group>"; };
+		F81B0A2C2A36C286008C2942 /* ChatImageLogo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatImageLogo.swift; sourceTree = "<group>"; };
+		F81B0A2E2A36C7AB008C2942 /* NoChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoChatView.swift; sourceTree = "<group>"; };
+		F81B0A302A36C7D7008C2942 /* ZeroChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZeroChatView.swift; sourceTree = "<group>"; };
 		F88464AA2A2A7C50007F4C64 /* SplashScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashScreenView.swift; sourceTree = "<group>"; };
 		F89F712C2A312B4F00051BFF /* ExpandbleTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandbleTextView.swift; sourceTree = "<group>"; };
 		F89F71302A312BED00051BFF /* OverlayApadater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayApadater.swift; sourceTree = "<group>"; };
@@ -143,14 +149,17 @@
 			path = helpers;
 			sourceTree = "<group>";
 		};
-		83678CC12A21B59000C50603 /* chat */ = {
+		83678CC12A21B59000C50603 /* Chat */ = {
 			isa = PBXGroup;
 			children = (
 				83F97EC62A16F359000CB670 /* ChatView.swift */,
 				83678CC22A21B5B000C50603 /* ChatListView.swift */,
 				83678CC42A21B5CC00C50603 /* ConversationView.swift */,
+				F81B0A2C2A36C286008C2942 /* ChatImageLogo.swift */,
+				F81B0A2E2A36C7AB008C2942 /* NoChatView.swift */,
+				F81B0A302A36C7D7008C2942 /* ZeroChatView.swift */,
 			);
-			path = chat;
+			path = Chat;
 			sourceTree = "<group>";
 		};
 		83F97E7F2A16E9C0000CB670 = {
@@ -207,9 +216,7 @@
 		83F97EA82A16F10C000CB670 /* views */ = {
 			isa = PBXGroup;
 			children = (
-				83678CC12A21B59000C50603 /* chat */,
 				83F97ECE2A16F3BD000CB670 /* subViews */,
-				83F97EB62A16F247000CB670 /* userLoginViews */,
 				83F97EB52A16F236000CB670 /* mainViews */,
 				83F97E8D2A16E9C0000CB670 /* ContentView.swift */,
 			);
@@ -256,12 +263,12 @@
 		83F97ECE2A16F3BD000CB670 /* subViews */ = {
 			isa = PBXGroup;
 			children = (
+				83F97EB62A16F247000CB670 /* userLoginViews */,
+				83678CC12A21B59000C50603 /* Chat */,
+				F81B0A2B2A36B4CE008C2942 /* ListingDetail */,
 				F89F712E2A312BA400051BFF /* ExpandableText */,
-				83F97ECF2A16F3D2000CB670 /* ProductDetailsView.swift */,
 				83F97ED12A16F3E4000CB670 /* CommentView.swift */,
 				83F97ED32A16F424000CB670 /* MessageDetailView.swift */,
-				83F97ED52A16F7AF000CB670 /* MapView.swift */,
-				F8A77E682A1BFF3F005AF90A /* SearchBar.swift */,
 				2887806E2A1DBDB70038268E /* PersonalDetailsView.swift */,
 				288780702A1EC0520038268E /* ManageAccountView.swift */,
 				288780722A217E050038268E /* ChangePasswordView.swift */,
@@ -270,10 +277,20 @@
 				288780782A29B8080038268E /* TopTabBarButton.swift */,
 				2887807A2A29B8210038268E /* CustomTopTabBarView.swift */,
 				F88464AA2A2A7C50007F4C64 /* SplashScreenView.swift */,
+			);
+			path = subViews;
+			sourceTree = "<group>";
+		};
+		F81B0A2B2A36B4CE008C2942 /* ListingDetail */ = {
+			isa = PBXGroup;
+			children = (
+				F8A77E682A1BFF3F005AF90A /* SearchBar.swift */,
+				83F97ED52A16F7AF000CB670 /* MapView.swift */,
+				83F97ECF2A16F3D2000CB670 /* ProductDetailsView.swift */,
 				F81B0A272A32C36A008C2942 /* BuyPageView.swift */,
 				F81B0A292A32C3E5008C2942 /* ManageItemView.swift */,
 			);
-			path = subViews;
+			path = ListingDetail;
 			sourceTree = "<group>";
 		};
 		F89F712E2A312BA400051BFF /* ExpandableText */ = {
@@ -389,6 +406,7 @@
 				83F97EAE2A16F1AE000CB670 /* ListingController.swift in Sources */,
 				8348320C2A185FD600CE8E2D /* Listing.swift in Sources */,
 				83F97E8E2A16E9C0000CB670 /* ContentView.swift in Sources */,
+				F81B0A2D2A36C286008C2942 /* ChatImageLogo.swift in Sources */,
 				F89F71312A312BED00051BFF /* OverlayApadater.swift in Sources */,
 				288780712A1EC0520038268E /* ManageAccountView.swift in Sources */,
 				F89F71352A312C2700051BFF /* ViewSizeReader.swift in Sources */,
@@ -403,6 +421,7 @@
 				F89F712D2A312B4F00051BFF /* ExpandbleTextView.swift in Sources */,
 				F89F71332A312C1000051BFF /* TruncationTextMask.swift in Sources */,
 				F871F7642A3018D4003E1019 /* SplashScreenView.swift in Sources */,
+				F81B0A2F2A36C7AB008C2942 /* NoChatView.swift in Sources */,
 				83F97ED62A16F7AF000CB670 /* MapView.swift in Sources */,
 				83F97EDA2A16F9E7000CB670 /* UserProfile.swift in Sources */,
 				83678CBC2A2199A400C50603 /* ChatController.swift in Sources */,
@@ -426,6 +445,7 @@
 				83F97ECB2A16F397000CB670 /* UserListingsView.swift in Sources */,
 				83F97ECD2A16F3AD000CB670 /* ProfileView.swift in Sources */,
 				83F97ED42A16F424000CB670 /* MessageDetailView.swift in Sources */,
+				F81B0A312A36C7D7008C2942 /* ZeroChatView.swift in Sources */,
 				83F97EAC2A16F156000CB670 /* AuthController.swift in Sources */,
 				838A74772A1BCF0A00F09DB8 /* ImageController.swift in Sources */,
 				838A74792A1BDA9900F09DB8 /* RootView.swift in Sources */,
@@ -566,8 +586,7 @@
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -597,8 +616,7 @@
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

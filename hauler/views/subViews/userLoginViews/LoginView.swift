@@ -91,7 +91,6 @@ struct LoginView: View {
             
         }//VStack ends
         .navigationTitle(Text("Login"))
-        
         .padding(30)
         .onAppear(){
             print("rootScreen", rootScreen)
@@ -115,6 +114,7 @@ struct LoginView: View {
                             if found {
                                 userProfileController.updateLoggedInUser()
                                 chatController.fetchChats(completion: {
+                                    print(chatController.chatDict.count)
                                     chatController.chatDict.forEach{dict in
                                         userProfileController.getUserByEmail(email: dict.key, completion: {_, _ in
                                             
