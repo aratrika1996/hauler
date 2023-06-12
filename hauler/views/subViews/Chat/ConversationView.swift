@@ -84,8 +84,8 @@ struct ChatMessageView: View {
                 Spacer()
                 Text(message.text)
                     .padding()
-                    .background(Color.blue)
-                    .foregroundColor(.white)
+                    .background(Color("HaulerOrange"))
+                    .foregroundColor(.black)
                     .cornerRadius(10)
             } else {
                 Text(message.text)

@@ -12,6 +12,7 @@ struct ChatListView: View {
     @EnvironmentObject var chatController: ChatController
     @EnvironmentObject var userProfileController: UserProfileController
     @State var localDict : [String:UserProfile] = [:]
+    @State var localChat : [String:Chat] = [:]
     @State private var selectedChat : String? = nil
     @State private var path : NavigationPath = NavigationPath()
     @State private var isLoading : Bool = false
@@ -29,14 +30,38 @@ struct ChatListView: View {
                         {
                             HStack{
                                 Image(uiImage: localDict[key]?.uProfileImage ?? UIImage(systemName: "person")!)
-                                    .resizable().frame(width: 50, height: 50)
-                                Spacer()
-                                Text(localDict[key]?.uName ?? "Unknown")
+                                    .resizable()
+                                    .cornerRadius(100)
+                                    .shadow(radius: 5, x:5, y:5)
+                                    .frame(width: 50, height: 50)
+                                HStack{
+                                    VStack(alignment: .leading){
+                                        HStack{
+                                            Text(localDict[key]?.uName ?? "Unknown")
+                                            Spacer()
+                                            Text(convertDate(date: (chatController.chatDict[key]?.messages.last?.timestamp.dateValue())!))
+                                                .foregroundColor(.gray)
+                                                
+                                        }
+                                        .padding(.bottom, 2)
+                                        .foregroundColor(.black)
+                                        Text(chatController.chatDict[key]?.messages.last?.text ?? "")
+                                            .foregroundColor(.gray)
+                                            .lineLimit(1)
+                                            
+                                    }
+                                }
+                                
+                                .padding()
+                                
+                                
                             }
-
+                            
                         }
                     }
                 }
+                .listStyle(.inset)
+                //List
                 .navigationDestination(for: Optional<String>.self, destination: {key in
                     if let key = key{
                         ConversationView(chat: key)
@@ -46,6 +71,7 @@ struct ChatListView: View {
                     localDict = dict
                 })
                 .onAppear{
+                    chatController.msgCount = 0
                     if chatController.newChatRoom{
                         self.isLoading = true
                         chatController.newChatRoom = false
@@ -68,7 +94,7 @@ struct ChatListView: View {
 
             }
         }
-        .navigationTitle("Chats")
+        .navigationTitle("Messages")
     }
     
     func redirect(local: Bool){
@@ -88,5 +114,14 @@ struct ChatListView: View {
             }
             path.append(self.selectedChat)
         }
+    }
+    
+    func convertDate(date: Date) -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "dd/MM/YY"
+        dateFormatter.timeZone = TimeZone.autoupdatingCurrent
+
+        let formattedDate = dateFormatter.string(from: date)
+        return formattedDate
     }
 }

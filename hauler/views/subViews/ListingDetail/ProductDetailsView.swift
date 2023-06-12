@@ -128,8 +128,8 @@ struct ProductDetailView: View {
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
                                     .frame(width: 40, height: 40)
-                                    .padding(15)
-                                    .background(Color(.white),in: Circle())
+                                    .cornerRadius(100)
+                                    
                                     .shadow(radius: 5, x:5, y:5)
                                 VStack(alignment: .leading){
                                     Text(userProfileController.userDict[listing.email]!.uName)

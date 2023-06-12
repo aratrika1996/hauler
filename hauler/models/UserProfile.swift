@@ -108,8 +108,4 @@ struct UserProfile: Identifiable, Codable {
         
         self.init(cName: name, cEmail: email, uPhone: phone, uAddress: address, uLong: long, uLat: lat, uProfileImageURL: profileImageURL)
     }
-    
-    func encode(to encoder: Encoder) throws {
-        //
-    }
 }
