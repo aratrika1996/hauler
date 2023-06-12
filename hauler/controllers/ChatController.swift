@@ -15,6 +15,7 @@ class ChatController: ObservableObject {
     @Published var messageText: String = ""
     @Published var toId : String? = nil
     @Published var selectedChar : Chat? = nil
+    @Published var msgCount : Int = 0
     
     private static var shared : ChatController?
     private let COLLECTION_CHAT: String = "Chat"
@@ -124,7 +125,6 @@ class ChatController: ObservableObject {
                 print("No chats found")
                 return
             }
-            let dispatchGroup = DispatchGroup()
             documents.forEach{document in
                 let chatId = document.documentID
                 do{
@@ -133,19 +133,16 @@ class ChatController: ObservableObject {
                 }catch{
                     print(#function, "error")
                 }
-//                dispatchGroup.enter()
                 self.fetchMessages(for: chatId) { messages in
                     print("chatId", chatId)
                     if(!messages.isEmpty){
                         let displayName = messages[0].toId == userId ? messages[0].fromId : messages[0].toId
                         let participants = [messages[0].toId, messages[0].fromId]
-    //                    let participants = chatroom
                         let chat = Chat(participants: participants, id: chatId, displayName: displayName, messages: messages)
                         print(#function, "chatId : \(chatId), name = \(displayName)")
                         self.chatDict[displayName] = chat
                     }
                     
-//                    dispatchGroup.leave()
                 }
             }
             completion()
@@ -178,17 +175,18 @@ class ChatController: ObservableObject {
                     completion([])
                     return
                 }
-
                 let messages = documents.compactMap { document -> Message? in
                     guard let messageDict = document.data() as? [String: Any] else {
                         return nil
                     }
                     var message = Message(dictionary: messageDict)
                     message?.id = document.documentID
-                    print("new msg id:\(message?.id)")
+//                    print("new msg id:\(message?.id)")
                     return message
                 }
-
+                if self.chatDict[chatId] != nil{
+                    self.msgCount += 1
+                }
                 completion(messages)
             }
     }

@@ -17,7 +17,6 @@ class UserProfileController : ObservableObject{
     var userDict : [String : UserProfile]{
         set{
             _userDict = newValue
-//            objectWillChange.send()
         }
         get{
             return _userDict
