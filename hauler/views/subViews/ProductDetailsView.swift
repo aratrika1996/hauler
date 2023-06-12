@@ -157,19 +157,18 @@ struct ProductDetailView: View {
                         Text("Any Comment?")
                     }
                     Button("Send"){
-                        if(
-                            chatController.chatDict.keys.contains(where: {
+                        if(chatController.chatDict.keys.contains(where: {
                                 $0 == listing.email
                             })){
-                            viewRouter.currentView = .chat
-                            chatController.toId = listing.email
-                            chatController.redirect = true
+                            chatController.newChatRoom = false
                         }else{
                             chatController.messageText = inputText + listing.title
-                            viewRouter.currentView = .chat
-                            chatController.toId = listing.email
-                            chatController.redirect = true
+                            chatController.newChatRoom = true
                         }
+                        viewRouter.currentView = .chat
+                        print(viewRouter.currentView)
+                        chatController.toId = listing.email
+                        chatController.redirect = true
                         dismiss()
                     }
                     Button("Cancel", role: .cancel){}
@@ -239,6 +238,11 @@ struct ProductDetailView: View {
                     }
                     
                 }
+            }
+        }
+        .onDisappear{
+            if(chatController.newChatRoom){
+                viewRouter.currentView = .chat
             }
         }
     }

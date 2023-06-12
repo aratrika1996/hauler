@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct ChatView: View {
-    var startNewChatWithId : String?
     @EnvironmentObject var authController : AuthController
     @EnvironmentObject var userProfileController : UserProfileController
     @EnvironmentObject var chatController : ChatController
@@ -47,18 +46,7 @@ struct ChatView: View {
                     NoChatView(rootScreen: $rootScreen)
                 }
                 else{
-                    if let newChatid = startNewChatWithId {
-                        if(!chatController.chatDict.keys.contains(where: {
-                            $0 == newChatid
-                        })){ChatListView().onAppear{
-                            chatController.newChatRoom(id: newChatid)
-                        }
-                        }else{
-                            ChatListView()
-                        }
-                    }else{
-                        ChatListView()
-                    }
+                    ChatListView()
                 }
                 
             }

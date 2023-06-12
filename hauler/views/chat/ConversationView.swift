@@ -11,6 +11,7 @@ import Combine
 struct ConversationView: View {
     var chat: String
     @EnvironmentObject var chatController: ChatController
+    @EnvironmentObject var userProfileController : UserProfileController
     @State private var shouldScrollToBottom = true
     @State private var messageCount = 0
     @State private var localChatDict : [String:Chat] = [:]
@@ -67,7 +68,7 @@ struct ConversationView: View {
             }
             .padding()
         }
-        .navigationTitle("\(chatController.chatDict[chat]!.displayName) ")
+        .navigationTitle("\(userProfileController.userDict[chat]!.uName) ")
     }
 }
 

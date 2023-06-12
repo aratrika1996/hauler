@@ -14,6 +14,7 @@ struct ChatListView: View {
     @State var localDict : [String:UserProfile] = [:]
     @State private var selectedChat : String? = nil
     @State private var path : NavigationPath = NavigationPath()
+    @State private var isLoading : Bool = false
     
     var body: some View {
         let currentDict = CurrentValueSubject<[String:UserProfile], Never>(userProfileController.userDict)
@@ -45,7 +46,24 @@ struct ChatListView: View {
                     localDict = dict
                 })
                 .onAppear{
-                    redirect(local: false)
+                    if chatController.newChatRoom{
+                        self.isLoading = true
+                        chatController.newChatRoom = false
+                        if let newId = chatController.toId{
+                            Task{
+                                await chatController.newChatRoom(id: newId, complete:{success in
+                                    chatController.fetchChats(completion: {
+                                        isLoading = false
+                                        redirect(local: false)
+                                    })
+                                    
+                                })
+                            }
+                            
+                        }
+                    }else{
+                        redirect(local: false)
+                    }
                 }
 
             }

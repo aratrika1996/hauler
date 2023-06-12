@@ -31,7 +31,7 @@ struct ContentView: View {
             }
             .tag(1)
             
-            ChatView(startNewChatWithId: newChatId,rootScreen: $rootScreen).tabItem {
+            ChatView(rootScreen: $rootScreen).tabItem {
                 Image(systemName: "text.bubble")
                 Text(title[2])
             }
