@@ -10,8 +10,10 @@ import SwiftUI
 struct ProfileView: View {
     @EnvironmentObject var authController : AuthController
     @EnvironmentObject var userProfileController : UserProfileController
+    @EnvironmentObject var chatController : ChatController
     @EnvironmentObject var listingController : ListingController
     @EnvironmentObject var imageController : ImageController
+    @EnvironmentObject var pageController : ViewRouter
     
     @State private var name : String = ""
     @State private var email : String = ""
@@ -153,7 +155,11 @@ struct ProfileView: View {
                         Button(action: {
                             authController.signOut()
                             userProfileController.updateLoggedInUser()
-                                self.rootScreen = .HOME
+                            userProfileController.loggedInUserEmail = ""
+                            userProfileController.userProfile = UserProfile()
+                            userProfileController.userDict = [:]
+                            chatController.chatDict = [:]
+                            pageController.currentView = .main
                             
                             
                         }){

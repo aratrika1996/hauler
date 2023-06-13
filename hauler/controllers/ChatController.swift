@@ -10,18 +10,24 @@ import FirebaseFirestore
 import Firebase
 
 class ChatController: ObservableObject {
+    @Published var chatDict : [String:Chat] = [:]
     @Published var chats: [Chat] = []
     @Published var messageText: String = ""
+    @Published var toId : String? = nil
+    @Published var selectedChar : Chat? = nil
+    @Published var msgCount : Int = 0
+    
     private static var shared : ChatController?
     private let COLLECTION_CHAT: String = "Chat"
     private var userId: String?
     private let db = Firestore.firestore()
+    
     var loggedInUserEmail: String?
+    var redirect : Bool = false
+    var newChatRoom : Bool = false
 
     init() {
         loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
-//        fetchChats()
-//        sendMessage(chatId: "32io4nkl324n")
     }
     
     static func getInstance() -> ChatController?{
@@ -32,31 +38,17 @@ class ChatController: ObservableObject {
         return shared
     }
 
-    func sendMessage(chatId: String) {
+    func sendMessage(chatId: String, toId: String, complete: @escaping () -> Void) {
         if(messageText.trimmingCharacters(in: .whitespacesAndNewlines) != ""){
             loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
             guard let userId = loggedInUserEmail else {
                 return
             }
-            var data : [String: Any] = [
-                "participants": [userId, "test2@email.com"] // Add the participants
-            ]
-            
-            db.collection(COLLECTION_CHAT).document(chatId).setData(data) { error in
-                if let error = error {
-                    print("Error sending message: \(error.localizedDescription)")
-                } else {
-                    self.messageText = ""
-                    print("Message sent successfully")
-                    self.fetchChats()
-                    
-                }
-            }
             
             // Add the participants field to the message data
             let messageData: [String: Any] = [
                 "fromId": userId,
-                "toId": "test@email.com",
+                "toId": toId,
                 "text": messageText, // messageText,
                 "timestamp": Date()
             ]
@@ -64,19 +56,59 @@ class ChatController: ObservableObject {
             db.collection(COLLECTION_CHAT).document(chatId).collection("messages").addDocument(data: messageData) { error in
                 if let error = error {
                     print("Error sending message: \(error.localizedDescription)")
+                    complete()
                 } else {
                     self.messageText = ""
                     print("Message sent successfully")
-                    self.fetchChats()
-                    
+                    self.fetchChats(completion: {
+                        complete()
+                    })
                 }
             }
         }
         
     }
+    
+    func newChatRoom(id: String, complete: @escaping (Bool) -> Void) async{
+        loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
+        guard let userId = loggedInUserEmail else {
+            return
+        }
+        let data : [String: Any] = [
+            "participants": [userId, id] // Add the participants
+        ]
+        
+        let newchatroom = db.collection(COLLECTION_CHAT).addDocument(data: data){error in
+            if let error = error {
+                print("Error creating new chatroom: \(error.localizedDescription)")
+            } else {
+                self.messageText = ""
+                print("New Chatroom created successfully")
+            }
+            
+            
+        }
+        let messageData: [String: Any] = [
+            "fromId": userId,
+            "toId": id,
+            "text": self.messageText, // messageText,
+            "timestamp": Date()
+        ]
+        self.db.collection(self.COLLECTION_CHAT).document(newchatroom.documentID).collection("messages").addDocument(data: messageData){err in
+            if let err = err {
+                complete(false)
+                print("Error sending new msg after creating new chatroom: \(err.localizedDescription)")
+            } else {
+                complete(true)
+                print("Message sent after chatroom creation successfully")
+            }
+            
+        }
+        
+    }
 
 
-    func fetchChats() {
+    func fetchChats(completion: @escaping () -> Void){
         loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
         guard let userId = loggedInUserEmail else {
             return
@@ -93,28 +125,34 @@ class ChatController: ObservableObject {
                 print("No chats found")
                 return
             }
-
-            var fetchedChats: [Chat] = []
-            let dispatchGroup = DispatchGroup()
-            print(#function, "chatroom found: \(snapshot?.documents.count)")
-            for (index, document) in documents.enumerated() {
+            documents.forEach{document in
                 let chatId = document.documentID
-                let displayName = "Room number \(index + 1)"// Set the display name based on your logic
-                dispatchGroup.enter()
+                do{
+                    let chatroom = try document.data(as: Chat.self)
+                    print(chatroom.participants)
+                }catch{
+                    print(#function, "error")
+                }
                 self.fetchMessages(for: chatId) { messages in
                     print("chatId", chatId)
-                    let chat = Chat(id: chatId, displayName: displayName, messages: messages)
-                    fetchedChats.append(chat)
-                    dispatchGroup.leave()
+                    if(!messages.isEmpty){
+                        let displayName = messages[0].toId == userId ? messages[0].fromId : messages[0].toId
+                        let participants = [messages[0].toId, messages[0].fromId]
+                        let chat = Chat(participants: participants, id: chatId, displayName: displayName, messages: messages)
+                        print(#function, "chatId : \(chatId), name = \(displayName)")
+                        self.chatDict[displayName] = chat
+                    }
+                    
                 }
             }
-            dispatchGroup.notify(queue: .main){
-                print(#function, "chatrooms fetched: \(self.chats.count)")
-                for room in self.chats{
-                    print("chatrooms name: \(room.displayName)")
-                }
-                    self.chats = fetchedChats
-            }
+            completion()
+//            dispatchGroup.notify(queue: .main){
+//                print(#function, "chatrooms fetched: \(self.chatDict.count)")
+//                self.chatDict.forEach{
+//                    print($0.value.displayName)
+//                }
+//                completion()
+//            }
             
         }
     }
@@ -125,7 +163,7 @@ class ChatController: ObservableObject {
 
         db.collection(COLLECTION_CHAT).document(chatId).collection("messages")
             .order(by: "timestamp", descending: false)
-            .getDocuments { (snapshot, error) in
+            .addSnapshotListener{ (snapshot, error) in
                 if let error = error {
                     print("Error fetching messages for chat \(chatId): \(error.localizedDescription)")
                     completion([])
@@ -137,17 +175,18 @@ class ChatController: ObservableObject {
                     completion([])
                     return
                 }
-
                 let messages = documents.compactMap { document -> Message? in
                     guard let messageDict = document.data() as? [String: Any] else {
                         return nil
                     }
                     var message = Message(dictionary: messageDict)
                     message?.id = document.documentID
-
+//                    print("new msg id:\(message?.id)")
                     return message
                 }
-
+                if self.chatDict[chatId] != nil{
+                    self.msgCount += 1
+                }
                 completion(messages)
             }
     }

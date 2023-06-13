@@ -6,7 +6,7 @@
 //
 
 import Foundation
-
+import SwiftUI
 
 
 struct UserProfile: Identifiable, Codable {
@@ -18,6 +18,18 @@ struct UserProfile: Identifiable, Codable {
     var uLong : Double = 0.0
     var uLat : Double = 0.0
     var uProfileImageURL : String? = ""
+    var uProfileImage : UIImage? = nil
+    
+    private enum CodingKeys: String, CodingKey {
+        case id
+        case uName
+        case uEmail
+        case uPhone
+        case uAddress
+        case uLong
+        case uLat
+        case uProfileImageURL
+    }
     
     init(){
         
@@ -32,6 +44,18 @@ struct UserProfile: Identifiable, Codable {
         self.uLong = uLong
         self.uLat = uLat
         self.uProfileImageURL = uProfileImageURL
+    }
+    
+    init(up: UserProfile, img: UIImage){
+        self.id = up.id
+        self.uName = up.uName
+        self.uEmail = up.uEmail
+        self.uAddress = up.uAddress
+        self.uPhone = up.uPhone
+        self.uLong = up.uLong
+        self.uLat = up.uLat
+        self.uProfileImageURL = up.uProfileImageURL
+        self.uProfileImage = img
     }
     
     init(from decoder: Decoder) throws {

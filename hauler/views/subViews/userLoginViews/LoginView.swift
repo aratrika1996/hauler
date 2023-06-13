@@ -11,6 +11,7 @@ import FirebaseFirestore
 struct LoginView: View {
     @EnvironmentObject var authController : AuthController
     @EnvironmentObject var userProfileController : UserProfileController
+    @EnvironmentObject var chatController : ChatController
     
     @Binding var rootScreen :RootView
     @Environment(\.presentationMode) var presentationMode
@@ -89,6 +90,7 @@ struct LoginView: View {
             }//HStack ends
             
         }//VStack ends
+        .navigationTitle(Text("Login"))
         .padding(30)
         .onAppear(){
             print("rootScreen", rootScreen)
@@ -103,7 +105,6 @@ struct LoginView: View {
     }
     
     func signIn(){
-        
         authController.signIn(email: self.emailAddress, password: self.password) { result in
             switch result {
             case .success(_):
@@ -112,7 +113,14 @@ struct LoginView: View {
                         DispatchQueue.main.async {
                             if found {
                                 userProfileController.updateLoggedInUser()
-
+                                chatController.fetchChats(completion: {
+                                    print(chatController.chatDict.count)
+                                    chatController.chatDict.forEach{dict in
+                                        userProfileController.getUserByEmail(email: dict.key, completion: {_, _ in
+                                            
+                                        })
+                                    }
+                                })
                             } else {
                                 print("User not found")
                                 var userProfile = UserProfile()
@@ -124,8 +132,6 @@ struct LoginView: View {
                         }
                     }
                 presentationMode.wrappedValue.dismiss()
-                
-                
             case .failure(let error):
                 print("Error while signing in: \(error.localizedDescription)")
                 self.authError = error.localizedDescription
@@ -133,7 +139,6 @@ struct LoginView: View {
             }
         }
     }
-    
 }
 
 //struct LoginView_Previews: PreviewProvider {
