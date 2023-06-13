@@ -13,6 +13,7 @@ class UserProfileController : ObservableObject{
     
     
     @Published var userProfile = UserProfile()
+    @Published var publicProfile = UserProfile()
     @Published var userDict : [String : UserProfile] = [:]
     @Published var loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
     private let store : Firestore
@@ -77,6 +78,25 @@ class UserProfileController : ObservableObject{
                 self.userProfile = user
                 self.userDict[email] = user
                 print(self.userDict)
+                completion(user, true)
+            } else {
+                completion(nil, false)
+            }
+        }
+    }
+    
+    func getPublicProfileByEmail(email: String, completion: @escaping (UserProfile?, Bool) -> Void) {
+        let db = Firestore.firestore()
+        
+        db.collection(COLLECTION_PROFILE).document(email).getDocument { snapshot, error in
+            if let error = error {
+                print("Error fetching user document: \(error)")
+                completion(nil, false)
+                return
+            }
+            
+            if let data = snapshot?.data(), let user = try? Firestore.Decoder().decode(UserProfile.self, from: data) {
+                self.publicProfile = user
                 completion(user, true)
             } else {
                 completion(nil, false)

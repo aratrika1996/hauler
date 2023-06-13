@@ -17,6 +17,7 @@
 		288780772A29B7E80038268E /* SoldListingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 288780762A29B7E80038268E /* SoldListingsView.swift */; };
 		288780792A29B8080038268E /* TopTabBarButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 288780782A29B8080038268E /* TopTabBarButton.swift */; };
 		2887807B2A29B8210038268E /* CustomTopTabBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2887807A2A29B8210038268E /* CustomTopTabBarView.swift */; };
+		288780832A32912A0038268E /* UserPublicProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 288780822A32912A0038268E /* UserPublicProfileView.swift */; };
 		8348320C2A185FD600CE8E2D /* Listing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8348320B2A185FD600CE8E2D /* Listing.swift */; };
 		83678CBC2A2199A400C50603 /* ChatController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83678CBB2A2199A300C50603 /* ChatController.swift */; };
 		83678CBE2A219FC200C50603 /* message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83678CBD2A219FC200C50603 /* message.swift */; };
@@ -67,6 +68,7 @@
 		288780762A29B7E80038268E /* SoldListingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoldListingsView.swift; sourceTree = "<group>"; };
 		288780782A29B8080038268E /* TopTabBarButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopTabBarButton.swift; sourceTree = "<group>"; };
 		2887807A2A29B8210038268E /* CustomTopTabBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTopTabBarView.swift; sourceTree = "<group>"; };
+		288780822A32912A0038268E /* UserPublicProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPublicProfileView.swift; sourceTree = "<group>"; };
 		8348320B2A185FD600CE8E2D /* Listing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Listing.swift; sourceTree = "<group>"; };
 		83678CBB2A2199A300C50603 /* ChatController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatController.swift; sourceTree = "<group>"; };
 		83678CBD2A219FC200C50603 /* message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = message.swift; sourceTree = "<group>"; };
@@ -250,6 +252,7 @@
 				288780762A29B7E80038268E /* SoldListingsView.swift */,
 				288780782A29B8080038268E /* TopTabBarButton.swift */,
 				2887807A2A29B8210038268E /* CustomTopTabBarView.swift */,
+				288780822A32912A0038268E /* UserPublicProfileView.swift */,
 			);
 			path = subViews;
 			sourceTree = "<group>";
@@ -361,6 +364,7 @@
 				83F97EC52A16F34B000CB670 /* SignUpView.swift in Sources */,
 				83F97EC92A16F36E000CB670 /* FavoritesView.swift in Sources */,
 				83678CC52A21B5CC00C50603 /* ConversationView.swift in Sources */,
+				288780832A32912A0038268E /* UserPublicProfileView.swift in Sources */,
 				288780772A29B7E80038268E /* SoldListingsView.swift in Sources */,
 				83F97ED22A16F3E4000CB670 /* CommentView.swift in Sources */,
 				83F97EB02A16F1DB000CB670 /* UserProfileController.swift in Sources */,
