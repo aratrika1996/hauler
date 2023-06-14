@@ -19,6 +19,7 @@ class ListingController : ObservableObject{
     @Published var userListings = [Listing]()
     @Published var userAvailableListings = [Listing]()
     @Published var userSoldListings = [Listing]()
+    @Published var sellerListings = [Listing]()
     @Published var adminMode = false
     @Published var searchText: String = ""
     @Published var selectedTokens : [ListingCategory] = []
@@ -304,6 +305,61 @@ class ListingController : ObservableObject{
                         completion(listings, nil)
                     }
         }
+    }
+    
+    func getListingsByEmail(sellerEmail:String, completion: @escaping ([Listing]?, Error?) -> Void) {
+        self.user_listener = self
+            .store
+            .collection(COLLECTION_LISTING)
+            .whereField("email", isEqualTo: sellerEmail)
+            .whereField("available", isEqualTo: true)
+            .addSnapshotListener { (querySnapshot, error) in
+                if let error = error {
+                    print(#function, "Unable to retrieve data from Firestore : \(error)")
+                    completion(nil, error)
+                    return
+                }
+                
+                var listings: [Listing] = []
+                
+                querySnapshot?.documents.forEach { document in
+                    do {
+                        var listing: Listing = try document.data(as: Listing.self)
+                        listing.id = document.documentID
+                        
+                        listings.append(listing)
+                    } catch let error {
+                        print(#function, "Unable to convert the document into object : \(error)")
+                    }
+                }
+                DispatchQueue.main.async {
+                    listings = listings.map{(li) -> Listing in
+                        let dispatchGroup = DispatchGroup()
+                        var img: UIImage? = nil
+                        dispatchGroup.enter()
+                        if let link = URL(string: li.imageURI){
+                            link.fetchImage(completion: {
+                                picData in
+                                if let picData = picData{
+                                    if let Uiimage = UIImage(data: picData){
+                                        img = Uiimage
+                                        dispatchGroup.leave()
+                                    }else{
+                                        print(#function, "Cast uiImage Error")
+                                    }
+                                }else{
+                                    print(#function, "no picData")
+                                }
+                            })
+                        }
+                        dispatchGroup.wait()
+                        return Listing(id: li.id, title: li.title, desc: li.desc, price: li.price, email: li.email, image: img, imageURI: li.imageURI, category: li.category, available: li.available, createDate: li.createDate, sellDate: li.sellDate)
+                    }
+                    self.sellerListings = listings
+                    //print(self.userListings)
+                    completion(listings, nil)
+                }
+            }
     }
     
     func approveListings(listingsToUpdate: [Listing], completion: @escaping (Error?) -> Void){
