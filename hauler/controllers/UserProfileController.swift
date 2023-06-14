@@ -14,6 +14,8 @@ class UserProfileController : ObservableObject{
     
     
     @Published var userProfile = UserProfile()
+    @Published var publicProfile = UserProfile()
+    
     var userDict : [String : UserProfile]{
         set{
             _userDict = newValue
@@ -23,6 +25,7 @@ class UserProfileController : ObservableObject{
         }
     }
     private var _userDict : [String : UserProfile] = [ : ]
+
     @Published var loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
     private let store : Firestore
     private static var shared : UserProfileController?
@@ -116,6 +119,24 @@ class UserProfileController : ObservableObject{
         }
     }
     
+    func getPublicProfileByEmail(email: String, completion: @escaping (UserProfile?, Bool) -> Void) {
+        let db = Firestore.firestore()
+        
+        db.collection(COLLECTION_PROFILE).document(email).getDocument { snapshot, error in
+            if let error = error {
+                print("Error fetching user document: \(error)")
+                completion(nil, false)
+                return
+            }
+            
+            if let data = snapshot?.data(), let user = try? Firestore.Decoder().decode(UserProfile.self, from: data) {
+                self.publicProfile = user
+                completion(user, true)
+            } else {
+                completion(nil, false)
+            }
+        }
+    }
     
     func getUserByEmail(email: String, completion: @escaping (UserProfile?, Bool) -> Void) {
         if let localprofile = self.userDict[email]{
@@ -187,7 +208,6 @@ class UserProfileController : ObservableObject{
         self.userDict[user.uEmail] = user
         completion(user)
     }
-    
     
     func getAllUserData(completion: @escaping () -> Void) {
         
