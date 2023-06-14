@@ -24,21 +24,48 @@ struct PostView: View {
     @State private var aspectMode: Bool = true
     
     @State private var alertTitle : String = ""
+    @State private var alertMsg : String = ""
     @State private var alertIsPresented : Bool = false
-    @State private var alertObj : Alert? = nil
+    
+    @State private var isTitleEditing : Bool = false{
+        didSet{
+            guard isTitleEditing != oldValue else {return}
+            if(isTitleEditing){isDescEditing = false; isValueEditing = false}
+        }
+    }
+    @State private var isDescEditing : Bool = false{
+        didSet{
+            guard isDescEditing != oldValue else {return}
+            if(isDescEditing){isTitleEditing = false; isValueEditing = false}
+        }
+    }
+    @State private var isValueEditing : Bool = false{
+        didSet{
+            guard isValueEditing != oldValue else {return}
+            if(isValueEditing){isTitleEditing = false; isDescEditing = false}
+        }
+    }
     
     @EnvironmentObject var imageController : ImageController
     @EnvironmentObject var listingController : ListingController
+    @EnvironmentObject var routeController : ViewRouter
     
     @State private var isImagePickerPresented = false
     @State private var listing: Listing = Listing()
+    
+    @State private var listingTitle : String = ""
+    @State private var listingDesc : String = ""
+    @State private var listingValue : String = ""
+    
+    @State private var useDefaultLocation : Bool = true
     
     
     @State private var imageSourceType : ImagePickerView.ImageSourceType? = nil
     
     var body: some View {
+        VStack{
             Form {
-                Section {
+                Section("Photo") {
                         if let image = resizedImage {
                             HStack {
                                 Spacer()
@@ -69,69 +96,62 @@ struct PostView: View {
                     }
                 }
                 
-                Section {
-                    TextField("Title", text: $listing.title)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                Section ("Info"){
+                    VStack{
+                        MaterialDesignTextField($listingTitle, placeholder: "Title", editing: $isTitleEditing)
+                            .onTapGesture {
+                                isTitleEditing = true
+                            }
+                        MaterialDesignTextField($listingDesc, placeholder: "Description", editing: $isDescEditing)
+                            .onTapGesture {
+                                isDescEditing = true
+                            }
+                        MaterialDesignTextField($listingValue, placeholder: "Price", editing: $isValueEditing)
+                            .onTapGesture {
+                                isValueEditing = true
+                            }
+                    }
                     
-                    TextField("Description", text: $listing.desc)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                    
-                    TextField("Price", value: $listing.price, formatter: NumberFormatter())
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                    
-                    HStack {
+                }
+                
+                .onTapGesture {
+                    isTitleEditing = false
+                    isDescEditing = false
+                    isValueEditing = false
+                }
+                Section("Detail"){
+                    HStack{
                         Text("Category")
                         Picker(selection: $listing.category, label: Text("")) {
                             ForEach(ListingCategory.allCases, id: \.self) { category in
                                 Text(category.displayName).tag(category)
+                                    
                             }
                         }
                         .pickerStyle(.menu)
                     }
                 }
                 
-                Section {
-                    Button(action: {
-                        guard let _ = resizedImage else {
-                            print("No image selected.")
-                            return
-                        }
-                        listing.email = listingController.loggedInUserEmail
-                        imageController.uploadImage(resizedImage!) { result in
-                            switch result {
-                            case .success(let url):
-                                // Handle the success case with the URL
-                                print("Image uploaded successfully. URL: \(url)")
-                                // Once we get the URL, we can update the imageURI field in the listing
-                                listing.imageURI = url.absoluteString
-                                // Perform any additional operations with the completed listing
-                                saveListing()
-                                self.alertObj = Alert(title: Text("Success"), message: Text("Post Successful"))
-                                
-                            case .failure(let error):
-                                // Handle the error case
-                                print("Error uploading image: \(error)")
-                                self.alertObj = Alert(title: Text("Failed"), message: Text("Post Failed"))
-                            }
-                            alertIsPresented = true
-                        }
-                    }) {
-                        Text("Post Listing")
-                            .foregroundColor(.white)
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(selectedImage == nil ? Color.gray : Color.green)
-                            .cornerRadius(10)
-                    }
-                    .disabled(selectedImage == nil)
+                Section("Location"){
+                    Picker("Where To Meet", selection: $useDefaultLocation, content: {
+                        Text("Default").tag(true)
+                        Text("Specfic").tag(false)
+                    })
+                    .pickerStyle(.segmented )
                 }
-            }
-            .navigationBarTitle("Post Listing")
-            .padding(.top, 5)
-            .padding()
-            .alert(alertTitle, isPresented: $alertIsPresented, presenting: self.alertObj, actions: {selection in
+                    
                 
-            })
+            }
+            .tint(Color("HaulerOrange"))
+            .shadow(radius: 5)
+//            .background(Color("HaulerOrangeLite"))
+            .scrollContentBackground(.hidden)
+            .navigationBarTitle("Post Listing")
+            .alert(self.alertTitle, isPresented: $alertIsPresented, actions: {
+                Button("OK"){
+                    self.routeController.currentView = .post
+                }
+            }, message: {Text(self.alertMsg)})
             .sheet(isPresented: $isImagePickerPresented, onDismiss: handleImagePickerDismissal) {
                 if($imageSourceType.wrappedValue != nil){
                     ImagePickerView(isPresented: $isImagePickerPresented, imageSourceType: $imageSourceType,selectedImage: $selectedImage)
@@ -143,7 +163,7 @@ struct PostView: View {
                         }
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(Color.blue)
+                        .background(Color("HaulerOrangeLite"))
                         .foregroundColor(.white)
                         .cornerRadius(10)
                         .buttonStyle(BorderlessButtonStyle())
@@ -153,17 +173,57 @@ struct PostView: View {
                         }
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(Color.blue)
+                        .background(Color("HaulerOrangeLite"))
                         .foregroundColor(.white)
                         .cornerRadius(10)
                         .buttonStyle(BorderlessButtonStyle())
                     }
                     .padding(.horizontal, 50)
                     .presentationDetents([.height(130)])
-                    
                 }
                 
             }
+            Button(action: {
+                guard let _ = resizedImage else {
+                    print("No image selected.")
+                    return
+                }
+                listing.email = listingController.loggedInUserEmail
+                imageController.uploadImage(resizedImage!) { result in
+                    switch result {
+                    case .success(let url):
+                        // Handle the success case with the URL
+                        print("Image uploaded successfully. URL: \(url)")
+                        // Once we get the URL, we can update the imageURI field in the listing
+                        listing.imageURI = url.absoluteString
+                        // Perform any additional operations with the completed listing
+                        saveListing()
+                        self.alertTitle = "Success"
+                        self.alertMsg = "PostSuccess"
+                        
+                    case .failure(let error):
+                        // Handle the error case
+                        print("Error uploading image: \(error)")
+                        self.alertTitle = "Failed"
+                        self.alertMsg = "PostFailed"
+                    }
+                    alertIsPresented = true
+                    
+                }
+            }) {
+                Text("Post Listing")
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(selectedImage == nil ? Color.gray : Color.green)
+                    .cornerRadius(10)
+            }
+            .padding(.horizontal, 10)
+            .disabled(selectedImage == nil)
+        }
+            
+        
+        
     }
     
     func handleImagePickerDismissal() {
@@ -189,8 +249,6 @@ struct PostView: View {
         let targetedSize : CGSize = CGSize(width: targetedW, height: targetedH)
         var bgSize : CGSize? = nil
         UIGraphicsBeginImageContextWithOptions(targetedSize, true, 1.0)
-//        UIColor.white.setFill()
-//        UIRectFill(CGRect(origin: .zero, size: targetedSize))
         switch aspectMode{
         case true:
             let imgW = (selectedImage?.size.width)!
@@ -216,8 +274,6 @@ struct PostView: View {
         defer{UIGraphicsEndImageContext()}
         resizedImage = UIGraphicsGetImageFromCurrentImageContext()!
         self.resizedImage = resizedImage
-//        print("original byte: \(self.selectedImage?.sizeInBytes)")
-//        print("resized byte: \(self.resizedImage?.sizeInBytes)")
     }
 
 
@@ -227,7 +283,22 @@ struct PostView: View {
     }
     
     func saveListing() {
+        self.listing.title = self.listingTitle
+        self.listing.desc = self.listingDesc
+        self.listing.price = Double(self.listingValue)!
+        self.listing.createDate = Date.now
+        self.listing.available = true
         listingController.insertListing(listing: listing)
+        clearAfterListed()
+    }
+    
+    func clearAfterListed() {
+        self.listing = Listing()
+        self.listingTitle = ""
+        self.listingDesc = ""
+        self.listingTitle = ""
+        self.selectedImage = nil
+        self.resizedImage = nil
     }
 }
 
