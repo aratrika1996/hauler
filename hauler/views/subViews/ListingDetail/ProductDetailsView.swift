@@ -117,14 +117,10 @@ struct ProductDetailView: View {
                             HStack{
                                 Text("About Seller").bold()
                                 Spacer()
-//                                Button("View Profile"){
-////                                    viewRouter.currentView = .list
-////                                    self.dismiss()
-//
-//                                }
-                                NavigationLink(destination: UserPublicProfileView(sellerEmail: listing.email, rootScreen: $rootScreen)){
-                                    Text("View Profile")
-                                }
+                                    NavigationLink(destination: UserPublicProfileView(sellerEmail: listing.email, rootScreen: $rootScreen)){
+                                        Text("View Profile")
+                                    }
+
                             }
                             
                             HStack(alignment: .center){
