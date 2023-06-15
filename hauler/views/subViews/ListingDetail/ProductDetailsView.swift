@@ -120,6 +120,7 @@ struct ProductDetailView: View {
                                 Button("View Profile"){
                                     NavigationLink(destination: UserPublicProfileView(sellerEmail: listing.email, rootScreen: $rootScreen)){
                                         Text("View Profile")
+                                    }
                                 }
                             }
                             
