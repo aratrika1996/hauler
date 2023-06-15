@@ -6,6 +6,7 @@
 //
 import SwiftUI
 import UIKit
+import MapKit
 
 extension UIImage {
     var sizeInBytes: Int {
@@ -18,27 +19,69 @@ extension UIImage {
     }
 }
 
+
+
 struct PostView: View {
+    enum Fields : Hashable{
+        case title
+        case desc
+        case price
+        case cate
+        case loca
+    }
+    
     @State private var selectedImage: UIImage? = nil
     @State private var resizedImage: UIImage? = nil
     @State private var aspectMode: Bool = true
     
     @State private var alertTitle : String = ""
+    @State private var alertMsg : String = ""
     @State private var alertIsPresented : Bool = false
-    @State private var alertObj : Alert? = nil
+    
+    @FocusState private var isTitleFocused : Bool
+    @State private var isTitleEditing : Bool = false{
+        didSet{
+            guard isTitleEditing != oldValue else {return}
+            if(isTitleEditing){isDescEditing = false; isValueEditing = false}
+        }
+    }
+    @State private var isDescEditing : Bool = false{
+        didSet{
+            guard isDescEditing != oldValue else {return}
+            if(isDescEditing){isTitleEditing = false; isValueEditing = false}
+        }
+    }
+    @State private var isValueEditing : Bool = false{
+        didSet{
+            guard isValueEditing != oldValue else {return}
+            if(isValueEditing){isTitleEditing = false; isDescEditing = false}
+        }
+    }
     
     @EnvironmentObject var imageController : ImageController
     @EnvironmentObject var listingController : ListingController
+    @EnvironmentObject var userProfileController : UserProfileController
+    @EnvironmentObject var routeController : ViewRouter
+    @EnvironmentObject var locationController : LocationManager
     
     @State private var isImagePickerPresented = false
     @State private var listing: Listing = Listing()
     
+    @State private var listingTitle : String = ""
+    @State private var listingDesc : String = ""
+    @State private var listingValue : String = ""
+    @State private var listingLoc : String = ""
+    @State private var loc : CLLocation = CLLocation(latitude: 0, longitude: 0)
+    
+    @State private var useDefaultLocation : Bool = true
+    @FocusState private var focusedField : Fields?
     
     @State private var imageSourceType : ImagePickerView.ImageSourceType? = nil
     
     var body: some View {
+        VStack{
             Form {
-                Section {
+                Section("Photo") {
                         if let image = resizedImage {
                             HStack {
                                 Spacer()
@@ -69,69 +112,119 @@ struct PostView: View {
                     }
                 }
                 
-                Section {
-                    TextField("Title", text: $listing.title)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                    
-                    TextField("Description", text: $listing.desc)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                    
-                    TextField("Price", value: $listing.price, formatter: NumberFormatter())
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                    
-                    HStack {
+                Section ("Info"){
+                    VStack{
+                        MaterialDesignTextField($listingTitle, placeholder: "Title", editing: $isTitleEditing)
+                            .focused($focusedField, equals: .some(.title))
+                            .onTapGesture {
+                                isTitleEditing = true
+                            }
+                        MaterialDesignTextField($listingDesc, placeholder: "Description", editing: $isDescEditing)
+                            .focused($focusedField, equals: .some(.desc))
+                            .onTapGesture {
+                                isDescEditing = true
+                            }
+                        MaterialDesignTextField($listingValue, placeholder: "Price", editing: $isValueEditing)
+                            .focused($focusedField, equals: .some(.price))
+                            .onTapGesture {
+                                isValueEditing = true
+                            }
+                    }
+                    .onChange(of: focusedField, perform: {which in
+                    switch (which){
+                    case .some(.title):
+                        isTitleEditing = true
+                        
+                    case .none:
+                        clearFocus()
+                    case .some(.desc):
+                        isDescEditing = true
+                    case .some(.price):
+                        isValueEditing = true
+                    case .some(.cate):
+                        clearFocus()
+                    case .some(.loca):
+                        clearFocus()
+                    }
+                    })
+                }
+                
+//                .onTapGesture {
+//                    clearFocus()
+//                }
+                Section("Detail"){
+                    HStack{
                         Text("Category")
                         Picker(selection: $listing.category, label: Text("")) {
                             ForEach(ListingCategory.allCases, id: \.self) { category in
                                 Text(category.displayName).tag(category)
+                                    
                             }
                         }
                         .pickerStyle(.menu)
+                        .focused($focusedField, equals: .some(.cate))
                     }
                 }
-                
-                Section {
-                    Button(action: {
-                        guard let _ = resizedImage else {
-                            print("No image selected.")
-                            return
+//                .onTapGesture {
+//                    clearFocus()
+//                }
+                Section("Location"){
+                    Picker("Where To Meet", selection: $useDefaultLocation, content: {
+                        Text("Default").tag(true)
+                        Text("Specfic").tag(false)
+                    })
+                    .pickerStyle(.segmented )
+                    .focused($focusedField, equals: .some(.loca))
+                    .onChange(of: useDefaultLocation, perform: {
+                        if($0){
+                            listingLoc = self.userProfileController.userDict[self.userProfileController.loggedInUserEmail]?.uAddress ?? ""
+                            self.locationController.ReversedLocation = listingLoc
                         }
-                        listing.email = listingController.loggedInUserEmail
-                        imageController.uploadImage(resizedImage!) { result in
-                            switch result {
-                            case .success(let url):
-                                // Handle the success case with the URL
-                                print("Image uploaded successfully. URL: \(url)")
-                                // Once we get the URL, we can update the imageURI field in the listing
-                                listing.imageURI = url.absoluteString
-                                // Perform any additional operations with the completed listing
-                                saveListing()
-                                self.alertObj = Alert(title: Text("Success"), message: Text("Post Successful"))
-                                
-                            case .failure(let error):
-                                // Handle the error case
-                                print("Error uploading image: \(error)")
-                                self.alertObj = Alert(title: Text("Failed"), message: Text("Post Failed"))
+                    })
+                    .onAppear{
+                        listingLoc = self.userProfileController.userDict[self.userProfileController.loggedInUserEmail]?.uAddress ?? ""
+                    }
+                    HStack{
+                        TextField("",text: $listingLoc)
+                            .disabled(useDefaultLocation ? true : false)
+                        if(!useDefaultLocation){
+                            Button("Convert"){
+                                self.locationController.ReversedLocation = listingLoc
                             }
-                            alertIsPresented = true
+                            .buttonStyle(.borderedProminent)
                         }
-                    }) {
-                        Text("Post Listing")
-                            .foregroundColor(.white)
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(selectedImage == nil ? Color.gray : Color.green)
-                            .cornerRadius(10)
                     }
-                    .disabled(selectedImage == nil)
+                    
+                        
+                        if(!useDefaultLocation){
+                            MapView(location: $loc)
+                                                            .frame(height: 300)
+//                            MapView(location: self.$loc)
+//                                .frame(height: 300)
+                                .onChange(of: self.locationController.latitude, perform: {_ in
+                                    self.loc = CLLocation(latitude: self.locationController.latitude, longitude: self.locationController.longitude)
+                                })
+                                .onChange(of: self.locationController.longitude, perform: {_ in
+                                    self.loc = CLLocation(latitude: self.locationController.latitude, longitude: self.locationController.longitude)
+                                })
+                        }
+                    
+                    
                 }
-            }
-            .navigationBarTitle("Post Listing")
-            .padding(.top, 5)
-            .padding()
-            .alert(alertTitle, isPresented: $alertIsPresented, presenting: self.alertObj, actions: {selection in
                 
-            })
+                    
+                
+            }
+            .tint(Color("HaulerOrange"))
+            .shadow(radius: 5)
+//            .background(Color("HaulerOrangeLite"))
+            .scrollContentBackground(.hidden)
+            .navigationBarTitle("Post Listing")
+            .alert(self.alertTitle, isPresented: $alertIsPresented, actions: {
+                Button("OK"){
+                    self.routeController.currentView = .post
+                }
+            }, message: {Text(self.alertMsg)})
             .sheet(isPresented: $isImagePickerPresented, onDismiss: handleImagePickerDismissal) {
                 if($imageSourceType.wrappedValue != nil){
                     ImagePickerView(isPresented: $isImagePickerPresented, imageSourceType: $imageSourceType,selectedImage: $selectedImage)
@@ -143,7 +236,7 @@ struct PostView: View {
                         }
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(Color.blue)
+                        .background(Color("HaulerOrangeLite"))
                         .foregroundColor(.white)
                         .cornerRadius(10)
                         .buttonStyle(BorderlessButtonStyle())
@@ -153,17 +246,59 @@ struct PostView: View {
                         }
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(Color.blue)
+                        .background(Color("HaulerOrangeLite"))
                         .foregroundColor(.white)
                         .cornerRadius(10)
                         .buttonStyle(BorderlessButtonStyle())
                     }
                     .padding(.horizontal, 50)
                     .presentationDetents([.height(130)])
-                    
                 }
                 
             }
+            Button(action: {
+                guard let _ = resizedImage else {
+                    print("No image selected.")
+                    return
+                }
+                listing.email = listingController.loggedInUserEmail
+                imageController.uploadImage(resizedImage!) { result in
+                    switch result {
+                    case .success(let url):
+                        // Handle the success case with the URL
+                        print("Image uploaded successfully. URL: \(url)")
+                        // Once we get the URL, we can update the imageURI field in the listing
+                        listing.imageURI = url.absoluteString
+                        // Perform any additional operations with the completed listing
+                        saveListing()
+                        self.alertTitle = "Success"
+                        self.alertMsg = "PostSuccess"
+                        
+                    case .failure(let error):
+                        // Handle the error case
+                        print("Error uploading image: \(error)")
+                        self.alertTitle = "Failed"
+                        self.alertMsg = "PostFailed"
+                    }
+                    alertIsPresented = true
+                    
+                }
+            }) {
+                Text("Post Listing")
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(selectedImage == nil ? Color.gray : Color.green)
+                    .cornerRadius(10)
+            }
+            .padding(.horizontal, 10)
+            .disabled(selectedImage == nil)
+        }
+            
+        .onAppear{
+            self.loc = CLLocation(latitude: locationController.latitude, longitude: locationController.longitude)
+        }
+        
     }
     
     func handleImagePickerDismissal() {
@@ -189,8 +324,6 @@ struct PostView: View {
         let targetedSize : CGSize = CGSize(width: targetedW, height: targetedH)
         var bgSize : CGSize? = nil
         UIGraphicsBeginImageContextWithOptions(targetedSize, true, 1.0)
-//        UIColor.white.setFill()
-//        UIRectFill(CGRect(origin: .zero, size: targetedSize))
         switch aspectMode{
         case true:
             let imgW = (selectedImage?.size.width)!
@@ -216,8 +349,6 @@ struct PostView: View {
         defer{UIGraphicsEndImageContext()}
         resizedImage = UIGraphicsGetImageFromCurrentImageContext()!
         self.resizedImage = resizedImage
-//        print("original byte: \(self.selectedImage?.sizeInBytes)")
-//        print("resized byte: \(self.resizedImage?.sizeInBytes)")
     }
 
 
@@ -226,8 +357,29 @@ struct PostView: View {
         isImagePickerPresented = true
     }
     
+    func clearFocus() {
+        isTitleEditing = false
+        isDescEditing = false
+        isValueEditing = false
+    }
+    
     func saveListing() {
+        self.listing.title = self.listingTitle
+        self.listing.desc = self.listingDesc
+        self.listing.price = Double(self.listingValue)!
+        self.listing.createDate = Date.now
+        self.listing.available = true
         listingController.insertListing(listing: listing)
+        clearAfterListed()
+    }
+    
+    func clearAfterListed() {
+        self.listing = Listing()
+        self.listingTitle = ""
+        self.listingDesc = ""
+        self.listingTitle = ""
+        self.selectedImage = nil
+        self.resizedImage = nil
     }
 }
 

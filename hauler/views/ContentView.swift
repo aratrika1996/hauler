@@ -17,6 +17,7 @@ struct ContentView: View {
     @EnvironmentObject var imageController : ImageController
     @EnvironmentObject var userProfileController : UserProfileController
     @EnvironmentObject var chatController : ChatController
+    @EnvironmentObject var locationController : LocationManager
     @EnvironmentObject var pageController : ViewRouter
     //    @StateObject private var viewRouter = ViewRouter()
     @Binding var rootScreen :RootView
@@ -112,7 +113,7 @@ struct ContentView: View {
         .environmentObject(imageController)
         .environmentObject(userProfileController)
         .environmentObject(chatController)
-        
+        .environmentObject(locationController)
     }
 }
 

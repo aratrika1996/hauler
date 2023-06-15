@@ -110,7 +110,7 @@ struct ProductDetailView: View {
                                 Spacer()
                             }
                             //Map
-                            MapView(location: CLLocation(latitude: 43.6896109, longitude: -79.3889326))
+                            MapView(location: .constant(CLLocation(latitude: 43.6896109, longitude: -79.3889326)) )
                                 .frame(height: 150)
                         }.padding()
                         VStack{
