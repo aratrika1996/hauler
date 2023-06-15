@@ -174,7 +174,7 @@ struct PostView: View {
                     .focused($focusedField, equals: .some(.loca))
                     TextField("",text: $listingLoc).disabled(useDefaultLocation ? true : false)
                     if(!useDefaultLocation){
-                        MapView(location: CLLocation(latitude: <#T##CLLocationDegrees#>, longitude: <#T##CLLocationDegrees#>))
+//                        MapView(location: CLLocation(latitude: <#T##CLLocationDegrees#>, longitude: <#T##CLLocationDegrees#>))
                     }
                 }
                 
