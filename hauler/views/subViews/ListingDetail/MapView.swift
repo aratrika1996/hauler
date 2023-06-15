@@ -10,11 +10,11 @@ import MapKit
 
 struct MapView: UIViewRepresentable {
     
-    let location: CLLocation
+    var location: CLLocation
     let userFlag = MKPointAnnotation()
         
-    init(location: CLLocation) {
-        self.location = location
+    init(location:  Binding<CLLocation>) {
+        self.location = location.wrappedValue
     }
     
     func makeUIView(context: Context) -> MKMapView {
@@ -25,7 +25,7 @@ struct MapView: UIViewRepresentable {
     
     func updateUIView(_ uiView: MKMapView, context: Context) {
         let coordinate = location.coordinate
-            let span = MKCoordinateSpan(latitudeDelta: 0.005, longitudeDelta: 0.005)
+            let span = MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
             let region = MKCoordinateRegion(center: coordinate, span: span)
             uiView.setRegion(region, animated: true)
         
@@ -38,6 +38,6 @@ struct MapView: UIViewRepresentable {
 
 struct MapView_Previews: PreviewProvider {
     static var previews: some View {
-        MapView(location: CLLocation(latitude: 43.6896109, longitude: -79.3889326))
+        MapView(location: .constant(CLLocation(latitude: 43.6896109, longitude: -79.3889326)))
     }
 }

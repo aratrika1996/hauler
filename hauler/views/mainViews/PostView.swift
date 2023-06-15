@@ -60,7 +60,9 @@ struct PostView: View {
     
     @EnvironmentObject var imageController : ImageController
     @EnvironmentObject var listingController : ListingController
+    @EnvironmentObject var userProfileController : UserProfileController
     @EnvironmentObject var routeController : ViewRouter
+    @EnvironmentObject var locationController : LocationManager
     
     @State private var isImagePickerPresented = false
     @State private var listing: Listing = Listing()
@@ -69,6 +71,7 @@ struct PostView: View {
     @State private var listingDesc : String = ""
     @State private var listingValue : String = ""
     @State private var listingLoc : String = ""
+    @State private var loc : CLLocation = CLLocation(latitude: 0, longitude: 0)
     
     @State private var useDefaultLocation : Bool = true
     @FocusState private var focusedField : Fields?
@@ -172,10 +175,41 @@ struct PostView: View {
                     })
                     .pickerStyle(.segmented )
                     .focused($focusedField, equals: .some(.loca))
-                    TextField("",text: $listingLoc).disabled(useDefaultLocation ? true : false)
-                    if(!useDefaultLocation){
-//                        MapView(location: CLLocation(latitude: <#T##CLLocationDegrees#>, longitude: <#T##CLLocationDegrees#>))
+                    .onChange(of: useDefaultLocation, perform: {
+                        if($0){
+                            listingLoc = self.userProfileController.userDict[self.userProfileController.loggedInUserEmail]?.uAddress ?? ""
+                            self.locationController.ReversedLocation = listingLoc
+                        }
+                    })
+                    .onAppear{
+                        listingLoc = self.userProfileController.userDict[self.userProfileController.loggedInUserEmail]?.uAddress ?? ""
                     }
+                    HStack{
+                        TextField("",text: $listingLoc)
+                            .disabled(useDefaultLocation ? true : false)
+                        if(!useDefaultLocation){
+                            Button("Convert"){
+                                self.locationController.ReversedLocation = listingLoc
+                            }
+                            .buttonStyle(.borderedProminent)
+                        }
+                    }
+                    
+                        
+                        if(!useDefaultLocation){
+                            MapView(location: $loc)
+                                                            .frame(height: 300)
+//                            MapView(location: self.$loc)
+//                                .frame(height: 300)
+                                .onChange(of: self.locationController.latitude, perform: {_ in
+                                    self.loc = CLLocation(latitude: self.locationController.latitude, longitude: self.locationController.longitude)
+                                })
+                                .onChange(of: self.locationController.longitude, perform: {_ in
+                                    self.loc = CLLocation(latitude: self.locationController.latitude, longitude: self.locationController.longitude)
+                                })
+                        }
+                    
+                    
                 }
                 
                     
@@ -261,7 +295,9 @@ struct PostView: View {
             .disabled(selectedImage == nil)
         }
             
-        
+        .onAppear{
+            self.loc = CLLocation(latitude: locationController.latitude, longitude: locationController.longitude)
+        }
         
     }
     

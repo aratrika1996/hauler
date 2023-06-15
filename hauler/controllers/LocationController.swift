@@ -12,14 +12,18 @@ import Contacts
 
 
 class LocationManager : NSObject, ObservableObject, CLLocationManagerDelegate{
+    @Published var authorizationStatus : CLAuthorizationStatus = .notDetermined
     @Published var longitude : Double = 0.0
     @Published var latitude : Double = 0.0
+    let dummylong = 43.6896109
+    let dummylat = -79.3889326
+    
     @Published var ReversedLocation : String = ""{
         didSet{
             guard ReversedLocation != oldValue else{ return }
             self.doForwardGeocoding(address: ReversedLocation, completion: {loc in
                 self.longitude = loc.coordinate.longitude
-                self.latitude = loc.coordinate.longitude
+                self.latitude = loc.coordinate.latitude
             })
         }
     }
@@ -32,6 +36,23 @@ class LocationManager : NSObject, ObservableObject, CLLocationManagerDelegate{
         super.init()
         self.locationManager.desiredAccuracy = kCLLocationAccuracyBest
         self.locationManager.delegate = self
+    }
+    
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        switch manager.authorizationStatus{
+        case .notDetermined:
+            self.locationManager.requestWhenInUseAuthorization()
+        case .restricted:
+            self.locationManager.requestAlwaysAuthorization()
+        case .denied:
+            self.locationManager.requestWhenInUseAuthorization()
+        case .authorizedAlways:
+            self.locationManager.startUpdatingLocation()
+        case .authorizedWhenInUse:
+            self.locationManager.startUpdatingLocation()
+        @unknown default:
+            print(#function, "Unknown Error when getting location")
+        }
     }
     
     func doReverseGeocoding(location : CLLocation, completionHandler: @escaping(String?, NSError?) -> Void){

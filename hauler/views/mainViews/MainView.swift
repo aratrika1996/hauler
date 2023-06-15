@@ -17,6 +17,7 @@ struct MainView: View {
     private let userProfileController : UserProfileController;
     private let imageController : ImageController;
     private let chatContoller : ChatController;
+    private let locationController : LocationManager
     @State private var root : RootView = .HOME
     @ObservedObject var pageController = ViewRouter()
     
@@ -27,6 +28,7 @@ struct MainView: View {
         userProfileController = UserProfileController(store: Firestore.firestore())
         imageController = ImageController()
         chatContoller = ChatController()
+        locationController = LocationManager()
     }
     
     var body: some View {
@@ -51,6 +53,7 @@ struct MainView: View {
         .environmentObject(imageController)
         .environmentObject(userProfileController)
         .environmentObject(chatContoller)
+        .environmentObject(locationController)
     }
 }
 
