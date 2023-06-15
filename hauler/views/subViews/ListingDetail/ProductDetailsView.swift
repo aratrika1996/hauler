@@ -151,7 +151,9 @@ struct ProductDetailView: View {
                             }
                         }.padding()
                     }
+                    .background(Color("HaulerDarkMode"))
                 }
+                
                 .alert("Notify The Seller", isPresented: $showAlert){
                     TextField(text: $inputText){
                         Text("Any Comment?")

@@ -85,6 +85,7 @@ struct HomeView: View {
                         Spacer()
                     }
                 }
+                .background(Color("HaulerDarkMode"))
                 .searchable(text: $listingController.searchText,
                             tokens: $listingController.selectedTokens,
                             suggestedTokens: $listingController.suggestedTokens,

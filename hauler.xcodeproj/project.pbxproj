@@ -58,7 +58,6 @@
 		F81B0A2D2A36C286008C2942 /* ChatImageLogo.swift in Sources */ = {isa = PBXBuildFile; fileRef = F81B0A2C2A36C286008C2942 /* ChatImageLogo.swift */; };
 		F81B0A2F2A36C7AB008C2942 /* NoChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F81B0A2E2A36C7AB008C2942 /* NoChatView.swift */; };
 		F81B0A312A36C7D7008C2942 /* ZeroChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F81B0A302A36C7D7008C2942 /* ZeroChatView.swift */; };
-		F81B0A342A39376B008C2942 /* MaterialDesignTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = F81B0A332A39376B008C2942 /* MaterialDesignTextField.swift */; };
 		F871F7642A3018D4003E1019 /* SplashScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88464AA2A2A7C50007F4C64 /* SplashScreenView.swift */; };
 		F871F7652A302BD2003E1019 /* ProductDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83F97ECF2A16F3D2000CB670 /* ProductDetailsView.swift */; };
 		F89F712D2A312B4F00051BFF /* ExpandbleTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89F712C2A312B4F00051BFF /* ExpandbleTextView.swift */; };
@@ -67,6 +66,9 @@
 		F89F71352A312C2700051BFF /* ViewSizeReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89F71342A312C2700051BFF /* ViewSizeReader.swift */; };
 		F89F71372A32471800051BFF /* PageController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89F71362A32471800051BFF /* PageController.swift */; };
 		F8A77E692A1BFF3F005AF90A /* SearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8A77E682A1BFF3F005AF90A /* SearchBar.swift */; };
+		F8B2C3EB2A3B9ABA0077CD13 /* textFieldValidation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8B2C3E92A3B993D0077CD13 /* textFieldValidation.swift */; };
+		F8B2C3EC2A3B9AC00077CD13 /* MaterialDesignTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = F81B0A332A39376B008C2942 /* MaterialDesignTextField.swift */; };
+		F8EA1CE52A3B9CC300DF78BC /* ImagePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8EA1CE42A3B9CC300DF78BC /* ImagePickerView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -125,6 +127,8 @@
 		F89F71342A312C2700051BFF /* ViewSizeReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewSizeReader.swift; sourceTree = "<group>"; };
 		F89F71362A32471800051BFF /* PageController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageController.swift; sourceTree = "<group>"; };
 		F8A77E682A1BFF3F005AF90A /* SearchBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBar.swift; sourceTree = "<group>"; };
+		F8B2C3E92A3B993D0077CD13 /* textFieldValidation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = textFieldValidation.swift; sourceTree = "<group>"; };
+		F8EA1CE42A3B9CC300DF78BC /* ImagePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePickerView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -149,6 +153,7 @@
 			children = (
 				283B43132A1984870073EA1B /* SignInAuthError.swift */,
 				283B43152A1989380073EA1B /* SignUpAuthError.swift */,
+				F8B2C3E92A3B993D0077CD13 /* textFieldValidation.swift */,
 			);
 			path = helpers;
 			sourceTree = "<group>";
@@ -283,6 +288,7 @@
 				2887807A2A29B8210038268E /* CustomTopTabBarView.swift */,
 				288780822A32912A0038268E /* UserPublicProfileView.swift */,
 				F88464AA2A2A7C50007F4C64 /* SplashScreenView.swift */,
+				F8EA1CE42A3B9CC300DF78BC /* ImagePickerView.swift */,
 			);
 			path = subViews;
 			sourceTree = "<group>";
@@ -426,8 +432,10 @@
 				F89F71352A312C2700051BFF /* ViewSizeReader.swift in Sources */,
 				83678CC32A21B5B000C50603 /* ChatListView.swift in Sources */,
 				288780752A29B7D60038268E /* AvailableListingsView.swift in Sources */,
+				F8B2C3EC2A3B9AC00077CD13 /* MaterialDesignTextField.swift in Sources */,
 				283B43162A1989380073EA1B /* SignUpAuthError.swift in Sources */,
 				83F97EBF2A16F313000CB670 /* MainView.swift in Sources */,
+				F8B2C3EB2A3B9ABA0077CD13 /* textFieldValidation.swift in Sources */,
 				83F97EC32A16F33D000CB670 /* LoginView.swift in Sources */,
 				288780792A29B8080038268E /* TopTabBarButton.swift in Sources */,
 				83F97EC72A16F359000CB670 /* ChatView.swift in Sources */,
@@ -444,8 +452,8 @@
 				F8A77E692A1BFF3F005AF90A /* SearchBar.swift in Sources */,
 				F81B0A2A2A32C3E5008C2942 /* ManageItemView.swift in Sources */,
 				F81B0A282A32C36A008C2942 /* BuyPageView.swift in Sources */,
-				F81B0A342A39376B008C2942 /* MaterialDesignTextField.swift in Sources */,
 				F89F71372A32471800051BFF /* PageController.swift in Sources */,
+				F8EA1CE52A3B9CC300DF78BC /* ImagePickerView.swift in Sources */,
 				83F97ED82A16F8B2000CB670 /* PostView.swift in Sources */,
 				83F97EC52A16F34B000CB670 /* SignUpView.swift in Sources */,
 				83F97EC92A16F36E000CB670 /* FavoritesView.swift in Sources */,
