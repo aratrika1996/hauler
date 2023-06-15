@@ -13,6 +13,7 @@ struct SoldListingsView: View {
     @State private var isSheetPresent = false
     @State private var showAlert = false
     @State private var listingToDelete = Listing()
+    @State private var selectedListing = Listing()
     
     var body: some View {
         VStack {
@@ -74,6 +75,7 @@ struct SoldListingsView: View {
                                 VStack(alignment: .leading) {
                                     Button(action: {
                                         self.isSheetPresent = false
+                                        self.selectedListing = item
                                     }) {
                                         Image(systemName: "xmark")
                                     }
@@ -81,7 +83,7 @@ struct SoldListingsView: View {
                                     .padding(.bottom, 20)
 
                                     Button(action: {
-                                        listingController.changeItemAvailabilityStatus(listingToUpdate: item) {_ in
+                                        listingController.changeItemAvailabilityStatus(listingToUpdate: self.selectedListing) {_ in
                                             self.isSheetPresent = false
                                         }
                                     }) {
