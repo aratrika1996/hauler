@@ -19,7 +19,6 @@ struct ContentView: View {
     @EnvironmentObject var chatController : ChatController
     @EnvironmentObject var locationController : LocationManager
     @EnvironmentObject var pageController : ViewRouter
-    //    @StateObject private var viewRouter = ViewRouter()
     @Binding var rootScreen :RootView
     
     var body: some View {

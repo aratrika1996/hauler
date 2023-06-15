@@ -118,8 +118,8 @@ struct ProductDetailView: View {
                                 Text("About Seller").bold()
                                 Spacer()
                                 Button("View Profile"){
-                                    viewRouter.currentView = .list
-                                    self.dismiss()
+                                    NavigationLink(destination: UserPublicProfileView(sellerEmail: listing.email, rootScreen: $rootScreen)){
+                                        Text("View Profile")
                                 }
                             }
                             
