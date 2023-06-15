@@ -69,7 +69,7 @@ struct MaterialDesignTextField: View {
   }
     
   private func updateBorderColor() {
-    borderColor = editing ? .blue : .gray
+    borderColor = editing ? Color("HaulerOrange") : .gray
     }
     
   private func updateBorderWidth() {
@@ -88,7 +88,7 @@ struct MaterialDesignTextField: View {
   }
     
   private func updatePlaceholderColor() {
-    placeholderColor = editing ? .blue : .gray
+    placeholderColor = editing ? Color("HaulerOrange") : .gray
   }
 
   private func updatePlaceholderFontSize() {

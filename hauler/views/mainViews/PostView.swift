@@ -6,6 +6,7 @@
 //
 import SwiftUI
 import UIKit
+import MapKit
 
 extension UIImage {
     var sizeInBytes: Int {
@@ -18,7 +19,17 @@ extension UIImage {
     }
 }
 
+
+
 struct PostView: View {
+    enum Fields : Hashable{
+        case title
+        case desc
+        case price
+        case cate
+        case loca
+    }
+    
     @State private var selectedImage: UIImage? = nil
     @State private var resizedImage: UIImage? = nil
     @State private var aspectMode: Bool = true
@@ -27,6 +38,7 @@ struct PostView: View {
     @State private var alertMsg : String = ""
     @State private var alertIsPresented : Bool = false
     
+    @FocusState private var isTitleFocused : Bool
     @State private var isTitleEditing : Bool = false{
         didSet{
             guard isTitleEditing != oldValue else {return}
@@ -56,9 +68,10 @@ struct PostView: View {
     @State private var listingTitle : String = ""
     @State private var listingDesc : String = ""
     @State private var listingValue : String = ""
+    @State private var listingLoc : String = ""
     
     @State private var useDefaultLocation : Bool = true
-    
+    @FocusState private var focusedField : Fields?
     
     @State private var imageSourceType : ImagePickerView.ImageSourceType? = nil
     
@@ -99,26 +112,43 @@ struct PostView: View {
                 Section ("Info"){
                     VStack{
                         MaterialDesignTextField($listingTitle, placeholder: "Title", editing: $isTitleEditing)
+                            .focused($focusedField, equals: .some(.title))
                             .onTapGesture {
                                 isTitleEditing = true
                             }
                         MaterialDesignTextField($listingDesc, placeholder: "Description", editing: $isDescEditing)
+                            .focused($focusedField, equals: .some(.desc))
                             .onTapGesture {
                                 isDescEditing = true
                             }
                         MaterialDesignTextField($listingValue, placeholder: "Price", editing: $isValueEditing)
+                            .focused($focusedField, equals: .some(.price))
                             .onTapGesture {
                                 isValueEditing = true
                             }
                     }
-                    
+                    .onChange(of: focusedField, perform: {which in
+                    switch (which){
+                    case .some(.title):
+                        isTitleEditing = true
+                        
+                    case .none:
+                        clearFocus()
+                    case .some(.desc):
+                        isDescEditing = true
+                    case .some(.price):
+                        isValueEditing = true
+                    case .some(.cate):
+                        clearFocus()
+                    case .some(.loca):
+                        clearFocus()
+                    }
+                    })
                 }
                 
-                .onTapGesture {
-                    isTitleEditing = false
-                    isDescEditing = false
-                    isValueEditing = false
-                }
+//                .onTapGesture {
+//                    clearFocus()
+//                }
                 Section("Detail"){
                     HStack{
                         Text("Category")
@@ -129,16 +159,25 @@ struct PostView: View {
                             }
                         }
                         .pickerStyle(.menu)
+                        .focused($focusedField, equals: .some(.cate))
                     }
                 }
-                
+//                .onTapGesture {
+//                    clearFocus()
+//                }
                 Section("Location"){
                     Picker("Where To Meet", selection: $useDefaultLocation, content: {
                         Text("Default").tag(true)
                         Text("Specfic").tag(false)
                     })
                     .pickerStyle(.segmented )
+                    .focused($focusedField, equals: .some(.loca))
+                    TextField("",text: $listingLoc).disabled(useDefaultLocation ? true : false)
+                    if(!useDefaultLocation){
+                        MapView(location: CLLocation(latitude: <#T##CLLocationDegrees#>, longitude: <#T##CLLocationDegrees#>))
+                    }
                 }
+                
                     
                 
             }
@@ -280,6 +319,12 @@ struct PostView: View {
     
     func openImagePicker() {
         isImagePickerPresented = true
+    }
+    
+    func clearFocus() {
+        isTitleEditing = false
+        isDescEditing = false
+        isValueEditing = false
     }
     
     func saveListing() {
