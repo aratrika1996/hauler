@@ -12,6 +12,8 @@ import FirebaseAuth
 import FirebaseStorage
 
 struct MainView: View {
+    @Environment(\.scenePhase) var scenePhase
+    
     private let authController : AuthController;
     private let listingController : ListingController;
     private let userProfileController : UserProfileController;
@@ -20,6 +22,7 @@ struct MainView: View {
     private let locationController : LocationManager
     @State private var root : RootView = .HOME
     @ObservedObject var pageController = ViewRouter()
+    
     
     
     init(){
@@ -45,6 +48,31 @@ struct MainView: View {
                 
             }
         }//NavigationView
+//        .onChange(of: scenePhase){currentPhase in
+//            switch(currentPhase){
+//            case .active:
+//                print("active")
+//
+//            case .inactive:
+//                print("inactive")
+//            case .background:
+//                print("background")
+//                if userProfileController.userProfile.uEmail != ""{
+//                    let userProfile = userProfileController.userProfile
+//                    do{
+//                        let encodedJson = try JSONEncoder().encode(userProfile)
+//                        print("Saving \(userProfile) @background")
+//                        UserDefaults.standard.set(encodedJson, forKey: userProfile.uEmail)
+//                    }catch{
+//                        print("JSON ENCODE ERROR @ saving user, inactive\(error)")
+//                    }
+//                }
+//            @unknown default:
+//                fatalError()
+//            }
+//
+//
+//        }
         
         .navigationViewStyle(.stack)
         .environmentObject(pageController)

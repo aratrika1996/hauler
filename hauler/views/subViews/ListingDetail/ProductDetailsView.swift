@@ -45,6 +45,7 @@ struct ProductDetailView: View {
                                 isLoading = false
                             }
                         }
+                        print("lon : \(listing.locLong) and lat : \(listing.locLat)")
                     }
             }else{
                 ZStack(alignment: .bottom){
@@ -109,9 +110,14 @@ struct ProductDetailView: View {
                                 Text("Where to meet").bold()
                                 Spacer()
                             }
+                            Text((listing.locString == "Unknown" ? "Contact User" : listing.locString))
                             //Map
-                            MapView(location: .constant(CLLocation(latitude: 43.6896109, longitude: -79.3889326)) )
+//                            MapView(nb_location: CLLocation(latitude: 43.718371, longitude: -79.5428673) )
+                            MapView(nb_location: CLLocation(latitude: listing.locLat, longitude: listing.locLong) )
                                 .frame(height: 150)
+                                .blur(radius: (listing.locString == "Unknown" ? 10 : 0))
+//                                .disable
+                                .disabled((listing.locString == "Unknown" ? true : false))
                         }.padding()
                         VStack{
                             HStack{

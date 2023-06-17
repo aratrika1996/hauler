@@ -129,7 +129,7 @@ class ListingController : ObservableObject{
                             })
                         }
                         dispatchGroup.wait()
-                        return Listing(id: li.id, title: li.title, desc: li.desc, price: li.price, email: li.email, image: img, imageURI: li.imageURI, category: li.category, available: li.available, createDate: li.createDate, sellDate: li.sellDate)
+                        return Listing(id: li.id, title: li.title, desc: li.desc, price: li.price, email: li.email, image: img, imageURI: li.imageURI, category: li.category, available: li.available, createDate: li.createDate, sellDate: li.sellDate, locString: li.locString, locLong: li.locLong, locLat: li.locLat)
                     }
                     self.listingsList = listings
                     completion(listings, nil)
@@ -186,7 +186,7 @@ class ListingController : ObservableObject{
                             }
                             
                             dispatchGroup.wait()
-                            return Listing(id: li.id, title: li.title, desc: li.desc, price: li.price, email: li.email, image: img, imageURI: li.imageURI, category: li.category, available: li.available, createDate: li.createDate, sellDate: li.sellDate)
+                            return Listing(id: li.id, title: li.title, desc: li.desc, price: li.price, email: li.email, image: img, imageURI: li.imageURI, category: li.category, available: li.available, createDate: li.createDate, sellDate: li.sellDate, locString: li.locString, locLong: li.locLong, locLat: li.locLat)
                         }
                         self.userListings = listings
                         print(self.userListings)
@@ -242,7 +242,7 @@ class ListingController : ObservableObject{
                                 })
                             }
                             dispatchGroup.wait()
-                            return Listing(id: li.id, title: li.title, desc: li.desc, price: li.price, email: li.email, image: img, imageURI: li.imageURI, category: li.category, available: li.available, createDate: li.createDate, sellDate: li.sellDate)
+                            return Listing(id: li.id, title: li.title, desc: li.desc, price: li.price, email: li.email, image: img, imageURI: li.imageURI, category: li.category, available: li.available, createDate: li.createDate, sellDate: li.sellDate, locString: li.locString, locLong: li.locLong, locLat: li.locLat)
                         }
                         self.userAvailableListings = listings
                         //print(self.userListings)
@@ -298,7 +298,7 @@ class ListingController : ObservableObject{
                                 })
                             }
                             dispatchGroup.wait()
-                            return Listing(id: li.id, title: li.title, desc: li.desc, price: li.price, email: li.email, image: img, imageURI: li.imageURI, category: li.category, available: li.available, createDate: li.createDate, sellDate: li.sellDate)
+                            return Listing(id: li.id, title: li.title, desc: li.desc, price: li.price, email: li.email, image: img, imageURI: li.imageURI, category: li.category, available: li.available, createDate: li.createDate, sellDate: li.sellDate, locString: li.locString, locLong: li.locLong, locLat: li.locLat)
                         }
                         self.userSoldListings = listings
                         //print(self.userListings)
@@ -353,7 +353,7 @@ class ListingController : ObservableObject{
                             })
                         }
                         dispatchGroup.wait()
-                        return Listing(id: li.id, title: li.title, desc: li.desc, price: li.price, email: li.email, image: img, imageURI: li.imageURI, category: li.category, available: li.available, createDate: li.createDate, sellDate: li.sellDate)
+                        return Listing(id: li.id, title: li.title, desc: li.desc, price: li.price, email: li.email, image: img, imageURI: li.imageURI, category: li.category, available: li.available, createDate: li.createDate, sellDate: li.sellDate, locString: li.locString, locLong: li.locLong, locLat: li.locLat)
                     }
                     self.sellerListings = listings
                     //print(self.userListings)

@@ -15,6 +15,9 @@ class LocationManager : NSObject, ObservableObject, CLLocationManagerDelegate{
     @Published var authorizationStatus : CLAuthorizationStatus = .notDetermined
     @Published var longitude : Double = 0.0
     @Published var latitude : Double = 0.0
+    
+//    @Binding var targetLoc : String = ""
+    
     let dummylong = 43.6896109
     let dummylat = -79.3889326
     
@@ -47,9 +50,11 @@ class LocationManager : NSObject, ObservableObject, CLLocationManagerDelegate{
         case .denied:
             self.locationManager.requestWhenInUseAuthorization()
         case .authorizedAlways:
-            self.locationManager.startUpdatingLocation()
+//            self.locationManager.startUpdatingLocation()
+            break
         case .authorizedWhenInUse:
-            self.locationManager.startUpdatingLocation()
+//            self.locationManager.startUpdatingLocation()
+            break
         @unknown default:
             print(#function, "Unknown Error when getting location")
         }

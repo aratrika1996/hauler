@@ -57,6 +57,9 @@ struct Listing: Identifiable, Codable, Hashable {
         case available
         case createDate
         case sellDate
+        case locString
+        case locLong
+        case locLat
     }
     
     @DocumentID var id: String? = nil
@@ -71,12 +74,15 @@ struct Listing: Identifiable, Codable, Hashable {
     var available : Bool = true
     var createDate : Date = Date.now
     var sellDate : Date = Date.now
+    var locString : String = ""
+    var locLong : Double = 0.0
+    var locLat : Double = 0.0
     
     init() {
         
     }
     
-    init(id: String? = nil, title: String, desc: String, price: Double, email:String, imageURI: String, category: ListingCategory, available: Bool, createDate: Date, sellDate: Date) {
+    init(id: String? = nil, title: String, desc: String, price: Double, email:String, imageURI: String, category: ListingCategory, available: Bool, createDate: Date, sellDate: Date, locString: String, locLong: Double, locLat : Double ) {
         self.id = id
         self.title = title
         self.desc = desc
@@ -87,23 +93,12 @@ struct Listing: Identifiable, Codable, Hashable {
         self.available = available
         self.createDate = createDate
         self.sellDate = sellDate
+        self.locString = locString
+        self.locLong = locLong
+        self.locLat = locLat
     }
     
-    init(itemToApprove: Listing) {
-        self.id = itemToApprove.id
-        self.title = itemToApprove.title
-        self.desc = itemToApprove.desc
-        self.price = itemToApprove.price
-        self.email = itemToApprove.email
-        self.imageURI = itemToApprove.imageURI
-        self.category = itemToApprove.category
-        self.approved = true
-        self.available = itemToApprove.available
-        self.createDate = itemToApprove.createDate
-        self.sellDate = itemToApprove.sellDate
-    }
-    
-    init(id: String? = nil, title: String, desc: String, price: Double, email:String, image: UIImage?, imageURI: String, category: ListingCategory, available: Bool, createDate: Date, sellDate: Date) {
+    init(id: String? = nil, title: String, desc: String, price: Double, email:String, image: UIImage?, imageURI: String, category: ListingCategory, available: Bool, createDate: Date, sellDate: Date , locString: String, locLong: Double, locLat : Double) {
         self.id = id
         self.title = title
         self.desc = desc
@@ -115,7 +110,14 @@ struct Listing: Identifiable, Codable, Hashable {
         self.available = available
         self.createDate = createDate
         self.sellDate = sellDate
+        self.locString = locString
+        self.locLong = locLong
+        self.locLat = locLat
     }
+    
+//    public func encode(to encoder: Encoder) throws{
+//        //
+//    }
     
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
@@ -130,6 +132,10 @@ struct Listing: Identifiable, Codable, Hashable {
         self.available = try container.decode(Bool.self, forKey: .available)
         self.createDate = try container.decode(Date.self, forKey: .createDate)
         self.sellDate = try container.decode(Date.self, forKey: .sellDate)
+        self.locString = try container.decodeIfPresent(String.self, forKey: .locString) ?? "Unknown"
+        self.locLong = try container.decodeIfPresent(Double.self, forKey: .locLong) ?? -79.5428673
+        self.locLat = try container.decodeIfPresent(Double.self, forKey: .locLat) ?? 43.718371
+        
     }
     
     
@@ -180,8 +186,31 @@ struct Listing: Identifiable, Codable, Hashable {
             print("unable to read selling date")
             return nil
         }
+        var locStr = "Unknown"
+        var lon = 43.718371
+        var lat = 79.5428673
+        if let str = dictionary["locString"] as? String{
+            locStr = str
+        }else{
+            print("unable to read loc String")
+            print("casted to unknown")
+        }
         
-        self.init(title: title, desc: desc, price: price, email: email, imageURI: imageURI, category: category, available: available, createDate: createDate, sellDate: sellDate)
+        if let Long = dictionary["locLong"] as? Double{
+            lon = Long
+        }else{
+            print("unable to read loc long")
+            print("casted to unknown")
+        }
+        
+        if let Lat = dictionary["locLat"] as? Double{
+            lat = Lat
+        }else{
+            print("unable to read loc lat")
+            print("casted to unknown")
+        }
+        
+        self.init(title: title, desc: desc, price: price, email: email, imageURI: imageURI, category: category, available: available, createDate: createDate, sellDate: sellDate, locString: locStr, locLong: lon, locLat: lat)
     }
     
     

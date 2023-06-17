@@ -190,15 +190,18 @@ struct PostView: View {
                     })
                     .pickerStyle(.segmented )
                     .focused($focusedField, equals: .some(.loca))
-                    .onChange(of: useDefaultLocation, perform: {
-                        if($0){
-                            listingLoc = self.userProfileController.userDict[self.userProfileController.loggedInUserEmail]?.uAddress ?? ""
-                            self.locationController.ReversedLocation = listingLoc
-                        }
+                    .onChange(of: useDefaultLocation, perform: {_ in
+//                        if($0){
+                        self.locationController.ReversedLocation = listingLoc
+//                        print(self.userProfileController.userDict[self.userProfileController.loggedInUserEmail]?.uAddress ?? "No Found in UP")
+//                            listingLoc = self.userProfileController.userDict[self.userProfileController.loggedInUserEmail]?.uAddress ?? ""
+//                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
+//
+//                            })
+//
+//                        }
                     })
-                    .onAppear{
-                        listingLoc = self.userProfileController.userDict[self.userProfileController.loggedInUserEmail]?.uAddress ?? ""
-                    }
+                    
                     HStack{
                         TextField("",text: $listingLoc)
                             .disabled(useDefaultLocation ? true : false)
@@ -209,22 +212,8 @@ struct PostView: View {
                             .buttonStyle(.borderedProminent)
                         }
                     }
-                    
-                        
-                        if(!useDefaultLocation){
-                            MapView(location: $loc)
-                                                            .frame(height: 300)
-//                            MapView(location: self.$loc)
-//                                .frame(height: 300)
-                                .onChange(of: self.locationController.latitude, perform: {_ in
-                                    self.loc = CLLocation(latitude: self.locationController.latitude, longitude: self.locationController.longitude)
-                                })
-                                .onChange(of: self.locationController.longitude, perform: {_ in
-                                    self.loc = CLLocation(latitude: self.locationController.latitude, longitude: self.locationController.longitude)
-                                })
-                        }
-                    
-                    
+//                        if(!useDefaultLocation){
+                    MapView(nb_location: CLLocation(latitude: self.locationController.latitude, longitude: self.locationController.longitude)).frame(height: 300)
                 }
 
             }
@@ -306,9 +295,9 @@ struct PostView: View {
             .padding(.horizontal, 10)
             .disabled(selectedImage == nil || !valueValid || !descValid || !titleValid)
         }
-            
         .onAppear{
-            self.loc = CLLocation(latitude: locationController.latitude, longitude: locationController.longitude)
+            self.locationController.ReversedLocation = self.userProfileController.userDict[self.userProfileController.loggedInUserEmail]?.uAddress ?? ""
+            
         }
         
     }

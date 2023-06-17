@@ -7,8 +7,26 @@
 
 import SwiftUI
 
+enum page:Int{
+    case Home = 1, Chats = 2, Posts = 3, Listings = 4, Profile = 5
+    var name: String{
+        switch(self){
+        case.Home:
+            return "Home"
+        case .Chats:
+            return "Chats"
+        case .Posts:
+            return "Posts"
+        case .Listings:
+            return "Listings"
+        case .Profile:
+            return "Profile"
+        }
+    }
+}
+
 struct ContentView: View {
-    @State private var tabSelection = 1
+    @State private var tabSelection = page.Home
     @State private var title : [String] = ["Hauler","Home", "Chats", "Posts", "Listings", "Profile"]
     @State var newChatId : String? = nil
     
@@ -27,59 +45,57 @@ struct ContentView: View {
                 .environmentObject(pageController)
                 .tabItem {
                     Image(systemName: "house")
-                    Text(title[1])
+                    Text(page.Home.name)
                 }
-                .tag(1)
+                .tag(page.Home)
             
             ChatView(rootScreen: $rootScreen).tabItem {
                 Image(systemName: "text.bubble")
-                Text(title[2])
+                Text(page.Chats.name)
             }
-            .tag(2)
+            .tag(page.Chats)
             .badge(chatController.msgCount)
             
             PostView().tabItem {
                 Image(systemName: "camera")
-                Text(title[3])
+                Text(page.Posts.name)
             }
-            .tag(3)
+            .tag(page.Posts)
             
             UserListingsView().tabItem{
                 Image(systemName: "list.bullet.rectangle.portrait")
-                Text(title[4])
+                Text(page.Listings.name)
                 
             }
-            .tag(4)
+            .tag(page.Listings)
             
             ProfileView(rootScreen: $rootScreen).tabItem{
                 Image(systemName: "person")
-                Text(title[5])
+                Text(page.Profile.name)
             }
-            .tag(5)
+            .tag(page.Profile)
         }
         .onReceive(pageController.objectWillChange, perform: {_ in
             switch(self.pageController.currentView){
             case .main:
-                self.tabSelection = 1
+                self.tabSelection = .Home
             case .chat:
-                self.tabSelection = 2
+                self.tabSelection = .Chats
             case .post:
-                self.tabSelection = 3
+                self.tabSelection = .Posts
             case .list:
-                self.tabSelection = 4
+                self.tabSelection = .Listings
             case .profile:
-                self.tabSelection = 5
+                self.tabSelection = .Profile
             }
             
         })
-        .navigationTitle($title[tabSelection])
-        .navigationTitle(((tabSelection == 1) ? $title[0] : $title[tabSelection]))
-        
         .toolbar(){
-            if(tabSelection == 1){
+            if(tabSelection == .Home || tabSelection == .Chats || tabSelection == .Listings){
                 ToolbarItem(placement:.navigationBarLeading){
-                    Text("Hello! \(userProfileController.userProfile.uName)")
-                        .lineLimit(1)
+                    Text((tabSelection == .Home) ? title[0] : tabSelection.name)
+                        .font(.title)
+                        .bold()
                 }
                 ToolbarItem(placement:.navigationBarTrailing){
                     HStack{
@@ -95,6 +111,18 @@ struct ContentView: View {
                             .background(Color("HaulerOrange"), in:Circle())
                     }
                 }
+            }else{
+                ToolbarItem(placement: .navigationBarLeading){
+                    HStack{
+                        Text(tabSelection.name)
+                            .font(.title)
+                            .bold()
+                        Spacer()
+                    }
+                    .background(Color(.white).blur(radius: 50))
+                    
+                }
+                
             }
         }
         .onAppear() {
