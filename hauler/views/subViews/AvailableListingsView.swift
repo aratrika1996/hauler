@@ -13,6 +13,7 @@ struct AvailableListingsView: View {
     @State private var isSheetPresent = false
     @State private var showAlert = false
     @State private var listingToDelete = Listing()
+    @State private var selectedListing = Listing()
     
     var body: some View {
         VStack {
@@ -53,6 +54,7 @@ struct AvailableListingsView: View {
                                             Image(systemName: "ellipsis")
                                                 .onTapGesture(perform: {
                                                     self.isSheetPresent = true
+                                                    self.selectedListing = item
                                                 })
                                         }
                                     }
@@ -63,6 +65,7 @@ struct AvailableListingsView: View {
                                     listingController.changeItemAvailabilityStatus(listingToUpdate: item) {_ in
                                         print("Marked as sold")
                                     }
+//                                    print(item.title)
                                 }) {
                                     Text("Mark as sold")
                                         .frame(maxWidth: .infinity)
@@ -107,9 +110,10 @@ struct AvailableListingsView: View {
                                     .padding(.bottom, 20)
 
                                     Button(action: {
-                                        listingController.changeItemAvailabilityStatus(listingToUpdate: item) {_ in
+                                        listingController.changeItemAvailabilityStatus(listingToUpdate: self.selectedListing) {_ in
                                             self.isSheetPresent = false
                                         }
+//                                        print(self.selectedListing.title)
                                     }) {
                                         HStack {
                                             Image(systemName: "tag.fill")
