@@ -14,6 +14,7 @@ struct SoldListingsView: View {
     @State private var showAlert = false
     @State private var listingToDelete = Listing()
     @State private var selectedListing = Listing()
+    @State private var selectedListingIndex : Int = 0
     
     var body: some View {
         VStack {
@@ -49,6 +50,7 @@ struct SoldListingsView: View {
                                             Image(systemName: "ellipsis")
                                                 .onTapGesture(perform: {
                                                     self.isSheetPresent = true
+                                                    self.selectedListing = item
                                                 })
                                         }
                                     }
@@ -58,6 +60,14 @@ struct SoldListingsView: View {
                                 Button(action: {
                                     listingController.changeItemAvailabilityStatus(listingToUpdate: item) {_ in
                                         print("Marked as available")
+                                        listingController.getAllUserSoldListings(completion: {_, err in
+                                            if let err = err{
+                                                print(#function, err)
+                                            }else{
+                                                print(#function, "good to go, counts = \(listingController.userSoldListings)")
+                                            }
+                                            //isLoading = false
+                                        })
                                     }
                                     print("clicked")
                                 }) {
@@ -75,7 +85,7 @@ struct SoldListingsView: View {
                                 VStack(alignment: .leading) {
                                     Button(action: {
                                         self.isSheetPresent = false
-                                        self.selectedListing = item
+                                        
                                     }) {
                                         Image(systemName: "xmark")
                                     }
@@ -84,6 +94,14 @@ struct SoldListingsView: View {
 
                                     Button(action: {
                                         listingController.changeItemAvailabilityStatus(listingToUpdate: self.selectedListing) {_ in
+                                            listingController.getAllUserSoldListings(completion: {_, err in
+                                                if let err = err{
+                                                    print(#function, err)
+                                                }else{
+                                                    print(#function, "good to go, counts = \(listingController.userSoldListings)")
+                                                }
+                                                //isLoading = false
+                                            })
                                             self.isSheetPresent = false
                                         }
                                     }) {
