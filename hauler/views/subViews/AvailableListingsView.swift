@@ -14,6 +14,7 @@ struct AvailableListingsView: View {
     @State private var showAlert = false
     @State private var listingToDelete = Listing()
     @State private var selectedListing = Listing()
+    @State private var openEditSheet = false
     
     var body: some View {
         VStack {
@@ -99,7 +100,8 @@ struct AvailableListingsView: View {
                                     .padding(.bottom, 20)
 
                                     Button(action: {
-
+                                        // Open the sheet view
+                                        openEditSheet = true
                                     }) {
                                         HStack {
                                             Image(systemName: "pencil")
@@ -108,6 +110,10 @@ struct AvailableListingsView: View {
                                     }
                                     .foregroundColor(Color.black)
                                     .padding(.bottom, 20)
+                                    .sheet(isPresented: $openEditSheet) {
+                                        // Content of the sheet view
+                                        Text("Sheet view content")
+                                    }
 
                                     Button(action: {
                                         listingController.changeItemAvailabilityStatus(listingToUpdate: self.selectedListing) {_ in
