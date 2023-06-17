@@ -21,75 +21,76 @@ struct AvailableListingsView: View {
             if(!listingController.userAvailableListings.isEmpty){
                 List{
                     ForEach(Array(listingController.userAvailableListings.enumerated()), id:\.element){idx, item in
-                            VStack(alignment: .leading) {
-                                HStack {
-                                    Image(uiImage: (item.image ?? UIImage(systemName: "exclamationmark.triangle.fill"))!).resizable().frame(width: 100, height: 100)
-                                        .cornerRadius(10)
-                                    
-                                    VStack (alignment: .leading) {
-                                        HStack {
-                                            VStack(alignment: .leading) {
-                                                Text(item.title)
-                                                    .font(.system(size: 21))
-                                                    .fontWeight(.medium)
-                                                
-                                                Text("$" + String(item.price))
-                                                    .font(.system(size: 18))
-                                                    .foregroundColor(Color(UIColor(named: "HaulerOrange") ?? .blue))
-                                                    .fontWeight(.medium)
-                                            }
-                                            Spacer()
-                                            Text("now")
+                        VStack(alignment: .leading) {
+                            HStack {
+                                Image(uiImage: (item.image ?? UIImage(systemName: "exclamationmark.triangle.fill"))!).resizable().frame(width: 100, height: 100)
+                                    .cornerRadius(10)
+                                
+                                VStack (alignment: .leading) {
+                                    HStack {
+                                        VStack(alignment: .leading) {
+                                            Text(item.title)
+                                                .font(.system(size: 21))
+                                                .fontWeight(.medium)
+                                            
+                                            Text("$" + String(item.price))
+                                                .font(.system(size: 18))
+                                                .foregroundColor(Color(UIColor(named: "HaulerOrange") ?? .blue))
+                                                .fontWeight(.medium)
+                                        }
+                                        Spacer()
+                                        Text("now")
+                                            .font(.system(size: 14))
+                                    }
+                                    .padding(.bottom, 0.1)
+                                    HStack {
+                                        VStack(alignment: .leading) {
+                                            Text("Location")
+                                                .font(.system(size: 14))
+                                                .padding(.bottom, 0.1)
+                                            Text("Posted in " + item.category.rawValue)
                                                 .font(.system(size: 14))
                                         }
-                                        .padding(.bottom, 0.1)
-                                        HStack {
-                                            VStack(alignment: .leading) {
-                                                Text("Location")
-                                                    .font(.system(size: 14))
-                                                    .padding(.bottom, 0.1)
-                                                Text("Posted in " + item.category.rawValue)
-                                                    .font(.system(size: 14))
-                                            }
-                                            Spacer()
-                                            Image(systemName: "ellipsis")
-                                                .onTapGesture(perform: {
-                                                    self.isSheetPresent = true
-                                                    self.selectedListing = item
-                                                })
-                                        }
+                                        Spacer()
+                                        Image(systemName: "ellipsis")
+                                            .onTapGesture(perform: {
+                                                self.isSheetPresent = true
+                                                self.selectedListing = item
+                                            })
                                     }
-                                    
                                 }
                                 
-                                Button(action: {
-                                    listingController.changeItemAvailabilityStatus(listingToUpdate: item) {_ in
-                                        print("Marked as sold")
-                                    }
-//                                    print(item.title)
-                                }) {
-                                    Text("Mark as sold")
-                                        .frame(maxWidth: .infinity)
-                                }
-                                //.padding([.top], 30)
-                                .buttonStyle(.borderedProminent)
-                                
-                                .tint(Color(UIColor(named: "HaulerOrange") ?? .blue))
                             }
-                            .listRowInsets(.init())
-                            .padding(10)
-                            .sheet(isPresented: self.$isSheetPresent) {
+                            
+                            Button(action: {
+                                listingController.changeItemAvailabilityStatus(listingToUpdate: item) {_ in
+                                    print("Marked as sold")
+                                }
+                                //                                    print(item.title)
+                            }) {
+                                Text("Mark as sold")
+                                    .frame(maxWidth: .infinity)
+                            }
+                            //.padding([.top], 30)
+                            .buttonStyle(.borderedProminent)
+                            
+                            .tint(Color(UIColor(named: "HaulerOrange") ?? .blue))
+                        }
+                        .listRowInsets(.init())
+                        .padding(10)
+                        .sheet(isPresented: self.$isSheetPresent) {
                                 VStack(alignment: .leading) {
                                     Button(action: {
                                         self.isSheetPresent = false
+                                        self.openEditSheet = false
                                     }) {
                                         Image(systemName: "xmark")
                                     }
                                     .foregroundColor(Color.black)
                                     .padding(.bottom, 20)
-
+                                    
                                     Button(action: {
-
+                                        
                                     }) {
                                         HStack {
                                             Image(systemName: "square.and.arrow.up")
@@ -98,10 +99,11 @@ struct AvailableListingsView: View {
                                     }
                                     .foregroundColor(Color.black)
                                     .padding(.bottom, 20)
-
+                                    
                                     Button(action: {
                                         // Open the sheet view
-                                        openEditSheet = true
+                                        self.isSheetPresent = false
+                                        self.openEditSheet = true
                                     }) {
                                         HStack {
                                             Image(systemName: "pencil")
@@ -110,16 +112,12 @@ struct AvailableListingsView: View {
                                     }
                                     .foregroundColor(Color.black)
                                     .padding(.bottom, 20)
-                                    .sheet(isPresented: $openEditSheet) {
-                                        // Content of the sheet view
-                                        Text("Sheet view content")
-                                    }
-
+                                    
                                     Button(action: {
                                         listingController.changeItemAvailabilityStatus(listingToUpdate: self.selectedListing) {_ in
                                             self.isSheetPresent = false
                                         }
-//                                        print(self.selectedListing.title)
+                                        //                                        print(self.selectedListing.title)
                                     }) {
                                         HStack {
                                             Image(systemName: "tag.fill")
@@ -128,7 +126,7 @@ struct AvailableListingsView: View {
                                     }
                                     .foregroundColor(Color.black)
                                     .padding(.bottom, 20)
-
+                                    
                                     Button(action: {
                                         self.listingToDelete = item
                                         self.showAlert = true
@@ -144,11 +142,11 @@ struct AvailableListingsView: View {
                                         Alert(title: Text("Delete Listing"),
                                               message: Text("Confirm?"),
                                               primaryButton: .default(
-                                                  Text("No")
+                                                Text("No")
                                               ),
                                               secondaryButton: .destructive(
-                                                  Text("Yes"),
-                                                  action: deleteListing
+                                                Text("Yes"),
+                                                action: deleteListing
                                               )
                                         )
                                         
@@ -157,7 +155,10 @@ struct AvailableListingsView: View {
                                 }
                                 .padding(20)
                                 .frame(maxWidth: .infinity, alignment: .leading)
-                            }
+                        }
+                        .sheet(isPresented: self.$openEditSheet){
+                            EditListingView(listing: item).environmentObject(listingController)
+                        }
                     }
                 }
                 .listStyle(PlainListStyle())
@@ -183,7 +184,7 @@ struct AvailableListingsView: View {
             }
             
         }
-//        .frame(maxWidth: .infinity, alignment: .leading)
+        //        .frame(maxWidth: .infinity, alignment: .leading)
         .onAppear {
             listingController.getAllUserAvailableListings(completion: {_, err in
                 if let err = err{
@@ -200,6 +201,7 @@ struct AvailableListingsView: View {
     func deleteListing() {
         self.listingController.deleteListing(listingToDelete: self.listingToDelete)
     }
+    
 }
 
 struct AvailableListingsView_Previews: PreviewProvider {

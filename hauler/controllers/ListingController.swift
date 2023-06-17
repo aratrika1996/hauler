@@ -385,24 +385,17 @@ class ListingController : ObservableObject{
         completion(nil)
     }
     
-    func updateListing(listingToUpdate: Listing, completion: @escaping (Error?) -> Void) {
+    func updateListing(listingToUpdate: Listing, newData: [String: Any]) {
         loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
         self.store
             .collection(COLLECTION_LISTING)
             .document(listingToUpdate.id!)
-            .updateData([
-                FIELD_TITLE : listingToUpdate.title,
-                FIELD_PRICE : listingToUpdate.price,
-                FIELD_DESC : listingToUpdate.desc,
-                FIELD_IMAGE : listingToUpdate.imageURI,
-                FIELD_CATEGORY : listingToUpdate.category,
-            ]) { error in
+            .setData(newData, merge: true) { error in
                 if let error = error {
-                    print(#function, "Unable to update document : \(error)")
+                    print(#function, "Unable to update document: \(error)")
                 } else {
-                    print(#function, "Successfully updated \(listingToUpdate) in the firestore")
+                    print(#function, "Successfully updated \(listingToUpdate) in Firestore")
                 }
-                completion(error)
             }
     }
     
