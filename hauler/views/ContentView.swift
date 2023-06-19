@@ -27,7 +27,7 @@ enum page:Int{
 
 struct ContentView: View {
     @State private var tabSelection = page.Home
-    @State private var title : [String] = ["Hauler","Home", "Chats", "Posts", "Listings", "Profile"]
+    @State private var title : [String] = ["Hauler","Discover", "Messages", "Posts", "Listings", "Profile"]
     @State var newChatId : String? = nil
     
     @EnvironmentObject var authController : AuthController
@@ -90,41 +90,45 @@ struct ContentView: View {
             }
             
         })
-        .toolbar(){
-            if(tabSelection == .Home || tabSelection == .Chats || tabSelection == .Listings){
+        //.navigationTitle($title[tabSelection])
+//        .navigationTitle(((tabSelection == 1) ? $title[0] : $title[tabSelection]))
+        
+        .toolbar{
+//            if(tabSelection == 1){
                 ToolbarItem(placement:.navigationBarLeading){
-                    Text((tabSelection == .Home) ? title[0] : tabSelection.name)
-                        .font(.title)
+//                    Text((tabSelection == .Home) ? title[0] : tabSelection.name)
+//                        .font(.title)
                         .bold()
+                    Text(title[tabSelection])
+                        .font(.system(size: 32))
+                        .fontWeight(.bold)
+                        //.padding(.vertical, 30)
                 }
+                
                 ToolbarItem(placement:.navigationBarTrailing){
                     HStack{
                         Image(uiImage: UIImage(systemName: "heart.fill")!)
                             .resizable()
                             .frame(width: 15, height: 15)
                             .padding(15)
-                            .background(Color("HaulerOrange"), in:Circle())
+                            .clipShape(Circle())
+                            .overlay(Circle().strokeBorder(Color(red: 220/255, green: 220/255, blue: 220/255), lineWidth: 1))
+                            //.background(Color("HaulerOrange"), in:Circle())
                         Image(uiImage: UIImage(systemName: "bell")!)
                             .resizable()
                             .frame(width: 15, height: 15)
                             .padding(15)
-                            .background(Color("HaulerOrange"), in:Circle())
+                            .clipShape(Circle())
+                            .overlay(Circle().strokeBorder(Color(red: 220/255, green: 220/255, blue: 220/255), lineWidth: 1))
                     }
+                    //.padding(.vertical, 30)
                 }
-            }else{
-                ToolbarItem(placement: .navigationBarLeading){
-                    HStack{
-                        Text(tabSelection.name)
-                            .font(.title)
-                            .bold()
-                        Spacer()
-                    }
-                    .background(Color(.white).blur(radius: 50))
-                    
-                }
-                
-            }
+//            }
         }
+//        .toolbarBackground(
+//            .white,
+//            for: .navigationBar)
+//        .toolbarBackground(.visible, for: .navigationBar)
         .onAppear() {
             
         }

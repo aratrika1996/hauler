@@ -34,46 +34,51 @@ struct HomeView: View {
                             HStack{
                                 ForEach(catagories, id: \.self){item in
                                     Text(item)
-                                        .foregroundColor(Color.white)
-                                        .padding().background(Color("HaulerOrange"), in: Rectangle()).cornerRadius(15)
+                                        .foregroundColor(Color(red: 180/255, green: 180/255, blue: 180/255))
+                                        .padding()
+                                        .background(RoundedRectangle(cornerRadius: 10).strokeBorder(Color(red: 225/255, green: 225/255, blue: 225/255), lineWidth: 1))
                                         .onTapGesture {
                                             listingController.selectedTokens.append(ListingCategory(rawValue: item)!)
                                         }
                                 }
                             }
-                        }.padding(.horizontal,10)
+                        }
+                        .padding(.leading,15)
                         
                     }
                     VStack{
                         if(!listingController.filteredList.isEmpty){
-                            LazyVGrid(columns: gridFormmats[0] , alignment: .center, spacing: 50){
+                            LazyVGrid(columns: [GridItem(.flexible(), spacing: 15), GridItem(.flexible(), spacing: 15)], alignment: .center, spacing: 20){
                                 ForEach(listingController.filteredList, id: \.self.id){item in
                                     NavigationLink(destination:
                                                     ProductDetailView(rootScreen: $rootScreen, listing: item)
                                         .environmentObject(viewRouter)
                                     ){
-                                        VStack{
+                                        VStack(alignment:.leading){
                                             Image(uiImage: (item.image ?? UIImage(systemName: "exclamationmark.triangle.fill"))!)
                                                 .resizable()
-                                                .scaledToFit()
-                                                .cornerRadius(8)
-                                            HStack{
-                                                VStack(alignment:.leading){
-                                                    Text(item.title)
-                                                    Text("$" + String(item.price)).foregroundColor(Color(red: 0.302, green: 0.47, blue: 0.256, opacity: 0.756))
-                                                }
-                                                Spacer()
+                                                .aspectRatio(contentMode: .fill)
+                                                .frame(height: 135)
+                                                .cornerRadius(20, corners: [.topLeft, .topRight])
+                                            VStack(alignment:.leading){
+                                                Text(item.title)
+                                                    .font(.system(size: 18))
+                                                    .fontWeight(.medium)
+                                                    .foregroundColor(Color.black)
+                                                Text("$" + String(item.price)).foregroundColor(Color(UIColor(named: "HaulerOrange") ?? .black))
+                                                    .font(.system(size: 15))
                                             }
-                                            .padding()
+                                            .padding(.horizontal, 10)
+                                            .padding(.bottom, 10)
                                         }
                                     }
                                     .background(Color.white)
                                     .cornerRadius(15)
-                                    .padding(.horizontal, 10)
-                                    .shadow(radius: 15, x:15, y:15)
+                                    .shadow(color: Color.gray.opacity(0.2), radius: 5, x:2, y:4)
                                     
                                 }
                             }
+                            .padding(15)
                             Spacer(minLength: 0)
                         }else{
                             Text("Item No Found")
@@ -90,9 +95,9 @@ struct HomeView: View {
                             tokens: $listingController.selectedTokens,
                             suggestedTokens: $listingController.suggestedTokens,
                             token: { token in
-                    Label(token.rawValue, systemImage: token.icon())
-                    
+                    Label("Search", systemImage: token.icon())
                 })
+                
             }
         }//NS
         .onAppear{
@@ -111,6 +116,8 @@ struct HomeView: View {
         }
     }
 }
+
+
 //
 //struct HomeView_Previews: PreviewProvider {
 //    static var previews: some View {
