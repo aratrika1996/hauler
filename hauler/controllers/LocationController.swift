@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 import CoreLocation
 import MapKit
 import Contacts
@@ -15,22 +16,19 @@ class LocationManager : NSObject, ObservableObject, CLLocationManagerDelegate{
     @Published var authorizationStatus : CLAuthorizationStatus = .notDetermined
     @Published var longitude : Double = 0.0
     @Published var latitude : Double = 0.0
-    
-//    @Binding var targetLoc : String = ""
-    
-    let dummylong = 43.6896109
-    let dummylat = -79.3889326
-    
+    @Published var listOfReversedLocation : [CLPlacemark] = []
     @Published var ReversedLocation : String = ""{
         didSet{
-            guard ReversedLocation != oldValue else{ return }
+            print("getting new loc...\(ReversedLocation)")
+//            guard ReversedLocation != oldValue else{ return }
+            print("no returned...\(ReversedLocation)")
             self.doForwardGeocoding(address: ReversedLocation, completion: {loc in
                 self.longitude = loc.coordinate.longitude
                 self.latitude = loc.coordinate.latitude
             })
         }
     }
-    
+
     private let locationManager = CLLocationManager()
     
     private let geocoder = CLGeocoder()
@@ -92,14 +90,17 @@ class LocationManager : NSObject, ObservableObject, CLLocationManagerDelegate{
     
     func doForwardGeocoding(address : String, completion :  @escaping (CLLocation) -> Void){
         let loc_geocoder = CLGeocoder()
-        loc_geocoder.geocodeAddressString(address, completionHandler: { (placemarks, error) in
+        var newAddr = address
+        loc_geocoder.geocodeAddressString(newAddr, completionHandler: { (placemarks, error) in
 //            CLPlacemark
             
             if (error != nil){
                 print(#function, "Unable to perform forward geocoding : \(error?.localizedDescription)")
             }else{
-                if let placemark = placemarks?.first {
-                    
+                if let placemark = placemarks?.first, let placemarkList = placemarks {
+                    print("count = \(placemarks?.count)")
+                    self.listOfReversedLocation = placemarkList
+                    print(self.listOfReversedLocation)
                     let obtainedLocation = placemark.location!
                     print(#function, "Obtained location after forward geocoding : \(obtainedLocation)")
                     completion(obtainedLocation)

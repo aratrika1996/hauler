@@ -110,6 +110,7 @@ class ChatController: ObservableObject {
 
     func fetchChats(completion: @escaping () -> Void){
         loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
+        print("using \(loggedInUserEmail) to get chats...")
         guard let userId = loggedInUserEmail else {
             return
         }
@@ -127,12 +128,6 @@ class ChatController: ObservableObject {
             }
             documents.forEach{document in
                 let chatId = document.documentID
-                do{
-                    let chatroom = try document.data(as: Chat.self)
-                    print(chatroom.participants)
-                }catch{
-                    print(#function, "error")
-                }
                 self.fetchMessages(for: chatId) { messages in
                     print("chatId", chatId)
                     if(!messages.isEmpty){

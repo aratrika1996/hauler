@@ -93,10 +93,17 @@ struct PostView: View {
     @State private var listingValueError = ""
     @State private var loc : CLLocation = CLLocation(latitude: 0, longitude: 0)
     
+    @State private var cd : Date = Date()
+    @State private var incd : Bool = false
+    
     @State private var useDefaultLocation : Bool = true
+    @State private var nonCA : Bool = false
+    @State private var showHint : Bool = false
     @FocusState private var focusedField : Fields?
     
     @State private var imageSourceType : ImagePickerView.ImageSourceType? = nil
+    
+    let delayController = DelayManager()
     
     var body: some View {
         VStack{
@@ -154,7 +161,6 @@ struct PostView: View {
                     switch (which){
                     case .some(.title):
                         isTitleEditing = true
-                        
                     case .none:
                         clearFocus()
                     case .some(.desc):
@@ -190,73 +196,71 @@ struct PostView: View {
                     })
                     .pickerStyle(.segmented )
                     .focused($focusedField, equals: .some(.loca))
-                    .onChange(of: useDefaultLocation, perform: {_ in
-//                        if($0){
-                        self.locationController.ReversedLocation = listingLoc
-//                        print(self.userProfileController.userDict[self.userProfileController.loggedInUserEmail]?.uAddress ?? "No Found in UP")
-//                            listingLoc = self.userProfileController.userDict[self.userProfileController.loggedInUserEmail]?.uAddress ?? ""
-//                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
-//
-//                            })
-//
-//                        }
+                    .onChange(of: useDefaultLocation, perform: {
+                        if(!$0){
+                            return
+                        }
+                        if let up = self.userProfileController.userDict[self.userProfileController.loggedInUserEmail]{
+                            if(up.uAddress == ""){
+                                return
+                            }
+                            listingLoc = up.uAddress
+                            delayController.start(delay: 1, closure: {
+                                self.locationController.ReversedLocation = listingLoc
+                            })
+                        }
+                        
+                    })
+                    .onChange(of: listingLoc, perform: {newloc in
+                        var newaddr = newloc
+                        if(!nonCA){
+                            newaddr += ",Canada"
+                        }
+                        delayController.start(delay: 1, closure: {
+                            
+                            if(self.locationController.ReversedLocation != newaddr){
+                                showHint = true
+                            }
+                            self.locationController.ReversedLocation = newaddr
+                            
+                        })
+                        
                     })
                     
                     HStack{
                         TextField("",text: $listingLoc)
                             .disabled(useDefaultLocation ? true : false)
                         if(!useDefaultLocation){
-                            Button("Convert"){
-                                self.locationController.ReversedLocation = listingLoc
-                            }
+                            Toggle("Non CA", isOn: $nonCA)
                             .buttonStyle(.borderedProminent)
                         }
+                        
                     }
-//                        if(!useDefaultLocation){
-                    MapView(nb_location: CLLocation(latitude: self.locationController.latitude, longitude: self.locationController.longitude)).frame(height: 300)
+                    ZStack(alignment: .topLeading){
+                                                MapView(nb_location: CLLocation(latitude: self.locationController.latitude, longitude: self.locationController.longitude)).frame(height: 300)
+                        if(!self.locationController.listOfReversedLocation.isEmpty){
+                            if(showHint){
+                                ForEach(self.locationController.listOfReversedLocation, id: \.self){loc in
+                                    HStack{
+                                        Text(loc.name ?? "")
+                                    }
+                                    .onTapGesture {
+                                        self.listingLoc = loc.name ?? ""
+                                        showHint = false
+                                    }
+                                }
+                            }
+                        }
+
+                    }
                 }
 
             }
             .tint(Color("HaulerOrange"))
             .shadow(radius: 5)
             .scrollContentBackground(.hidden)
-            .navigationBarTitle("Post Listing")
-            .alert(self.alertTitle, isPresented: $alertIsPresented, actions: {
-                Button("OK"){
-                    self.routeController.currentView = .post
-                }
-            }, message: {Text(self.alertMsg)})
-            .sheet(isPresented: $isImagePickerPresented, onDismiss: handleImagePickerDismissal) {
-                if($imageSourceType.wrappedValue != nil){
-                    ImagePickerView(isPresented: $isImagePickerPresented, imageSourceType: $imageSourceType,selectedImage: $selectedImage)
-                }else{
-                    VStack{
-                        Button("Take Photo"){
-                            self.imageSourceType = .camera
-                            ImagePickerView(isPresented: $isImagePickerPresented, imageSourceType: $imageSourceType,selectedImage: $selectedImage)
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color("HaulerOrangeLite"))
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
-                        .buttonStyle(BorderlessButtonStyle())
-                        Button("Browse Library"){
-                            self.imageSourceType = .photoLibrary
-                            ImagePickerView(isPresented: $isImagePickerPresented, imageSourceType: $imageSourceType,selectedImage: $selectedImage)
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color("HaulerOrangeLite"))
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
-                        .buttonStyle(BorderlessButtonStyle())
-                    }
-                    .padding(.horizontal, 50)
-                    .presentationDetents([.height(130)])
-                }
-                
-            }
+            
+            
             Button(action: {
                 guard let _ = resizedImage else {
                     print("No image selected.")
@@ -297,6 +301,42 @@ struct PostView: View {
         }
         .onAppear{
             self.locationController.ReversedLocation = self.userProfileController.userDict[self.userProfileController.loggedInUserEmail]?.uAddress ?? ""
+        }
+        .navigationBarTitle("Post Listing")
+        .alert(self.alertTitle, isPresented: $alertIsPresented, actions: {
+            Button("OK"){
+                self.routeController.currentView = .post
+            }
+        }, message: {Text(self.alertMsg)})
+        .sheet(isPresented: $isImagePickerPresented, onDismiss: handleImagePickerDismissal) {
+            if($imageSourceType.wrappedValue != nil){
+                ImagePickerView(isPresented: $isImagePickerPresented, imageSourceType: $imageSourceType,selectedImage: $selectedImage)
+            }else{
+                VStack{
+                    Button("Take Photo"){
+                        self.imageSourceType = .camera
+                        ImagePickerView(isPresented: $isImagePickerPresented, imageSourceType: $imageSourceType,selectedImage: $selectedImage)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color("HaulerOrangeLite"))
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
+                    .buttonStyle(BorderlessButtonStyle())
+                    Button("Browse Library"){
+                        self.imageSourceType = .photoLibrary
+                        ImagePickerView(isPresented: $isImagePickerPresented, imageSourceType: $imageSourceType,selectedImage: $selectedImage)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color("HaulerOrangeLite"))
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
+                    .buttonStyle(BorderlessButtonStyle())
+                }
+                .padding(.horizontal, 50)
+                .presentationDetents([.height(130)])
+            }
             
         }
         
@@ -445,6 +485,34 @@ struct PostView: View {
         self.valueValid = true
     }
 }
+
+class DelayManager {
+    var workItem: DispatchWorkItem?
+    
+    func start(delay: TimeInterval, closure: @escaping () -> Void) {
+        cancel()
+        
+        let newWorkItem = DispatchWorkItem { [weak self] in
+            closure()
+            self?.workItem = nil
+        }
+        workItem = newWorkItem
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: newWorkItem)
+    }
+    
+    func extend(delay: TimeInterval) {
+        if let existingWorkItem = workItem {
+            existingWorkItem.cancel()
+            DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: existingWorkItem)
+        }
+    }
+    
+    func cancel() {
+        workItem?.cancel()
+        workItem = nil
+    }
+}
+
 
 struct PostView_Previews: PreviewProvider {
     static var previews: some View {

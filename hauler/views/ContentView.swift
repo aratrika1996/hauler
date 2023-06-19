@@ -126,14 +126,7 @@ struct ContentView: View {
             }
         }
         .onAppear() {
-            UITabBar.appearance().backgroundColor = UIColor(named: "BackgroundGray") ?? .white
-            chatController.fetchChats(completion: {
-                Task{
-                    await userProfileController.getUsersByEmail(email: Array(chatController.chatDict.keys), completion: {_ in
-                        
-                    })
-                }
-            })
+            
         }
         .environmentObject(authController)
         .environmentObject(listingController)

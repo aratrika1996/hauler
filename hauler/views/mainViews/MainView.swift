@@ -20,6 +20,7 @@ struct MainView: View {
     private let imageController : ImageController;
     private let chatContoller : ChatController;
     private let locationController : LocationManager
+    @State private var isLoading : Bool = true
     @State private var root : RootView = .HOME
     @ObservedObject var pageController = ViewRouter()
     
@@ -36,18 +37,35 @@ struct MainView: View {
     
     var body: some View {
         NavigationStack(){
-            switch root{
-            case .HOME:
-                ContentView(rootScreen : $root)
-                
-            case .LOGIN:
-                LoginView(rootScreen : $root)
-                
-            case .SIGNUP:
-                SignUpView(rootScreen : $root)
-                
+            if(!isLoading){
+                switch root{
+                case .HOME:
+                    ContentView(rootScreen : $root)
+                    
+                case .LOGIN:
+                    LoginView(rootScreen : $root)
+                    
+                case .SIGNUP:
+                    SignUpView(rootScreen : $root)
+                    
+                }
+            }else{
+                SplashScreenView()
             }
-        }//NavigationView
+            
+        }
+        .onAppear{
+            UITabBar.appearance().backgroundColor = UIColor(named: "BackgroundGray") ?? .white
+            chatContoller.fetchChats(completion: {
+                print("after main appear, chat profile = \(self.chatContoller.chatDict.count)")
+                Task{
+                    await userProfileController.getUsersByEmail(email: Array(chatContoller.chatDict.keys), completion: {_ in
+                        isLoading = false
+                    })
+                }
+            })
+        }
+//NavigationView
 //        .onChange(of: scenePhase){currentPhase in
 //            switch(currentPhase){
 //            case .active:
