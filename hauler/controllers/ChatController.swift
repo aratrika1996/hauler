@@ -9,6 +9,7 @@ import Foundation
 import FirebaseFirestore
 import Firebase
 
+
 class ChatController: ObservableObject {
     @Published var chatDict : [String:Chat] = [:]
     @Published var chats: [Chat] = []
@@ -16,6 +17,7 @@ class ChatController: ObservableObject {
     @Published var toId : String? = nil
     @Published var selectedChar : Chat? = nil
     @Published var msgCount : Int = 0
+    @Published var sortedKeyDict : [String:Date] = [:]
     
     private static var shared : ChatController?
     private let COLLECTION_CHAT: String = "Chat"
@@ -25,6 +27,13 @@ class ChatController: ObservableObject {
     var loggedInUserEmail: String?
     var redirect : Bool = false
     var newChatRoom : Bool = false
+    var sortedKey : [String]{
+        get{
+            sortedKeyDict.keys.sorted{
+                sortedKeyDict[$0]! > sortedKeyDict[$1]!
+            }
+        }
+    }
 
     init() {
         loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
@@ -110,7 +119,6 @@ class ChatController: ObservableObject {
 
     func fetchChats(completion: @escaping () -> Void){
         loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
-        print("using \(loggedInUserEmail) to get chats...")
         guard let userId = loggedInUserEmail else {
             return
         }
@@ -136,18 +144,12 @@ class ChatController: ObservableObject {
                         let chat = Chat(participants: participants, id: chatId, displayName: displayName, messages: messages)
                         print(#function, "chatId : \(chatId), name = \(displayName)")
                         self.chatDict[displayName] = chat
+                        self.sortedKeyDict[displayName] = messages.last?.timestamp.dateValue()
                     }
-                    
                 }
             }
+            
             completion()
-//            dispatchGroup.notify(queue: .main){
-//                print(#function, "chatrooms fetched: \(self.chatDict.count)")
-//                self.chatDict.forEach{
-//                    print($0.value.displayName)
-//                }
-//                completion()
-//            }
             
         }
     }
@@ -170,7 +172,7 @@ class ChatController: ObservableObject {
                     completion([])
                     return
                 }
-                let messages = documents.compactMap { document -> Message? in
+                var messages = documents.compactMap { document -> Message? in
                     guard let messageDict = document.data() as? [String: Any] else {
                         return nil
                     }
@@ -182,6 +184,7 @@ class ChatController: ObservableObject {
                 if self.chatDict[chatId] != nil{
                     self.msgCount += 1
                 }
+                
                 completion(messages)
             }
     }

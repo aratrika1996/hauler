@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Combine
+import FirebaseFirestore
 
 struct ConversationView: View {
     var chat: String
@@ -14,6 +15,7 @@ struct ConversationView: View {
     @EnvironmentObject var userProfileController : UserProfileController
     @State private var shouldScrollToBottom = true
     @State private var messageCount = 0
+    @State private var lastDay : Date? = nil
     @State private var localChatDict : [String:Chat] = [:]
 
     var body: some View {
@@ -23,6 +25,13 @@ struct ConversationView: View {
                 ScrollView(.vertical) {
                     VStack(alignment: .leading, spacing: 10) {
                         ForEach(localChatDict[chat]?.messages ?? []) { message in
+                            if let previousMessage = previousMessage(for: message) {
+                                if isDifferentDay(date1: previousMessage.timestamp.dateValue(), date2: message.timestamp.dateValue()) {
+                                    DayTagView(day: message.timestamp.dateValue().convertToTag())
+                                }
+                            }else{
+                                DayTagView(day: message.timestamp.dateValue().convertToTag())
+                            }
                             ChatMessageView(message: message, isSender: message.fromId == chatController.loggedInUserEmail)
                                 .padding(.horizontal)
                                 .id(message.id) // Assign a unique identifier to each message
@@ -70,9 +79,34 @@ struct ConversationView: View {
         }
         .navigationTitle("\(userProfileController.userDict[chat]!.uName) ")
     }
+    
+    func previousMessage(for message: Message) -> Message? {
+        guard let index = localChatDict[chat]?.messages.firstIndex(where: { $0.id == message.id }) else {
+            return nil
+        }
+        
+        return index > 0 ? localChatDict[chat]?.messages[index - 1] : nil
+    }
+
+    func isDifferentDay(date1: Date, date2: Date) -> Bool {
+        let calendar = Calendar.current
+        return !calendar.isDate(date1, inSameDayAs: date2)
+    }
+
 }
 
-
+struct DayTagView : View{
+    var day:String
+    var body: some View{
+        HStack{
+            Spacer()
+            Text(day)
+                .font(.headline)
+                .padding(.vertical, 10)
+            Spacer()
+        }
+    }
+}
 
 struct ChatMessageView: View {
     let message: Message
@@ -82,17 +116,25 @@ struct ChatMessageView: View {
         HStack {
             if isSender {
                 Spacer()
-                Text(message.text)
-                    .padding()
-                    .background(Color("HaulerOrange"))
-                    .foregroundColor(.black)
-                    .cornerRadius(10)
+                HStack{
+                    Text(message.timestamp.dateValue().convertToTime()).font(.caption).foregroundColor(.gray)
+                    Text(message.text)
+                        .padding()
+                        .background(Color("HaulerOrange"))
+                        .foregroundColor(.black)
+                        .cornerRadius(10)
+                }
             } else {
-                Text(message.text)
-                    .padding()
-                    .background(Color.gray)
-                    .foregroundColor(.black)
-                    .cornerRadius(10)
+                VStack{
+                    HStack{
+                        Text(message.text)
+                            .padding()
+                            .background(Color.gray)
+                            .foregroundColor(.black)
+                            .cornerRadius(10)
+                        Text(message.timestamp.dateValue().convertToTime()).font(.caption).foregroundColor(.gray)
+                    }
+                }
                 Spacer()
             }
         }

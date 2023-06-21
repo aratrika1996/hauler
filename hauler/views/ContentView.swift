@@ -98,8 +98,8 @@ struct ContentView: View {
                 ToolbarItem(placement:.navigationBarLeading){
 //                    Text((tabSelection == .Home) ? title[0] : tabSelection.name)
 //                        .font(.title)
-                        .bold()
-                    Text(title[tabSelection])
+//                        .bold()
+                    Text(title[tabSelection.rawValue])
                         .font(.system(size: 32))
                         .fontWeight(.bold)
                         //.padding(.vertical, 30)
