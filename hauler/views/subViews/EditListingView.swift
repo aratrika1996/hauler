@@ -28,19 +28,19 @@ struct EditListingView: View {
     @State private var alertIsPresented : Bool = false
     
     @FocusState private var isTitleFocused : Bool
-    @State private var isTitleEditing : Bool = false{
+    @State private var isTitleEditing : Bool = true{
         didSet{
             guard isTitleEditing != oldValue else {return}
             if(isTitleEditing){isDescEditing = false; isValueEditing = false}
         }
     }
-    @State private var isDescEditing : Bool = false{
+    @State private var isDescEditing : Bool = true{
         didSet{
             guard isDescEditing != oldValue else {return}
             if(isDescEditing){isTitleEditing = false; isValueEditing = false}
         }
     }
-    @State private var isValueEditing : Bool = false{
+    @State private var isValueEditing : Bool = true{
         didSet{
             guard isValueEditing != oldValue else {return}
             if(isValueEditing){isTitleEditing = false; isDescEditing = false}
@@ -59,10 +59,32 @@ struct EditListingView: View {
     @State private var isImagePickerPresented = false
     @State var listing: Listing
     
+    @State var titleValid = true {
+       didSet {
+           listingTitleHint = titleValid ? self.listingTitleHint : self.listingTitleError
+       }
+     }
+     @State var descValid = true {
+       didSet {
+           listingDescHint = descValid ? self.listingDescHint : self.listingDescError
+       }
+     }
+    @State var valueValid = true {
+      didSet {
+          listingValueHint = valueValid ? self.listingValueHint : self.listingValueError
+      }
+    }
+    
     @State private var listingTitle : String = ""
     @State private var listingDesc : String = ""
     @State private var listingValue : String = ""
     @State private var listingLoc : String = ""
+    @State private var listingTitleHint = "Length 5 - 20"
+    @State private var listingDescHint = "Length 5 - 100"
+    @State private var listingValueHint = "0 < 999,999"
+    @State private var listingTitleError = ""
+    @State private var listingDescError = ""
+    @State private var listingValueError = ""
     @State private var loc : CLLocation = CLLocation(latitude: 0, longitude: 0)
     
     @State private var useDefaultLocation : Bool = true
@@ -106,17 +128,17 @@ struct EditListingView: View {
                 
                 Section ("Info"){
                     VStack{
-                        MaterialDesignTextField($listingTitle, placeholder: "Title", editing: $isTitleEditing)
+                        MaterialDesignTextField($listingTitle, placeholder: "Title", hint: $listingTitleHint, editing: $isTitleEditing, valid: $titleValid)
                             .focused($focusedField, equals: .some(.title))
                             .onTapGesture {
                                 isTitleEditing = true
                             }
-                        MaterialDesignTextField($listingDesc, placeholder: "Description", editing: $isDescEditing)
+                        MaterialDesignTextField($listingDesc, placeholder: "Description", hint: $listingDescHint, editing: $isDescEditing, valid: $descValid)
                             .focused($focusedField, equals: .some(.desc))
                             .onTapGesture {
                                 isDescEditing = true
                             }
-                        MaterialDesignTextField($listingValue, placeholder: "Price", editing: $isValueEditing)
+                        MaterialDesignTextField($listingValue, placeholder: "Price", hint: $listingValueHint, editing: $isValueEditing, valid: $valueValid)
                             .focused($focusedField, equals: .some(.price))
                             .onTapGesture {
                                 isValueEditing = true
@@ -141,9 +163,6 @@ struct EditListingView: View {
                     })
                 }
                 
-//                .onTapGesture {
-//                    clearFocus()
-//                }
                 Section("Detail"){
                     HStack{
                         Text("Category")
@@ -157,9 +176,7 @@ struct EditListingView: View {
                         .focused($focusedField, equals: .some(.cate))
                     }
                 }
-//                .onTapGesture {
-//                    clearFocus()
-//                }
+                
                 Section("Location"){
                     Picker("Where To Meet", selection: $useDefaultLocation, content: {
                         Text("Default").tag(true)
@@ -167,15 +184,10 @@ struct EditListingView: View {
                     })
                     .pickerStyle(.segmented )
                     .focused($focusedField, equals: .some(.loca))
-                    .onChange(of: useDefaultLocation, perform: {
-                        if($0){
-                            listingLoc = self.userProfileController.userDict[self.userProfileController.loggedInUserEmail]?.uAddress ?? ""
-                            self.locationController.ReversedLocation = listingLoc
-                        }
+                    .onChange(of: useDefaultLocation, perform: {_ in
+                        self.locationController.ReversedLocation = listingLoc
                     })
-                    .onAppear{
-                        listingLoc = self.userProfileController.userDict[self.userProfileController.loggedInUserEmail]?.uAddress ?? ""
-                    }
+                    
                     HStack{
                         TextField("",text: $listingLoc)
                             .disabled(useDefaultLocation ? true : false)
@@ -191,8 +203,6 @@ struct EditListingView: View {
                         if(!useDefaultLocation){
                             MapView(location: $loc)
                                                             .frame(height: 300)
-//                            MapView(location: self.$loc)
-//                                .frame(height: 300)
                                 .onChange(of: self.locationController.latitude, perform: {_ in
                                     self.loc = CLLocation(latitude: self.locationController.latitude, longitude: self.locationController.longitude)
                                 })
@@ -284,7 +294,7 @@ struct EditListingView: View {
                     .cornerRadius(10)
             }
             .padding(.horizontal, 10)
-            .disabled(selectedImage == nil)
+            .disabled(selectedImage == nil || !valueValid || !descValid || !titleValid)
         }
             
         .onAppear{

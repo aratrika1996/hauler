@@ -96,7 +96,7 @@ class UserProfileController : ObservableObject{
                                                 DispatchQueue.main.sync {
                                                     self.userDict[uemail] = user
                                                 }
-                                                completion(true)
+//                                                completion(true)
                                             }
                                         }
                                     })
@@ -244,7 +244,7 @@ class UserProfileController : ObservableObject{
                             self.userProfile = profileData
                         }
                     }
-                    catch let err as Error{
+                    catch let err{
                         print(#function, "Unable to convert the document into object", err)
                     }
                 }

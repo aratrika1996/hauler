@@ -8,6 +8,7 @@ import SwiftUI
 import UIKit
 import MapKit
 
+
 extension UIImage {
     var sizeInBytes: Int {
         guard let cgImage = self.cgImage else {
@@ -22,13 +23,7 @@ extension UIImage {
 
 
 struct PostView: View {
-    enum Fields : Hashable{
-        case title
-        case desc
-        case price
-        case cate
-        case loca
-    }
+    
     
     @State private var selectedImage: UIImage? = nil
     @State private var resizedImage: UIImage? = nil
@@ -43,19 +38,38 @@ struct PostView: View {
         didSet{
             guard isTitleEditing != oldValue else {return}
             if(isTitleEditing){isDescEditing = false; isValueEditing = false}
+            else{validateTitle()}
         }
     }
     @State private var isDescEditing : Bool = false{
         didSet{
             guard isDescEditing != oldValue else {return}
             if(isDescEditing){isTitleEditing = false; isValueEditing = false}
+            else{validateDesc()}
         }
     }
     @State private var isValueEditing : Bool = false{
         didSet{
             guard isValueEditing != oldValue else {return}
             if(isValueEditing){isTitleEditing = false; isDescEditing = false}
+            else{validateValue()}
         }
+    }
+    
+    @State var titleValid = true {
+       didSet {
+           listingTitleHint = titleValid ? self.listingTitleHint : self.listingTitleError
+       }
+     }
+     @State var descValid = true {
+       didSet {
+           listingDescHint = descValid ? self.listingDescHint : self.listingDescError
+       }
+     }
+    @State var valueValid = true {
+      didSet {
+          listingValueHint = valueValid ? self.listingValueHint : self.listingValueError
+      }
     }
     
     @EnvironmentObject var imageController : ImageController
@@ -71,12 +85,25 @@ struct PostView: View {
     @State private var listingDesc : String = ""
     @State private var listingValue : String = ""
     @State private var listingLoc : String = ""
+    @State private var listingTitleHint = "Length 5 - 20"
+    @State private var listingDescHint = "Length 5 - 100"
+    @State private var listingValueHint = "0 < 999,999"
+    @State private var listingTitleError = ""
+    @State private var listingDescError = ""
+    @State private var listingValueError = ""
     @State private var loc : CLLocation = CLLocation(latitude: 0, longitude: 0)
     
+    @State private var cd : Date = Date()
+    @State private var incd : Bool = false
+    
     @State private var useDefaultLocation : Bool = true
+    @State private var nonCA : Bool = false
+    @State private var showHint : Bool = false
     @FocusState private var focusedField : Fields?
     
     @State private var imageSourceType : ImagePickerView.ImageSourceType? = nil
+    
+    let delayController = DelayManager()
     
     var body: some View {
         VStack{
@@ -112,19 +139,19 @@ struct PostView: View {
                     }
                 }
                 
-                Section ("Info"){
+                Section("Info"){
                     VStack{
-                        MaterialDesignTextField($listingTitle, placeholder: "Title", editing: $isTitleEditing)
+                        MaterialDesignTextField($listingTitle, placeholder: "Title", hint: $listingTitleHint, editing: $isTitleEditing, valid: $titleValid)
                             .focused($focusedField, equals: .some(.title))
                             .onTapGesture {
                                 isTitleEditing = true
                             }
-                        MaterialDesignTextField($listingDesc, placeholder: "Description", editing: $isDescEditing)
+                        MaterialDesignTextField($listingDesc, placeholder: "Description", hint: $listingDescHint, editing: $isDescEditing, valid: $descValid)
                             .focused($focusedField, equals: .some(.desc))
                             .onTapGesture {
                                 isDescEditing = true
                             }
-                        MaterialDesignTextField($listingValue, placeholder: "Price", editing: $isValueEditing)
+                        MaterialDesignTextField($listingValue, placeholder: "Price", hint: $listingValueHint, editing: $isValueEditing, valid: $valueValid)
                             .focused($focusedField, equals: .some(.price))
                             .onTapGesture {
                                 isValueEditing = true
@@ -134,7 +161,6 @@ struct PostView: View {
                     switch (which){
                     case .some(.title):
                         isTitleEditing = true
-                        
                     case .none:
                         clearFocus()
                     case .some(.desc):
@@ -149,9 +175,6 @@ struct PostView: View {
                     })
                 }
                 
-//                .onTapGesture {
-//                    clearFocus()
-//                }
                 Section("Detail"){
                     HStack{
                         Text("Category")
@@ -165,9 +188,7 @@ struct PostView: View {
                         .focused($focusedField, equals: .some(.cate))
                     }
                 }
-//                .onTapGesture {
-//                    clearFocus()
-//                }
+
                 Section("Location"){
                     Picker("Where To Meet", selection: $useDefaultLocation, content: {
                         Text("Default").tag(true)
@@ -176,86 +197,70 @@ struct PostView: View {
                     .pickerStyle(.segmented )
                     .focused($focusedField, equals: .some(.loca))
                     .onChange(of: useDefaultLocation, perform: {
-                        if($0){
-                            listingLoc = self.userProfileController.userDict[self.userProfileController.loggedInUserEmail]?.uAddress ?? ""
-                            self.locationController.ReversedLocation = listingLoc
+                        if(!$0){
+                            return
                         }
+                        if let up = self.userProfileController.userDict[self.userProfileController.loggedInUserEmail]{
+                            if(up.uAddress == ""){
+                                return
+                            }
+                            listingLoc = up.uAddress
+                            delayController.start(delay: 1, closure: {
+                                self.locationController.ReversedLocation = listingLoc
+                            })
+                        }
+                        
                     })
-                    .onAppear{
-                        listingLoc = self.userProfileController.userDict[self.userProfileController.loggedInUserEmail]?.uAddress ?? ""
-                    }
+                    .onChange(of: listingLoc, perform: {newloc in
+                        var newaddr = newloc
+                        if(!nonCA){
+                            newaddr += ",Canada"
+                        }
+                        delayController.start(delay: 1, closure: {
+                            
+                            if(self.locationController.ReversedLocation != newaddr){
+                                showHint = true
+                            }
+                            self.locationController.ReversedLocation = newaddr
+                            
+                        })
+                        
+                    })
+                    
                     HStack{
                         TextField("",text: $listingLoc)
                             .disabled(useDefaultLocation ? true : false)
                         if(!useDefaultLocation){
-                            Button("Convert"){
-                                self.locationController.ReversedLocation = listingLoc
-                            }
+                            Toggle("Non CA", isOn: $nonCA)
                             .buttonStyle(.borderedProminent)
                         }
-                    }
-                    
                         
-                        if(!useDefaultLocation){
-                            MapView(location: $loc)
-                                                            .frame(height: 300)
-//                            MapView(location: self.$loc)
-//                                .frame(height: 300)
-                                .onChange(of: self.locationController.latitude, perform: {_ in
-                                    self.loc = CLLocation(latitude: self.locationController.latitude, longitude: self.locationController.longitude)
-                                })
-                                .onChange(of: self.locationController.longitude, perform: {_ in
-                                    self.loc = CLLocation(latitude: self.locationController.latitude, longitude: self.locationController.longitude)
-                                })
+                    }
+                    ZStack(alignment: .topLeading){
+                                                MapView(nb_location: CLLocation(latitude: self.locationController.latitude, longitude: self.locationController.longitude)).frame(height: 300)
+                        if(!self.locationController.listOfReversedLocation.isEmpty){
+                            if(showHint){
+                                ForEach(self.locationController.listOfReversedLocation, id: \.self){loc in
+                                    HStack{
+                                        Text(loc.name ?? "")
+                                    }
+                                    .onTapGesture {
+                                        self.listingLoc = loc.name ?? ""
+                                        showHint = false
+                                    }
+                                }
+                            }
                         }
-                    
-                    
+
+                    }
                 }
-                
-                    
-                
+
             }
             .tint(Color("HaulerOrange"))
             .shadow(radius: 5)
-//            .background(Color("HaulerOrangeLite"))
             .scrollContentBackground(.hidden)
-            .navigationBarTitle("Post Listing")
-            .alert(self.alertTitle, isPresented: $alertIsPresented, actions: {
-                Button("OK"){
-                    self.routeController.currentView = .post
-                }
-            }, message: {Text(self.alertMsg)})
-            .sheet(isPresented: $isImagePickerPresented, onDismiss: handleImagePickerDismissal) {
-                if($imageSourceType.wrappedValue != nil){
-                    ImagePickerView(isPresented: $isImagePickerPresented, imageSourceType: $imageSourceType,selectedImage: $selectedImage)
-                }else{
-                    VStack{
-                        Button("Take Photo"){
-                            self.imageSourceType = .camera
-                            ImagePickerView(isPresented: $isImagePickerPresented, imageSourceType: $imageSourceType,selectedImage: $selectedImage)
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color("HaulerOrangeLite"))
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
-                        .buttonStyle(BorderlessButtonStyle())
-                        Button("Browse Library"){
-                            self.imageSourceType = .photoLibrary
-                            ImagePickerView(isPresented: $isImagePickerPresented, imageSourceType: $imageSourceType,selectedImage: $selectedImage)
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color("HaulerOrangeLite"))
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
-                        .buttonStyle(BorderlessButtonStyle())
-                    }
-                    .padding(.horizontal, 50)
-                    .presentationDetents([.height(130)])
-                }
-                
-            }
+            
+            
             Button(action: {
                 guard let _ = resizedImage else {
                     print("No image selected.")
@@ -292,11 +297,47 @@ struct PostView: View {
                     .cornerRadius(10)
             }
             .padding(.horizontal, 10)
-            .disabled(selectedImage == nil)
+            .disabled(selectedImage == nil || !valueValid || !descValid || !titleValid)
         }
-            
         .onAppear{
-            self.loc = CLLocation(latitude: locationController.latitude, longitude: locationController.longitude)
+            self.locationController.ReversedLocation = self.userProfileController.userDict[self.userProfileController.loggedInUserEmail]?.uAddress ?? ""
+        }
+        .navigationBarTitle("Post Listing")
+        .alert(self.alertTitle, isPresented: $alertIsPresented, actions: {
+            Button("OK"){
+                self.routeController.currentView = .post
+            }
+        }, message: {Text(self.alertMsg)})
+        .sheet(isPresented: $isImagePickerPresented, onDismiss: handleImagePickerDismissal) {
+            if($imageSourceType.wrappedValue != nil){
+                ImagePickerView(isPresented: $isImagePickerPresented, imageSourceType: $imageSourceType,selectedImage: $selectedImage)
+            }else{
+                VStack{
+                    Button("Take Photo"){
+                        self.imageSourceType = .camera
+                        ImagePickerView(isPresented: $isImagePickerPresented, imageSourceType: $imageSourceType,selectedImage: $selectedImage)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color("HaulerOrangeLite"))
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
+                    .buttonStyle(BorderlessButtonStyle())
+                    Button("Browse Library"){
+                        self.imageSourceType = .photoLibrary
+                        ImagePickerView(isPresented: $isImagePickerPresented, imageSourceType: $imageSourceType,selectedImage: $selectedImage)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color("HaulerOrangeLite"))
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
+                    .buttonStyle(BorderlessButtonStyle())
+                }
+                .padding(.horizontal, 50)
+                .presentationDetents([.height(130)])
+            }
+            
         }
         
     }
@@ -364,6 +405,9 @@ struct PostView: View {
     }
     
     func saveListing() {
+        guard titleValid && descValid && valueValid else{
+            return
+        }
         self.listing.title = self.listingTitle
         self.listing.desc = self.listingDesc
         self.listing.price = Double(self.listingValue)!
@@ -381,64 +425,94 @@ struct PostView: View {
         self.selectedImage = nil
         self.resizedImage = nil
     }
+    
+    func validateTitle(){
+        let copy = self.listingTitle
+        if copy.isEmpty{
+            self.titleValid = false
+            self.listingTitleHint = validationErrorsTitle.Empty.desc
+            return
+        }
+        if copy.count < 5{
+            self.titleValid = false
+            self.listingTitleHint = validationErrorsTitle.tooShort.desc
+            return
+        }
+        if copy.count > 20{
+            self.titleValid = false
+            self.listingTitleHint = validationErrorsTitle.tooLong.desc
+            return
+        }
+        self.titleValid = true
+    }
+    
+    func validateDesc(){
+        let copy = self.listingDesc
+        if copy.isEmpty{
+            self.descValid = false
+            self.listingDescHint = validationErrorsDesc.Empty.desc
+            return
+        }
+        if copy.count < 5{
+            self.descValid = false
+            self.listingDescHint = validationErrorsDesc.tooShort.desc
+            return
+        }
+        if copy.count > 100{
+            self.descValid = false
+            self.listingDescHint = validationErrorsDesc.tooLong.desc
+            return
+        }
+        self.descValid = true
+    }
+    
+    func validateValue(){
+        guard let copy = Double(self.listingValue) else{
+            self.valueValid = false
+            self.listingValueHint = validationErrorsValue.nan.desc
+            return
+        }
+        if copy < 0{
+            self.valueValid = false
+            self.listingValueHint = validationErrorsValue.negative.desc
+            return
+        }
+        if copy > 999999{
+            self.valueValid = false
+            self.listingValueHint = validationErrorsValue.tooBig.desc
+            return
+        }
+        self.valueValid = true
+    }
 }
 
-struct ImagePickerView: UIViewControllerRepresentable {
-    @Binding var isPresented: Bool
-    @Binding var imageSourceType: ImageSourceType?
-    @Binding var selectedImage: UIImage?
+class DelayManager {
+    var workItem: DispatchWorkItem?
     
-    func makeUIViewController(context: Context) -> UIImagePickerController {
-        let imagePickerController = UIImagePickerController()
-        imagePickerController.delegate = context.coordinator
-        switch imageSourceType{
-        case .photoLibrary:
-            imagePickerController.sourceType = .photoLibrary
-        case .camera:
-            imagePickerController.sourceType = .camera
-        case .none:
-            imagePickerController.sourceType = .photoLibrary
+    func start(delay: TimeInterval, closure: @escaping () -> Void) {
+        cancel()
+        
+        let newWorkItem = DispatchWorkItem { [weak self] in
+            closure()
+            self?.workItem = nil
         }
-        return imagePickerController
+        workItem = newWorkItem
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: newWorkItem)
     }
     
-    func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {
-        // No update needed
-    }
-    
-    
-    func makeCoordinator() -> Coordinator {
-        return Coordinator(parent: self)
-    }
-    
-    final class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-        let parent: ImagePickerView
-        
-        init(parent: ImagePickerView) {
-            self.parent = parent
-        }
-        
-        
-        
-        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
-            if let image = info[.originalImage] as? UIImage {
-                parent.selectedImage = image
-            }
-            
-            parent.isPresented = false
-        }
-        
-        
-        func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-            parent.isPresented = false
+    func extend(delay: TimeInterval) {
+        if let existingWorkItem = workItem {
+            existingWorkItem.cancel()
+            DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: existingWorkItem)
         }
     }
     
-    enum ImageSourceType: Int {
-            case photoLibrary
-            case camera
-        }
+    func cancel() {
+        workItem?.cancel()
+        workItem = nil
+    }
 }
+
 
 struct PostView_Previews: PreviewProvider {
     static var previews: some View {
