@@ -131,14 +131,26 @@ struct ProductDetailView: View {
                             }
                             
                             HStack(alignment: .center){
-                                Image(uiImage: (userProfileController.userDict[listing.email]?.uProfileImage!)!)
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fill)
-                                    .frame(width: 60, height: 60)
-                                    .background(Color.gray)
-                                    .clipShape(Circle())
-                                    .overlay(Circle().stroke(Color.white, lineWidth: 1))
-                                    .scaledToFit()
+                                if (userProfileController.userDict[listing.email]?.uProfileImage != nil) {
+                                    Image(uiImage: (userProfileController.userDict[listing.email]?.uProfileImage!)!)
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fill)
+                                        .frame(width: 60, height: 60)
+                                        .background(Color.gray)
+                                        .clipShape(Circle())
+                                        .overlay(Circle().stroke(Color.white, lineWidth: 1))
+                                        .scaledToFit()
+                                }
+                                else {
+                                    Image(systemName: "person")
+                                        .resizable()
+                                        .frame(width: 40, height: 40)
+                                        .foregroundColor(.black)
+                                        .padding(30)
+                                        .background(Color.gray)
+                                        .clipShape(Circle())
+                                }
+                                
                                 VStack(alignment: .leading){
                                     Text(userProfileController.userDict[listing.email]!.uName)
                                         .foregroundColor(Color.black)

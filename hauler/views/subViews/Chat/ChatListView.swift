@@ -34,7 +34,7 @@ struct ChatListView: View {
                                     Image(uiImage: (localDict[key]?.uProfileImage)!)
                                         .resizable()
                                         .aspectRatio(contentMode: .fill)
-                                        .frame(width: 100, height: 100)
+                                        .frame(width: 65, height: 65)
                                         .clipShape(Circle())
                                         .overlay(Circle().stroke(Color.white, lineWidth: 1))
                                         .scaledToFit()
@@ -43,9 +43,9 @@ struct ChatListView: View {
                                     //Text((localDict[key]?.uProfileImage!)! as! DateInterval)
                                     Image(systemName: "person")
                                         .resizable()
-                                        .frame(width: 40, height: 40)
+                                        .frame(width: 25, height: 25)
                                         .foregroundColor(.black)
-                                        .padding(30)
+                                        .padding(20)
                                         .background(Color.gray)
                                         .clipShape(Circle())
                                 }
@@ -54,24 +54,29 @@ struct ChatListView: View {
                                     VStack(alignment: .leading){
                                         HStack{
                                             Text(localDict[key]?.uName ?? "Unknown")
+                                                .font(.system(size: 18))
+                                                .fontWeight(.medium)
                                             Spacer()
                                             Text((chatController.chatDict[key]?.messages.last?.timestamp.dateValue().convertToDateOrTime())!)
                                                 .foregroundColor(.gray)
+                                                .font(.system(size: 13))
                                                 
                                         }
-                                        .padding(.bottom, 2)
+                                        .padding(.bottom, 1)
                                         .foregroundColor(.black)
                                         Text(chatController.chatDict[key]?.messages.last?.text ?? "")
                                             .foregroundColor(.gray)
                                             .lineLimit(1)
+                                            .font(.system(size: 16))
                                     }
                                 }
-                                .padding()
+                                .padding(5)
                             }
                         }
                     }
                 }
-                .listStyle(.inset)
+                .padding(.vertical, 10)
+                .listStyle(.plain)
                 //List
                 .navigationDestination(for: Optional<String>.self, destination: {key in
                     if let key = key{
@@ -149,7 +154,7 @@ extension Date{
     func convertToTag() -> String{
         let dateFormatter = DateFormatter()
         dateFormatter.timeZone = TimeZone.autoupdatingCurrent
-        dateFormatter.dateFormat = "dd/MM"
+        dateFormatter.dateFormat = "MMM d, yyyy"
         let formattedDate = dateFormatter.string(from: self)
         return formattedDate
     }
