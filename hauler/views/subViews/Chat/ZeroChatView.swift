@@ -24,9 +24,9 @@ struct ZeroChatView: View{
             HStack{
                 Spacer()
                 Text("Start Browsing")
-                    .font(.title)
+                    .font(.system(size: 20))
                     .foregroundColor(.white)
-                    .padding()
+                    .padding(12)
                     .onTapGesture {
                         viewController.currentView = .main
                         dismiss()
@@ -35,7 +35,7 @@ struct ZeroChatView: View{
                 Spacer()
             }
             .background(Color("HaulerOrange"))
-            .cornerRadius(20)
+            .cornerRadius(15)
             .padding([.top], 30)
         }
         

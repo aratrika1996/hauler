@@ -8,15 +8,27 @@ HAULER is designed to create an interactive and efficient platform where users c
 
 # Features
 
+## Done
 - Product Search : Users can easily search for products available on the app based on keywords or categories.
+![ezgif com-video-to-gif (1)](https://github.com/m-mraisi/hauler/assets/34162216/45f04b3c-27ad-4482-8ba5-b3a91860431b)
 
 - Address Management : Users can add their addresses or opt for meetups as pick-up locations, providing flexibility for transactions.
+
+
 - Messaging : HAULER enables users to communicate with each other through an in-app messaging system, facilitating inquiries about products and negotiations.
-- Chat Enable/Disable : Users can choose to enable or disable the chat feature as per their preference.
+
+
+
+- Post History : Users can access a screen that displays their own listings and their respective statuses.
+
+## In progress
+
+- Profile Management : Users have a dedicated profile screen where they can manage their personal information, such as name, email, and phone number.
+
+## Pending 
 - Favorites and Following  : Users can mark products as favorites and follow specific sellers to receive updates and notifications about their listings.
 - Personalized Feeds : Users can view a customized feed of products from sellers they follow or explore the general marketplace.
-- Profile Management : Users have a dedicated profile screen where they can manage their personal information, such as name, email, and phone number.
-- Post History : Users can access a screen that displays their own listings and their respective statuses.
+
 
 # Technologies Used
 HAULER utilizes various technologies to deliver its functionalities effectively. This section provides an overview of the key technologies employed in the development of the app, including:

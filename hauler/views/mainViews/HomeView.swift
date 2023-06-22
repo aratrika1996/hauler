@@ -95,7 +95,7 @@ struct HomeView: View {
                             tokens: $listingController.selectedTokens,
                             suggestedTokens: $listingController.suggestedTokens,
                             token: { token in
-                    Label("Search", systemImage: token.icon())
+                    Label(token.rawValue, systemImage: token.icon())
                 })
                 
             }
