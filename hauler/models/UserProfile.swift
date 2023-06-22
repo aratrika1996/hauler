@@ -46,7 +46,7 @@ struct UserProfile: Identifiable, Codable {
         self.uProfileImageURL = uProfileImageURL
     }
     
-    init(up: UserProfile, img: UIImage){
+    init(up: UserProfile, img: UIImage?){
         self.id = up.id
         self.uName = up.uName
         self.uEmail = up.uEmail

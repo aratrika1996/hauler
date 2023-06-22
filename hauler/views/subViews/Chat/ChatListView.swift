@@ -29,11 +29,27 @@ struct ChatListView: View {
                         NavigationLink(value:key as String)
                         {
                             HStack{
-                                Image(uiImage: localDict[key]?.uProfileImage ?? UIImage(systemName: "person")!)
-                                    .resizable()
-                                    .cornerRadius(100)
-                                    .shadow(radius: 5, x:5, y:5)
-                                    .frame(width: 50, height: 50)
+                                if ((localDict[key]?.uProfileImage) != nil) {
+                                    //Text((localDict[key]?.uProfileImage!)! as! DateInterval)
+                                    Image(uiImage: (localDict[key]?.uProfileImage)!)
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fill)
+                                        .frame(width: 100, height: 100)
+                                        .clipShape(Circle())
+                                        .overlay(Circle().stroke(Color.white, lineWidth: 1))
+                                        .scaledToFit()
+                                }
+                                else {
+                                    //Text((localDict[key]?.uProfileImage!)! as! DateInterval)
+                                    Image(systemName: "person")
+                                        .resizable()
+                                        .frame(width: 40, height: 40)
+                                        .foregroundColor(.black)
+                                        .padding(30)
+                                        .background(Color.gray)
+                                        .clipShape(Circle())
+                                }
+                                
                                 HStack{
                                     VStack(alignment: .leading){
                                         HStack{
