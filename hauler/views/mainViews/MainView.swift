@@ -58,11 +58,14 @@ struct MainView: View {
             UITabBar.appearance().backgroundColor = UIColor(named: "BackgroundGray") ?? .white
             chatContoller.fetchChats(completion: {
                 print("after main appear, chat profile = \(self.chatContoller.chatDict.count)")
-                Task{
-                    await userProfileController.getUsersByEmail(email: Array(chatContoller.chatDict.keys), completion: {_ in
-                        isLoading = false
-                    })
+                if(!self.chatContoller.chatDict.isEmpty){
+                    self.chatContoller.chatDict.keys.forEach{
+                        userProfileController.getUserByEmail(email: $0, completion: {_,_ in
+                            
+                        })
+                    }
                 }
+                isLoading = false
             })
         }
 //NavigationView

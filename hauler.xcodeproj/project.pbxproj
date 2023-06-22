@@ -70,6 +70,7 @@
 		F8B2C3EB2A3B9ABA0077CD13 /* textFieldValidation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8B2C3E92A3B993D0077CD13 /* textFieldValidation.swift */; };
 		F8B2C3EC2A3B9AC00077CD13 /* MaterialDesignTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = F81B0A332A39376B008C2942 /* MaterialDesignTextField.swift */; };
 		F8EA1CE52A3B9CC300DF78BC /* ImagePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8EA1CE42A3B9CC300DF78BC /* ImagePickerView.swift */; };
+		F8FB72552A43EE620088E5B6 /* DelayController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8FB72542A43EE620088E5B6 /* DelayController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -131,6 +132,7 @@
 		F8A77E682A1BFF3F005AF90A /* SearchBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBar.swift; sourceTree = "<group>"; };
 		F8B2C3E92A3B993D0077CD13 /* textFieldValidation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = textFieldValidation.swift; sourceTree = "<group>"; };
 		F8EA1CE42A3B9CC300DF78BC /* ImagePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePickerView.swift; sourceTree = "<group>"; };
+		F8FB72542A43EE620088E5B6 /* DelayController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelayController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -244,6 +246,7 @@
 				838A74762A1BCF0A00F09DB8 /* ImageController.swift */,
 				83678CBB2A2199A300C50603 /* ChatController.swift */,
 				F89F71362A32471800051BFF /* PageController.swift */,
+				F8FB72542A43EE620088E5B6 /* DelayController.swift */,
 			);
 			path = controllers;
 			sourceTree = "<group>";
@@ -428,6 +431,7 @@
 				288780732A217E050038268E /* ChangePasswordView.swift in Sources */,
 				83F97EAE2A16F1AE000CB670 /* ListingController.swift in Sources */,
 				8348320C2A185FD600CE8E2D /* Listing.swift in Sources */,
+				F8FB72552A43EE620088E5B6 /* DelayController.swift in Sources */,
 				83F97E8E2A16E9C0000CB670 /* ContentView.swift in Sources */,
 				F81B0A2D2A36C286008C2942 /* ChatImageLogo.swift in Sources */,
 				F89F71312A312BED00051BFF /* OverlayApadater.swift in Sources */,
