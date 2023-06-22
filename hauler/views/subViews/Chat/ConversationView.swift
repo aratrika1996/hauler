@@ -61,21 +61,28 @@ struct ConversationView: View {
             }
 
             HStack {
-                TextField("Type your message", text: $chatController.messageText)
+                TextField("Write a message ...", text: $chatController.messageText)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .padding(10)
                 Button(action: {
                     chatController.sendMessage(chatId: chatController.chatDict[chat]!.id, toId: chat, complete: {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
                             shouldScrollToBottom = true // Set shouldScrollToBottom to true after sending a message
                             messageCount += 1 // Update the message count
                         })
-                        
+
                     })
                 }) {
-                    Text("Send")
+                    Image(systemName: "paperplane.fill")
+                        .foregroundColor(.white)
+                        .padding(7)
+                        .background(Color("HaulerOrange"))
+                        .cornerRadius(5)
                 }
             }
-            .padding()
+            .padding(10)
+            
+            
         }
         .navigationTitle("\(userProfileController.userDict[chat]!.uName) ")
     }
@@ -101,7 +108,8 @@ struct DayTagView : View{
         HStack{
             Spacer()
             Text(day)
-                .font(.headline)
+                .font(.system(size: 15))
+                .foregroundColor(.gray)
                 .padding(.vertical, 10)
             Spacer()
         }
@@ -116,25 +124,24 @@ struct ChatMessageView: View {
         HStack {
             if isSender {
                 Spacer()
-                HStack{
-                    Text(message.timestamp.dateValue().convertToTime()).font(.caption).foregroundColor(.gray)
+                VStack(alignment: .trailing){
                     Text(message.text)
                         .padding()
-                        .background(Color("HaulerOrange"))
-                        .foregroundColor(.black)
+                        .background(Color("HaulerOrange").opacity(0.9))
+                        .foregroundColor(.white)
                         .cornerRadius(10)
+                    Text(message.timestamp.dateValue().convertToTime()).font(.caption).foregroundColor(.gray)
                 }
             } else {
-                VStack{
-                    HStack{
-                        Text(message.text)
-                            .padding()
-                            .background(Color.gray)
-                            .foregroundColor(.black)
-                            .cornerRadius(10)
-                        Text(message.timestamp.dateValue().convertToTime()).font(.caption).foregroundColor(.gray)
-                    }
+                VStack(alignment: .leading){
+                    Text(message.text)
+                        .padding()
+                        .background(Color.gray.opacity(0.6))
+                        .foregroundColor(.black)
+                        .cornerRadius(10)
+                    Text(message.timestamp.dateValue().convertToTime()).font(.caption).foregroundColor(.gray)
                 }
+                .padding(.vertical, 20)
                 Spacer()
             }
         }

@@ -103,7 +103,7 @@ class UserProfileController : ObservableObject{
                                 }
                             }
                         }
-                        user = UserProfile(up: user, img: UIImage(systemName: "person")!)
+                        user = UserProfile(up: user, img: nil)
                         self.userDict[uemail] = user
                         print(#function, "added new profile:\(user.uName)")
                         

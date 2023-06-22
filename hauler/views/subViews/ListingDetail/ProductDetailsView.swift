@@ -50,21 +50,26 @@ struct ProductDetailView: View {
             }else{
                 ZStack(alignment: .bottom){
                     ScrollView(.vertical){
-                        Image(uiImage: (listing.image!)).resizable().aspectRatio(contentMode: .fill).cornerRadius(15)
+                        Image(uiImage: (listing.image!)).resizable().frame(height: 320).aspectRatio(contentMode: .fill)
                         HStack{
                             VStack(alignment: .leading){
-                                Text("\(listing.title)").bold().fontWeight(.heavy)
-                                Text("$\(listing.price.formatted())").foregroundColor(Color("HaulerOrange"))
+                                Text("\(listing.title)")
+                                    .font(.system(size: 22))
+                                    .fontWeight(.bold)
+                                Text("$\(listing.price.formatted())")
+                                    .foregroundColor(Color("HaulerOrange"))
+                                    .font(.system(size: 18))
+                                    .fontWeight(.medium)
                             }
                             Spacer()
                             if(listing.email != chatController.loggedInUserEmail && userProfileController.loggedInUserEmail != ""){
-                                Image(uiImage: UIImage(systemName: "envelope")!)
+                                Image(uiImage: UIImage(systemName: "text.bubble")!)
                                     .resizable()
                                     .frame(width: 20, height: 20)
                                     .padding(15)
                                     .background(.white, in: RoundedRectangle(cornerRadius: 5))
                                     .cornerRadius(5)
-                                    .shadow(radius: 5, x: 5,y: 5)
+                                    .shadow(color: Color.gray.opacity(0.4), radius: 5, x:2, y:4)
                                     .onTapGesture {
                                     if(
                                         chatController.chatDict.keys.contains(where: {
@@ -86,12 +91,12 @@ struct ProductDetailView: View {
                                 .padding(15)
                                 .background(.white, in: RoundedRectangle(cornerRadius: 5))
                                 .cornerRadius(5)
-                                .shadow(radius: 5, x: 5,y: 5)
+                                .shadow(color: Color.gray.opacity(0.4), radius: 5, x:2, y:4)
                         }
                         .padding()
                         VStack(alignment: .leading){
                             HStack(){
-                                Text("Description").bold()
+                                Text("Description").font(.system(size: 19)).fontWeight(.medium)
                                 Spacer()
                             }
                             ExpandableText("\(listing.desc)")
@@ -107,7 +112,7 @@ struct ProductDetailView: View {
                         }.padding()
                         VStack{
                             HStack{
-                                Text("Where to meet").bold()
+                                Text("Where to meet").font(.system(size: 19)).fontWeight(.medium)
                                 Spacer()
                             }
                             Text((listing.locString == "Unknown" ? "Contact User" : listing.locString))
@@ -118,37 +123,52 @@ struct ProductDetailView: View {
                         }.padding()
                         VStack{
                             HStack{
-                                Text("About Seller").bold()
+                                Text("About Seller").font(.system(size: 19)).fontWeight(.medium)
                                 Spacer()
                                     NavigationLink(destination: UserPublicProfileView(sellerEmail: listing.email, rootScreen: $rootScreen)){
-                                        Text("View Profile")
+                                        Text("View Profile").font(.system(size: 19)).fontWeight(.medium)
                                     }
 
                             }
                             
                             HStack(alignment: .center){
-                                Image(uiImage: (userProfileController.userDict[listing.email]?.uProfileImage!)!)
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 40, height: 40)
-                                    .cornerRadius(100)
-                                    
-                                    .shadow(radius: 5, x:5, y:5)
+                                if (userProfileController.userDict[listing.email]?.uProfileImage != nil) {
+                                    Image(uiImage: (userProfileController.userDict[listing.email]?.uProfileImage!)!)
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fill)
+                                        .frame(width: 60, height: 60)
+                                        .background(Color.gray)
+                                        .clipShape(Circle())
+                                        .overlay(Circle().stroke(Color.white, lineWidth: 1))
+                                        .scaledToFit()
+                                }
+                                else {
+                                    Image(systemName: "person")
+                                        .resizable()
+                                        .frame(width: 40, height: 40)
+                                        .foregroundColor(.black)
+                                        .padding(30)
+                                        .background(Color.gray)
+                                        .clipShape(Circle())
+                                }
+                                
                                 VStack(alignment: .leading){
                                     Text(userProfileController.userDict[listing.email]!.uName)
                                         .foregroundColor(Color.black)
-                                    HStack{
-                                        ForEach(0..<4){_ in
-                                            Image(uiImage: UIImage(systemName: "star.fill")!)
-                                                .resizable()
-                                                .frame(width: 20, height: 20)
-                                        }
-                                        Image(uiImage: UIImage(systemName: "star")!)
-                                            .resizable()
-                                            .frame(width: 20, height: 20)
-                                        Text("4")
-                                        Text("(8)")
-                                    }
+//                                    HStack{
+//                                        ForEach(0..<4){_ in
+//                                            Image(uiImage: UIImage(systemName: "star.fill")!)
+//                                                .resizable()
+//                                                .frame(width: 20, height: 20)
+//                                        }
+//                                        Image(uiImage: UIImage(systemName: "star")!)
+//                                            .resizable()
+//                                            .frame(width: 20, height: 20)
+//                                        Text("4")
+//                                        Text("(8)")
+//                                    }
+                                    Text(userProfileController.userDict[listing.email]!.uEmail)
+                                        .foregroundColor(Color.black)
                                 }
                                 Spacer()
                             }
