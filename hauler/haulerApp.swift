@@ -14,6 +14,7 @@ import FirebaseFirestore
 @main
 struct haulerApp: App {
     
+    
     init(){
         FirebaseApp.configure()
     }
@@ -23,6 +24,5 @@ struct haulerApp: App {
             MainView()
 //            SplashScreenView()
         }
-        
     }
 }

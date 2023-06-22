@@ -23,7 +23,7 @@ struct ProductDetailView: View {
     
     @Binding var rootScreen :RootView
     
-    var listing : Listing
+    let listing : Listing
     
     var body: some View {
         NavigationView(){
@@ -114,9 +114,11 @@ struct ProductDetailView: View {
                                 Text("Where to meet").font(.system(size: 19)).fontWeight(.medium)
                                 Spacer()
                             }
-                            //Map
-                            MapView(location: .constant(CLLocation(latitude: 43.6896109, longitude: -79.3889326)) )
+                            Text((listing.locString == "Unknown" ? "Contact User" : listing.locString))
+                            MapView(nb_location: CLLocation(latitude: listing.locLat, longitude: listing.locLong) )
                                 .frame(height: 150)
+                                .blur(radius: (listing.locString == "Unknown" ? 10 : 0))
+                                .disabled((listing.locString == "Unknown" ? true : false))
                         }.padding()
                         VStack{
                             HStack{
@@ -159,7 +161,9 @@ struct ProductDetailView: View {
                             }
                         }.padding()
                     }
+                    .background(Color("HaulerDarkMode"))
                 }
+                
                 .alert("Notify The Seller", isPresented: $showAlert){
                     TextField(text: $inputText){
                         Text("Any Comment?")
@@ -186,7 +190,7 @@ struct ProductDetailView: View {
                         
                         if(listing.email == chatController.loggedInUserEmail){
                             Button(action:{}){
-                                NavigationLink(destination: ManageItemView()) {
+                                NavigationLink(destination: EditListingView(listing: listing)) {
                                     Text("Manage Item")
                                         .font(.system(size: 20))
                                         .foregroundColor(Color("HaulerOrange"))

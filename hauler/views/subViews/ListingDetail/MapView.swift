@@ -17,6 +17,10 @@ struct MapView: UIViewRepresentable {
         self.location = location.wrappedValue
     }
     
+    init(nb_location: CLLocation){
+        self.location = nb_location
+    }
+    
     func makeUIView(context: Context) -> MKMapView {
         let map = MKMapView(frame: .zero)
         map.isZoomEnabled = true
@@ -25,11 +29,12 @@ struct MapView: UIViewRepresentable {
     
     func updateUIView(_ uiView: MKMapView, context: Context) {
         let coordinate = location.coordinate
+        print("Updating map with new coor: \(coordinate)")
             let span = MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
             let region = MKCoordinateRegion(center: coordinate, span: span)
             uiView.setRegion(region, animated: true)
-        
         userFlag.coordinate = coordinate
+        uiView.removeAnnotations(uiView.annotations)
         uiView.addAnnotation(userFlag)
     }
     

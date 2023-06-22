@@ -21,7 +21,7 @@ struct ChatListView: View {
         let currentDict = CurrentValueSubject<[String:UserProfile], Never>(userProfileController.userDict)
         NavigationStack(path:$path){
             VStack{
-                List(Array(self.chatController.chatDict.keys), id:\.self, selection:$selectedChat){key in
+                List(Array(self.chatController.sortedKey), id:\.self, selection:$selectedChat){key in
                     Button(action: {
                         self.selectedChat = key
                         redirect(local: true)
@@ -55,7 +55,7 @@ struct ChatListView: View {
                                         HStack{
                                             Text(localDict[key]?.uName ?? "Unknown")
                                             Spacer()
-                                            Text(convertDate(date: (chatController.chatDict[key]?.messages.last?.timestamp.dateValue())!))
+                                            Text((chatController.chatDict[key]?.messages.last?.timestamp.dateValue().convertToDateOrTime())!)
                                                 .foregroundColor(.gray)
                                                 
                                         }
@@ -64,15 +64,10 @@ struct ChatListView: View {
                                         Text(chatController.chatDict[key]?.messages.last?.text ?? "")
                                             .foregroundColor(.gray)
                                             .lineLimit(1)
-                                            
                                     }
                                 }
-                                
                                 .padding()
-                                
-                                
                             }
-                            
                         }
                     }
                 }
@@ -98,10 +93,8 @@ struct ChatListView: View {
                                         isLoading = false
                                         redirect(local: false)
                                     })
-                                    
                                 })
                             }
-                            
                         }
                     }else{
                         redirect(local: false)
@@ -132,12 +125,32 @@ struct ChatListView: View {
         }
     }
     
-    func convertDate(date: Date) -> String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "dd/MM/YY"
-        dateFormatter.timeZone = TimeZone.autoupdatingCurrent
+}
 
-        let formattedDate = dateFormatter.string(from: date)
+extension Date{
+    func convertToDateOrTime() -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.timeZone = TimeZone.autoupdatingCurrent
+        if(self.distance(to: .now) > 86400){
+            dateFormatter.dateFormat = "dd/MM/YY"
+        }else{
+            dateFormatter.dateFormat = "HH:mm"
+        }
+        let formattedDate = dateFormatter.string(from: self)
+        return formattedDate
+    }
+    func convertToTime() -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.timeZone = TimeZone.autoupdatingCurrent
+        dateFormatter.dateFormat = "HH:mm"
+        let formattedDate = dateFormatter.string(from: self)
+        return formattedDate
+    }
+    func convertToTag() -> String{
+        let dateFormatter = DateFormatter()
+        dateFormatter.timeZone = TimeZone.autoupdatingCurrent
+        dateFormatter.dateFormat = "dd/MM"
+        let formattedDate = dateFormatter.string(from: self)
         return formattedDate
     }
 }
