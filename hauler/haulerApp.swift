@@ -6,12 +6,23 @@
 //
 
 import SwiftUI
+import Firebase
+import FirebaseAuth
+import FirebaseCore
+import FirebaseFirestore
 
 @main
 struct haulerApp: App {
+    
+    
+    init(){
+        FirebaseApp.configure()
+    }
+        
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            MainView()
+//            SplashScreenView()
         }
     }
 }
