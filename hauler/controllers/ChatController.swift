@@ -46,6 +46,15 @@ class ChatController: ObservableObject {
         
         return shared
     }
+    
+    func logoutClear(){
+        chatDict = [:]
+        chats = []
+        messageText = ""
+        toId = nil
+        selectedChar = nil
+        sortedKeyDict = [:]
+    }
 
     func sendMessage(chatId: String, toId: String, complete: @escaping () -> Void) {
         if(messageText.trimmingCharacters(in: .whitespacesAndNewlines) != ""){

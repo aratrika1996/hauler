@@ -16,37 +16,40 @@ struct ChatView: View {
     
     @State private var linkSelection : Int? = nil
     var body: some View {
-        if(isLoading){
-            SplashScreenView()
-                .onAppear{
-                    print("ChatAppear")
-                        chatController.fetchChats(completion: {
-                            chatController.chatDict.keys.forEach{
-                                userProfileController.getUserByEmail(email: $0, completion: {_,_ in
-                                    isLoading = false
-                                })
-                            }
-                            
-                        })
-                        
-                }
-                .onDisappear{
-                    print("ChatGone")
-                }
+        VStack{
+            if(isLoading){
+                SplashScreenView()
+                    
 
-        }else{
-            VStack{
-                if userProfileController.loggedInUserEmail == ""{
-                    NoChatView(rootScreen: $rootScreen)
+            }else{
+                VStack{
+                    if userProfileController.loggedInUserEmail == ""{
+                        NoChatView(rootScreen: $rootScreen)
+                    }
+                    else if(chatController.chatDict.isEmpty && !chatController.newChatRoom){
+                        ZeroChatView()
+                    }
+                    else{
+                        ChatListView()
+                    }
+                    
                 }
-                else if(chatController.chatDict.isEmpty && !chatController.newChatRoom){
-                    ZeroChatView()
-                }
-                else{
-                    ChatListView()
-                }
-                
             }
+        }
+        .onAppear{
+            print("ChatAppear")
+                chatController.fetchChats(completion: {
+                    chatController.chatDict.keys.forEach{
+                        userProfileController.getUserByEmail(email: $0, completion: {_,_ in
+                            isLoading = false
+                        })
+                    }
+                    
+                })
+                
+        }
+        .onDisappear{
+            print("ChatGone")
         }
     }
     
