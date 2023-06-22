@@ -12,6 +12,7 @@ struct ProductDetailView: View {
     @EnvironmentObject var chatController : ChatController
     @EnvironmentObject var userProfileController : UserProfileController
     @EnvironmentObject var authController : AuthController
+    @EnvironmentObject var listingController : ListingController
     @EnvironmentObject var viewRouter : ViewRouter
     @Environment(\.dismiss) var dismiss
     
@@ -198,7 +199,7 @@ struct ProductDetailView: View {
                                 NavigationLink(destination: BuyPageView()) {
                                     Text("Buy Now")
                                         .font(.system(size: 20))
-                                        .foregroundColor(Color("HaulerOrange"))
+                                        .foregroundColor(.white)
                                         .frame(maxWidth: .infinity)
                                 }
                                 
@@ -206,14 +207,13 @@ struct ProductDetailView: View {
                             .padding(.horizontal, 20)
                             .padding([.top], 10)
                             .buttonStyle(.borderedProminent)
-                            .tint(.black)
                         }
                         else{
                             Button(action:{}){
                                 NavigationLink(destination: BuyPageView()) {
                                     Text("Buy Now")
                                         .font(.system(size: 20))
-                                        .foregroundColor(Color("HaulerOrange"))
+                                        .foregroundColor(.white)
                                         .frame(maxWidth: .infinity)
                                 }
                                
@@ -221,7 +221,7 @@ struct ProductDetailView: View {
                             .padding(.horizontal, 20)
                             .padding([.top], 10)
                             .buttonStyle(.borderedProminent)
-                            .tint(.black)
+
                             Spacer()
                             Button(action:{}){
                                 NavigationLink(destination: LoginView(rootScreen: $rootScreen)) {
