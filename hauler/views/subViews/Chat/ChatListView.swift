@@ -78,7 +78,7 @@ struct ChatListView: View {
                         redirect(local: false)
                     }
                 }
-
+                
             }
         }
         
@@ -88,12 +88,15 @@ struct ChatListView: View {
     func redirect(local: Bool){
         if(!local){
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                print("Redirect?\(self.chatController.redirect)")
                 if (self.chatController.redirect){
+                    self.chatController.redirect = false
+                    print("path b4:\(path)")
                     if(!path.isEmpty){
                         path.removeLast(path.count)
                     }
                     path.append(self.chatController.toId)
-                    self.chatController.redirect = false
+                    print("path after:\(path)")
                 }
             }
         }else{

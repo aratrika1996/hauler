@@ -65,19 +65,8 @@ struct ProductDetailView: View {
                                     .cornerRadius(5)
                                     .shadow(radius: 5, x: 5,y: 5)
                                     .onTapGesture {
-                                    if(
-                                        chatController.chatDict.keys.contains(where: {
-                                            $0 == listing.email
-                                        })){
-                                        viewRouter.currentView = .chat
-                                        chatController.toId = listing.email
-                                        chatController.redirect = true
-                                        dismiss()
+                                        gotoChat()
                                     }
-                                    else{
-                                        showAlert = true
-                                    }
-                                }
                             }
                             Image(uiImage: UIImage(systemName: "heart.fill")!)
                                 .resizable()
@@ -195,13 +184,14 @@ struct ProductDetailView: View {
                             .tint(Color("HaulerOrange"))
                         }else if(userProfileController.loggedInUserEmail != ""){
                             
-                            Button(action:{}){
-                                NavigationLink(destination: BuyPageView()) {
+                            Button(action:{
+                                gotoChat()
+                            }){
+
                                     Text("Buy Now")
                                         .font(.system(size: 20))
                                         .foregroundColor(.white)
                                         .frame(maxWidth: .infinity)
-                                }
                                 
                             }
                             .padding(.horizontal, 20)
@@ -209,7 +199,9 @@ struct ProductDetailView: View {
                             .buttonStyle(.borderedProminent)
                         }
                         else{
-                            Button(action:{}){
+                            Button(action:{
+                                gotoChat()
+                            }){
                                 NavigationLink(destination: BuyPageView()) {
                                     Text("Buy Now")
                                         .font(.system(size: 20))
@@ -259,6 +251,21 @@ struct ProductDetailView: View {
     func gotoLogin(){
         rootScreen = .LOGIN
         self.dismiss()
+    }
+    
+    func gotoChat(){
+        if(
+            chatController.chatDict.keys.contains(where: {
+                $0 == listing.email
+            })){
+            viewRouter.currentView = .chat
+            chatController.toId = listing.email
+            chatController.redirect = true
+            dismiss()
+        }
+        else{
+            showAlert = true
+        }
     }
 }
 

@@ -58,6 +58,7 @@ struct ConversationView: View {
                 .onReceive(currentChatDict, perform: {dict in
                     localChatDict = dict
                 })
+                
             }
 
             HStack {

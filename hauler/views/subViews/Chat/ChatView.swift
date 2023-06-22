@@ -41,12 +41,12 @@ struct ChatView: View {
                 chatController.fetchChats(completion: {
                     chatController.chatDict.keys.forEach{
                         userProfileController.getUserByEmail(email: $0, completion: {_,_ in
-                            isLoading = false
+                            
                         })
                     }
                     
                 })
-                
+            isLoading = false
         }
         .onDisappear{
             print("ChatGone")

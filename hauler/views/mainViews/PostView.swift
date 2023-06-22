@@ -24,7 +24,7 @@ extension UIImage {
 
 struct PostView: View {
     
-    
+    @Environment(\.dismiss) var dismiss
     @State private var selectedImage: UIImage? = nil
     @State private var resizedImage: UIImage? = nil
     @State private var aspectMode: Bool = true
@@ -92,6 +92,7 @@ struct PostView: View {
     @State private var listingDescError = ""
     @State private var listingValueError = ""
     @State private var loc : CLLocation = CLLocation(latitude: 0, longitude: 0)
+    @State private var enableMap : Bool = true
     
     @State private var useDefaultLocation : Bool = true
     @State private var nonCA : Bool = false
@@ -234,21 +235,23 @@ struct PostView: View {
                         
                     }
                     ZStack(alignment: .topLeading){
-                    MapView(nb_location: CLLocation(latitude: self.locationController.latitude, longitude: self.locationController.longitude)).frame(height: 300)
-                        if(!self.locationController.listOfReversedLocation.isEmpty){
-                            if(showHint){
-                                ForEach(self.locationController.listOfReversedLocation, id: \.self){loc in
-                                    HStack{
-                                        Text(loc.name ?? "")
-                                    }
-                                    .onTapGesture {
-                                        self.listingLoc = loc.name ?? ""
-                                        showHint = false
+                            MapView(nb_location: CLLocation(latitude: self.locationController.latitude, longitude: self.locationController.longitude)).frame(height: 300)
+                            
+                            if(!self.locationController.listOfReversedLocation.isEmpty){
+                                if(showHint){
+                                    ForEach(self.locationController.listOfReversedLocation, id: \.self){loc in
+                                        HStack{
+                                            Text(loc.name ?? "")
+                                        }
+                                        .onTapGesture {
+                                            self.listingLoc = loc.name ?? ""
+                                            showHint = false
+                                        }
                                     }
                                 }
                             }
-                        }
-
+                            
+                        
                     }
                 }
 
@@ -259,6 +262,7 @@ struct PostView: View {
             
             
             Button(action: {
+                
                 guard let _ = resizedImage else {
                     print("No image selected.")
                     return
@@ -282,6 +286,8 @@ struct PostView: View {
                         self.alertTitle = "Failed"
                         self.alertMsg = "PostFailed"
                     }
+                    self.routeController.currentView = .list
+                    clearAfterListed()
                     alertIsPresented = true
                     
                 }
@@ -300,11 +306,15 @@ struct PostView: View {
             self.listingLoc = self.userProfileController.userDict[self.userProfileController.loggedInUserEmail]?.uAddress ?? ""
         }
         .navigationBarTitle("Post Listing")
-        .alert(self.alertTitle, isPresented: $alertIsPresented, actions: {
-            Button("OK"){
-                self.routeController.currentView = .post
-            }
-        }, message: {Text(self.alertMsg)})
+//        .alert(self.alertTitle, isPresented: $alertIsPresented, actions: {
+//            Button("OK"){
+//
+//                self.routeController.currentView = .post
+////                clearAfterListed()
+//                self.dismiss()
+//
+//            }
+//        }, message: {Text(self.alertMsg)})
         .sheet(isPresented: $isImagePickerPresented, onDismiss: handleImagePickerDismissal) {
             if($imageSourceType.wrappedValue != nil){
                 ImagePickerView(isPresented: $isImagePickerPresented, imageSourceType: $imageSourceType,selectedImage: $selectedImage)
@@ -414,10 +424,11 @@ struct PostView: View {
         self.listing.locLat = self.locationController.latitude
         self.listing.locLong = self.locationController.longitude
         listingController.insertListing(listing: listing)
-        clearAfterListed()
+        
     }
     
     func clearAfterListed() {
+        self.enableMap = false
         self.listing = Listing()
         self.listingTitle = ""
         self.listingDesc = ""
