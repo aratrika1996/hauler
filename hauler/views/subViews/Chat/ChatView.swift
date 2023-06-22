@@ -19,27 +19,21 @@ struct ChatView: View {
         if(isLoading){
             SplashScreenView()
                 .onAppear{
-                    if(chatController.chatDict.isEmpty){
+                    print("ChatAppear")
                         chatController.fetchChats(completion: {
-                            Task{
-                                await userProfileController.getUsersByEmail(email: Array(chatController.chatDict.keys), completion: {success in
-                                    if(success){
-                                        isLoading = false
-                                    }
+                            chatController.chatDict.keys.forEach{
+                                userProfileController.getUserByEmail(email: $0, completion: {_,_ in
+                                    isLoading = false
                                 })
                             }
                             
                         })
-                    }else{
-                        Task{
-                            await userProfileController.getUsersByEmail(email: Array(chatController.chatDict.keys), completion: {success in
-                                if(success){
-                                    isLoading = false
-                                }
-                            })
-                        }
-                    }
+                        
                 }
+                .onDisappear{
+                    print("ChatGone")
+                }
+
         }else{
             VStack{
                 if userProfileController.loggedInUserEmail == ""{

@@ -93,9 +93,6 @@ struct PostView: View {
     @State private var listingValueError = ""
     @State private var loc : CLLocation = CLLocation(latitude: 0, longitude: 0)
     
-    @State private var cd : Date = Date()
-    @State private var incd : Bool = false
-    
     @State private var useDefaultLocation : Bool = true
     @State private var nonCA : Bool = false
     @State private var showHint : Bool = false
@@ -141,17 +138,17 @@ struct PostView: View {
                 
                 Section("Info"){
                     VStack{
-                        MaterialDesignTextField($listingTitle, placeholder: "Title", hint: $listingTitleHint, editing: $isTitleEditing, valid: $titleValid)
+                        MaterialDesignTextField($listingTitle, placeholder: "Title", hint: $listingTitleHint, editing: $isTitleEditing, valid: $titleValid, initialEditing: false)
                             .focused($focusedField, equals: .some(.title))
                             .onTapGesture {
                                 isTitleEditing = true
                             }
-                        MaterialDesignTextField($listingDesc, placeholder: "Description", hint: $listingDescHint, editing: $isDescEditing, valid: $descValid)
+                        MaterialDesignTextField($listingDesc, placeholder: "Description", hint: $listingDescHint, editing: $isDescEditing, valid: $descValid, initialEditing: false)
                             .focused($focusedField, equals: .some(.desc))
                             .onTapGesture {
                                 isDescEditing = true
                             }
-                        MaterialDesignTextField($listingValue, placeholder: "Price", hint: $listingValueHint, editing: $isValueEditing, valid: $valueValid)
+                        MaterialDesignTextField($listingValue, placeholder: "Price", hint: $listingValueHint, editing: $isValueEditing, valid: $valueValid, initialEditing: false)
                             .focused($focusedField, equals: .some(.price))
                             .onTapGesture {
                                 isValueEditing = true
@@ -237,7 +234,7 @@ struct PostView: View {
                         
                     }
                     ZStack(alignment: .topLeading){
-                                                MapView(nb_location: CLLocation(latitude: self.locationController.latitude, longitude: self.locationController.longitude)).frame(height: 300)
+                    MapView(nb_location: CLLocation(latitude: self.locationController.latitude, longitude: self.locationController.longitude)).frame(height: 300)
                         if(!self.locationController.listOfReversedLocation.isEmpty){
                             if(showHint){
                                 ForEach(self.locationController.listOfReversedLocation, id: \.self){loc in
@@ -300,7 +297,7 @@ struct PostView: View {
             .disabled(selectedImage == nil || !valueValid || !descValid || !titleValid)
         }
         .onAppear{
-            self.locationController.ReversedLocation = self.userProfileController.userDict[self.userProfileController.loggedInUserEmail]?.uAddress ?? ""
+            self.listingLoc = self.userProfileController.userDict[self.userProfileController.loggedInUserEmail]?.uAddress ?? ""
         }
         .navigationBarTitle("Post Listing")
         .alert(self.alertTitle, isPresented: $alertIsPresented, actions: {
@@ -413,6 +410,9 @@ struct PostView: View {
         self.listing.price = Double(self.listingValue)!
         self.listing.createDate = Date.now
         self.listing.available = true
+        self.listing.locString = self.locationController.ReversedLocation
+        self.listing.locLat = self.locationController.latitude
+        self.listing.locLong = self.locationController.longitude
         listingController.insertListing(listing: listing)
         clearAfterListed()
     }
@@ -421,9 +421,10 @@ struct PostView: View {
         self.listing = Listing()
         self.listingTitle = ""
         self.listingDesc = ""
-        self.listingTitle = ""
+        self.listingValue = ""
         self.selectedImage = nil
         self.resizedImage = nil
+        self.clearFocus()
     }
     
     func validateTitle(){
@@ -483,33 +484,6 @@ struct PostView: View {
             return
         }
         self.valueValid = true
-    }
-}
-
-class DelayManager {
-    var workItem: DispatchWorkItem?
-    
-    func start(delay: TimeInterval, closure: @escaping () -> Void) {
-        cancel()
-        
-        let newWorkItem = DispatchWorkItem { [weak self] in
-            closure()
-            self?.workItem = nil
-        }
-        workItem = newWorkItem
-        DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: newWorkItem)
-    }
-    
-    func extend(delay: TimeInterval) {
-        if let existingWorkItem = workItem {
-            existingWorkItem.cancel()
-            DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: existingWorkItem)
-        }
-    }
-    
-    func cancel() {
-        workItem?.cancel()
-        workItem = nil
     }
 }
 

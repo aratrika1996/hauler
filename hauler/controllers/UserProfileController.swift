@@ -51,6 +51,18 @@ class UserProfileController : ObservableObject{
         
         return shared
     }
+    
+    func loginInitialize(who: String){
+        self.loggedInUserEmail = who
+    }
+    
+    func logoutClear(){
+        userProfile = UserProfile()
+        publicProfile = UserProfile()
+        _userDict.removeAll()
+        loggedInUserEmail = ""
+    }
+    
     func updateLoggedInUser(){
         self.loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
     }
@@ -74,49 +86,6 @@ class UserProfileController : ObservableObject{
             }
         }
         
-    }
-    
-    func getUsersByEmail (email: [String], completion: @escaping(Bool) -> Void) async{
-        print(#function, "email got: \(email.count)")
-        DispatchQueue.main.async {
-            let dispatchgroup = DispatchGroup()
-            email.forEach{uemail in
-                dispatchgroup.enter()
-                self.db.collection(self.COLLECTION_PROFILE).document(uemail).getDocument(as: UserProfile.self, completion: {data in
-                    do {
-                        var user = try data.get()
-                        if let userimgpath = user.uProfileImageURL {
-                            if !userimgpath.isEmpty && userimgpath != "" {
-                                if let userimgurl = URL(string: userimgpath) {
-                                    userimgurl.fetchImage(completion: { [weak self] data in
-                                        guard let self = self else { return } // Make sure self is captured weakly
-                                        if let data = data {
-                                            if let userimg = UIImage(data: data) {
-                                                user = UserProfile(up: user, img: userimg)
-                                                DispatchQueue.main.sync {
-                                                    self.userDict[uemail] = user
-                                                }
-//                                                completion(true)
-                                            }
-                                        }
-                                    })
-                                }
-                            }
-                        }
-                        user = UserProfile(up: user, img: UIImage(systemName: "person")!)
-                        self.userDict[uemail] = user
-                        print(#function, "added new profile:\(user.uName)")
-                        
-                        dispatchgroup.leave()
-                    }catch{
-                        completion(false)
-                    }
-                })
-            }
-            dispatchgroup.notify(queue: .main, execute: {
-                completion(true)
-            })
-        }
     }
     
     func getPublicProfileByEmail(email: String, completion: @escaping (UserProfile?, Bool) -> Void) {
@@ -145,7 +114,7 @@ class UserProfileController : ObservableObject{
         }
         print(#function, "fetch new up: \(email)")
         self.store.collection(self.COLLECTION_PROFILE).document(email).getDocument { [weak self] snapshot, error in
-            DispatchQueue.main.async{
+//            DispatchQueue.main.async{
                 print(#function, "start fetching")
                 guard let self = self else { return } // Make sure self is captured weakly
                 if let error = error {
@@ -180,7 +149,7 @@ class UserProfileController : ObservableObject{
                     completion(nil, false)
                 }
             }
-        }
+//        }
         
     }
     
@@ -194,9 +163,7 @@ class UserProfileController : ObservableObject{
                         if let data = data {
                             if let userimg = UIImage(data: data) {
                                 user = UserProfile(up: user, img: userimg)
-                                DispatchQueue.main.sync {
-                                    self.userDict[user.uEmail] = user
-                                }
+                                self.userDict[user.uEmail] = user
                                 completion(user)
                             }
                         }

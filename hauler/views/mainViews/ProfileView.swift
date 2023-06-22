@@ -154,14 +154,9 @@ struct ProfileView: View {
                         
                         Button(action: {
                             authController.signOut()
-                            userProfileController.updateLoggedInUser()
-                            userProfileController.loggedInUserEmail = ""
-                            userProfileController.userProfile = UserProfile()
-                            userProfileController.userDict = [:]
-                            chatController.chatDict = [:]
+                            userProfileController.logoutClear()
+                            chatController.logoutClear()
                             pageController.currentView = .main
-                            
-                            
                         }){
                             Text("Log out")
                                 .font(.system(size: 20))

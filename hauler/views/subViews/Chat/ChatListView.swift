@@ -11,14 +11,11 @@ import Combine
 struct ChatListView: View {
     @EnvironmentObject var chatController: ChatController
     @EnvironmentObject var userProfileController: UserProfileController
-    @State var localDict : [String:UserProfile] = [:]
-    @State var localChat : [String:Chat] = [:]
     @State private var selectedChat : String? = nil
     @State private var path : NavigationPath = NavigationPath()
     @State private var isLoading : Bool = false
     
     var body: some View {
-        let currentDict = CurrentValueSubject<[String:UserProfile], Never>(userProfileController.userDict)
         NavigationStack(path:$path){
             VStack{
                 List(Array(self.chatController.sortedKey), id:\.self, selection:$selectedChat){key in
@@ -29,7 +26,7 @@ struct ChatListView: View {
                         NavigationLink(value:key as String)
                         {
                             HStack{
-                                Image(uiImage: localDict[key]?.uProfileImage ?? UIImage(systemName: "person")!)
+                                Image(uiImage: userProfileController.userDict[key]?.uProfileImage ?? UIImage(systemName: "person")!)
                                     .resizable()
                                     .cornerRadius(100)
                                     .shadow(radius: 5, x:5, y:5)
@@ -37,9 +34,9 @@ struct ChatListView: View {
                                 HStack{
                                     VStack(alignment: .leading){
                                         HStack{
-                                            Text(localDict[key]?.uName ?? "Unknown")
+                                            Text(userProfileController.userDict[key]?.uName ?? "Unknown")
                                             Spacer()
-                                            Text((chatController.chatDict[key]?.messages.last?.timestamp.dateValue().convertToDateOrTime())!)
+                                            Text((chatController.chatDict[key]?.messages.last?.timestamp.dateValue().convertToDateOrTime()) ?? "")
                                                 .foregroundColor(.gray)
                                                 
                                         }
@@ -61,9 +58,6 @@ struct ChatListView: View {
                     if let key = key{
                         ConversationView(chat: key)
                     }
-                })
-                .onReceive(currentDict, perform: {dict in
-                    localDict = dict
                 })
                 .onAppear{
                     chatController.msgCount = 0
@@ -87,6 +81,7 @@ struct ChatListView: View {
 
             }
         }
+        
         .navigationTitle("Messages")
     }
     

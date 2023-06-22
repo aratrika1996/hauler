@@ -114,11 +114,12 @@ struct LoginView: View {
                             if found {
                                 userProfileController.updateLoggedInUser()
                                 chatController.fetchChats(completion: {
-                                    print(chatController.chatDict.count)
-                                    chatController.chatDict.forEach{dict in
-                                        userProfileController.getUserByEmail(email: dict.key, completion: {_, _ in
-                                            
-                                        })
+//                                    if(!self.chatController.chatDict.isEmpty){
+                                        self.chatController.chatDict.keys.forEach{
+                                            userProfileController.getUserByEmail(email: $0, completion: {_,_ in
+                                                
+                                            })
+//                                        }
                                     }
                                 })
                             } else {
