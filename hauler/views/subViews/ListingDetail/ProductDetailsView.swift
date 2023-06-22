@@ -12,6 +12,7 @@ struct ProductDetailView: View {
     @EnvironmentObject var chatController : ChatController
     @EnvironmentObject var userProfileController : UserProfileController
     @EnvironmentObject var authController : AuthController
+    @EnvironmentObject var listingController : ListingController
     @EnvironmentObject var viewRouter : ViewRouter
     @Environment(\.dismiss) var dismiss
     
@@ -202,25 +203,10 @@ struct ProductDetailView: View {
                         
                         if(listing.email == chatController.loggedInUserEmail){
                             Button(action:{}){
-                                NavigationLink(destination: EditListingView(listing: listing)) {
+                                NavigationLink(destination: EditListingView(listing: listing).environmentObject(listingController)) {
                                     Text("Manage Item")
                                         .font(.system(size: 20))
-                                        .foregroundColor(Color("HaulerOrange"))
-                                        .frame(maxWidth: .infinity)
-                                }
-                               
-                            }
-                            .padding(.horizontal, 20)
-                            .padding([.top], 10)
-                            .buttonStyle(.borderedProminent)
-                            .tint(.black)
-                        }else if(userProfileController.loggedInUserEmail != ""){
-                            
-                            Button(action:{}){
-                                NavigationLink(destination: BuyPageView()) {
-                                    Text("Buy Now")
-                                        .font(.system(size: 20))
-                                        .foregroundColor(Color("HaulerOrange"))
+                                        .foregroundColor(.white)
                                         .frame(maxWidth: .infinity)
                                 }
                                 
@@ -228,14 +214,27 @@ struct ProductDetailView: View {
                             .padding(.horizontal, 20)
                             .padding([.top], 10)
                             .buttonStyle(.borderedProminent)
-                            .tint(.black)
+                        }else if(userProfileController.loggedInUserEmail != ""){
+                            
+                            Button(action:{}){
+                                NavigationLink(destination: BuyPageView()) {
+                                    Text("Buy Now")
+                                        .font(.system(size: 20))
+                                        .foregroundColor(.white)
+                                        .frame(maxWidth: .infinity)
+                                }
+                                
+                            }
+                            .padding(.horizontal, 20)
+                            .padding([.top], 10)
+                            .buttonStyle(.borderedProminent)
                         }
                         else{
                             Button(action:{}){
                                 NavigationLink(destination: BuyPageView()) {
                                     Text("Buy Now")
                                         .font(.system(size: 20))
-                                        .foregroundColor(Color("HaulerOrange"))
+                                        .foregroundColor(.white)
                                         .frame(maxWidth: .infinity)
                                 }
                                
@@ -243,7 +242,7 @@ struct ProductDetailView: View {
                             .padding(.horizontal, 20)
                             .padding([.top], 10)
                             .buttonStyle(.borderedProminent)
-                            .tint(.black)
+
                             Spacer()
                             Button(action:{}){
                                 NavigationLink(destination: LoginView(rootScreen: $rootScreen)) {
