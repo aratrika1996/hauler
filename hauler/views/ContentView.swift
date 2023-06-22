@@ -56,13 +56,13 @@ struct ContentView: View {
             .tag(page.Chats)
             .badge(chatController.msgCount)
             
-            PostView().tabItem {
+            PostView(rootScreen: $rootScreen).tabItem {
                 Image(systemName: "camera")
                 Text(page.Posts.name)
             }
             .tag(page.Posts)
             
-            UserListingsView().tabItem{
+            UserListingsView(rootScreen: $rootScreen).tabItem{
                 Image(systemName: "list.bullet.rectangle.portrait")
                 Text(page.Listings.name)
                 

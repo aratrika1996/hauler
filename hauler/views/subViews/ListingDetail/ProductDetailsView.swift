@@ -214,36 +214,37 @@ struct ProductDetailView: View {
                             .padding(.horizontal, 20)
                             .padding([.top], 10)
                             .buttonStyle(.borderedProminent)
-                        }else if(userProfileController.loggedInUserEmail != ""){
-                            
-                            Button(action:{}){
-                                NavigationLink(destination: BuyPageView()) {
-                                    Text("Buy Now")
-                                        .font(.system(size: 20))
-                                        .foregroundColor(.white)
-                                        .frame(maxWidth: .infinity)
-                                }
-                                
-                            }
-                            .padding(.horizontal, 20)
-                            .padding([.top], 10)
-                            .buttonStyle(.borderedProminent)
+                        }
+                        else if(userProfileController.loggedInUserEmail != ""){
+
+//                            Button(action:{}){
+//                                NavigationLink(destination: BuyPageView()) {
+//                                    Text("Buy Now")
+//                                        .font(.system(size: 20))
+//                                        .foregroundColor(.white)
+//                                        .frame(maxWidth: .infinity)
+//                                }
+//
+//                            }
+//                            .padding(.horizontal, 20)
+//                            .padding([.top], 10)
+//                            .buttonStyle(.borderedProminent)
                         }
                         else{
-                            Button(action:{}){
-                                NavigationLink(destination: BuyPageView()) {
-                                    Text("Buy Now")
-                                        .font(.system(size: 20))
-                                        .foregroundColor(.white)
-                                        .frame(maxWidth: .infinity)
-                                }
-                               
-                            }
-                            .padding(.horizontal, 20)
-                            .padding([.top], 10)
-                            .buttonStyle(.borderedProminent)
-
-                            Spacer()
+//                            Button(action:{}){
+//                                NavigationLink(destination: BuyPageView()) {
+//                                    Text("Buy Now")
+//                                        .font(.system(size: 20))
+//                                        .foregroundColor(.white)
+//                                        .frame(maxWidth: .infinity)
+//                                }
+//
+//                            }
+//                            .padding(.horizontal, 20)
+//                            .padding([.top], 10)
+//                            .buttonStyle(.borderedProminent)
+//
+//                            Spacer()
                             Button(action:{}){
                                 NavigationLink(destination: LoginView(rootScreen: $rootScreen)) {
                                     Text("Login to Chat")
