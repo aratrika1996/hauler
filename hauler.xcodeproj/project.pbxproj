@@ -71,6 +71,7 @@
 		F8B2C3EC2A3B9AC00077CD13 /* MaterialDesignTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = F81B0A332A39376B008C2942 /* MaterialDesignTextField.swift */; };
 		F8EA1CE52A3B9CC300DF78BC /* ImagePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8EA1CE42A3B9CC300DF78BC /* ImagePickerView.swift */; };
 		F8FB72552A43EE620088E5B6 /* DelayController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8FB72542A43EE620088E5B6 /* DelayController.swift */; };
+		F8FB72582A4480380088E5B6 /* PromiseKit in Frameworks */ = {isa = PBXBuildFile; productRef = F8FB72572A4480380088E5B6 /* PromiseKit */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -145,6 +146,7 @@
 				83F97E9F2A16F075000CB670 /* FirebaseFirestore in Frameworks */,
 				83F97EA32A16F075000CB670 /* FirebaseStorage in Frameworks */,
 				83F97EA62A16F0EB000CB670 /* URLImage in Frameworks */,
+				F8FB72582A4480380088E5B6 /* PromiseKit in Frameworks */,
 				83F97EA12A16F075000CB670 /* FirebaseFirestoreSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -368,6 +370,7 @@
 				83F97EA02A16F075000CB670 /* FirebaseFirestoreSwift */,
 				83F97EA22A16F075000CB670 /* FirebaseStorage */,
 				83F97EA52A16F0EB000CB670 /* URLImage */,
+				F8FB72572A4480380088E5B6 /* PromiseKit */,
 			);
 			productName = hauler;
 			productReference = 83F97E882A16E9C0000CB670 /* hauler.app */;
@@ -400,6 +403,7 @@
 			packageReferences = (
 				83F97E992A16F075000CB670 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				83F97EA42A16F0EA000CB670 /* XCRemoteSwiftPackageReference "url-image" */,
+				F8FB72562A4480380088E5B6 /* XCRemoteSwiftPackageReference "PromiseKit" */,
 			);
 			productRefGroup = 83F97E892A16E9C0000CB670 /* Products */;
 			projectDirPath = "";
@@ -709,6 +713,14 @@
 				minimumVersion = 3.0.0;
 			};
 		};
+		F8FB72562A4480380088E5B6 /* XCRemoteSwiftPackageReference "PromiseKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/mxcl/PromiseKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -741,6 +753,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 83F97EA42A16F0EA000CB670 /* XCRemoteSwiftPackageReference "url-image" */;
 			productName = URLImage;
+		};
+		F8FB72572A4480380088E5B6 /* PromiseKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F8FB72562A4480380088E5B6 /* XCRemoteSwiftPackageReference "PromiseKit" */;
+			productName = PromiseKit;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

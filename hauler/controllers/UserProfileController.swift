@@ -108,9 +108,14 @@ class UserProfileController : ObservableObject{
     }
     
     func getUserByEmail(email: String, completion: @escaping (UserProfile?, Bool) -> Void) {
+        if loggedInUserEmail == email{
+            print(#function, "finished with myself")
+            completion(userProfile, true)
+        }
         if let localprofile = self.userDict[email]{
             print(#function, "finished with local userdict")
             completion(localprofile, true)
+            return
         }
         print(#function, "fetch new up: \(email)")
         self.store.collection(self.COLLECTION_PROFILE).document(email).getDocument { [weak self] snapshot, error in
@@ -119,7 +124,7 @@ class UserProfileController : ObservableObject{
                 guard let self = self else { return } // Make sure self is captured weakly
                 if let error = error {
                     print("Error fetching user document: \(error)")
-                    completion(nil, false)
+//                    completion(nil, false)
                     return
                 }
                 
@@ -128,7 +133,8 @@ class UserProfileController : ObservableObject{
                     print(#function, "got snapshot, id=\(snapshot.documentID)")
                 } else {
                     print(#function, "Cannot get snapshot")
-                    completion(nil, false)
+//                    completion(nil, false)
+                    return
                 }
                 
                 if let data = snapshot?.data() {

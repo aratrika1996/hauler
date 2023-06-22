@@ -113,9 +113,9 @@ struct LoginView: View {
                         DispatchQueue.main.async {
                             if found {
                                 userProfileController.updateLoggedInUser()
-                                chatController.fetchChats(completion: {
+                                chatController.fetchChats(completion: {keys in
 //                                    if(!self.chatController.chatDict.isEmpty){
-                                        self.chatController.chatDict.keys.forEach{
+                                        keys.forEach{
                                             userProfileController.getUserByEmail(email: $0, completion: {_,_ in
                                                 
                                             })

@@ -15,6 +15,7 @@ struct ChatListView: View {
     @State private var path : NavigationPath = NavigationPath()
     @State private var isLoading : Bool = false
     
+    
     var body: some View {
         NavigationStack(path:$path){
             VStack{
@@ -67,7 +68,7 @@ struct ChatListView: View {
                         if let newId = chatController.toId{
                             Task{
                                 await chatController.newChatRoom(id: newId, complete:{success in
-                                    chatController.fetchChats(completion: {
+                                    chatController.fetchChats(completion: {_ in
                                         isLoading = false
                                         redirect(local: false)
                                     })

@@ -8,7 +8,7 @@
 import Foundation
 import FirebaseFirestore
 import Firebase
-import Promises
+
 
 
 class ChatController: ObservableObject {
@@ -52,7 +52,7 @@ class ChatController: ObservableObject {
     
     func loginInitialize(who: String){
         self.loggedInUserEmail = who
-        self.fetchChats(completion: {})
+        self.fetchChats(completion: {_ in})
     }
     
     func logoutClear(){
@@ -88,7 +88,7 @@ class ChatController: ObservableObject {
                 } else {
                     self.messageText = ""
                     print("Message sent successfully")
-                    self.fetchChats(completion: {
+                    self.fetchChats(completion: {_ in
                         complete()
                     })
                 }
@@ -136,15 +136,15 @@ class ChatController: ObservableObject {
     }
 
 
-    func fetchChats(completion: @escaping () -> Void){
-        self.chatDict.removeAll()
+    func fetchChats(completion: @escaping ([String]) -> Void){
+        self.chatDict = [:]
         loggedInUserEmail = Auth.auth().currentUser?.email ?? UserDefaults.standard.string(forKey: "KEY_EMAIL")
         print("Who am I? \(loggedInUserEmail)")
         guard let userId = loggedInUserEmail else {
             return
         }
 
-        chatRef = db.collection(COLLECTION_CHAT).whereField("participants", arrayContains: userId).addSnapshotListener { snapshot, error in
+        db.collection(COLLECTION_CHAT).whereField("participants", arrayContains: userId).addSnapshotListener { snapshot, error in
             print("started fetching data")
             if let error = error {
                 print("Error fetching chats: \(error.localizedDescription)")
@@ -156,6 +156,7 @@ class ChatController: ObservableObject {
                 return
             }
             let dispatch = DispatchGroup()
+            var key : [String] = []
             documents.forEach{document in
                 dispatch.enter()
                 let chatId = document.documentID
@@ -169,46 +170,46 @@ class ChatController: ObservableObject {
                         self.chatDict[displayName] = chat
                         if(displayName != self.loggedInUserEmail){
                             self.sortedKeyDict[displayName] = messages.last?.timestamp.dateValue()
+                            key.append(displayName)
                         }
                     }
                     dispatch.leave()
                 }
             }
             dispatch.notify(queue: .main){
-                completion()
+                print(key)
+                completion(key)
             }
         }
     }
 
-    private func initFetchMessages(for chatId: String, completion: @escaping ([Message]) -> Void) {
+    private func initFetchMessages(for chatId: String, completion: @escaping([Message]) -> Void){
         print("started fetching msg for \(chatId)")
-        
-        db.collection(COLLECTION_CHAT).document(chatId).collection("messages")
-            .order(by: "timestamp", descending: false)
-            .getDocuments { snapshot, error in
-                if let error = error {
-                    print("Error fetching messages for chat \(chatId): \(error.localizedDescription)")
-                    completion([])
-                    return
-                }
-
-                guard let documents = snapshot?.documents else {
-                    print("No messages found for chat \(chatId)")
-                    completion([])
-                    return
-                }
-                
-                let messages = documents.compactMap { document -> Message? in
-                    guard let messageDict = document.data() as? [String: Any] else {
-                        return nil
+            db.collection(COLLECTION_CHAT).document(chatId).collection("messages")
+                .order(by: "timestamp", descending: false)
+                .getDocuments { snapshot, error in
+                    if let error = error {
+                        print("Error fetching messages for chat \(chatId): \(error.localizedDescription)")
+                        return
                     }
-                    var message = Message(dictionary: messageDict)
-                    message?.id = document.documentID
-                    return message
+                    
+                    guard let documents = snapshot?.documents else {
+                        print("No messages found for chat \(chatId)")
+                        completion([])
+                        return
+                    }
+                    
+                    let messages = documents.compactMap { document -> Message? in
+                        guard let messageDict = document.data() as? [String: Any] else {
+                            return nil
+                        }
+                        var message = Message(dictionary: messageDict)
+                        message?.id = document.documentID
+                        return message
+                    }
+                    
+                    completion(messages)
                 }
-                
-                completion(messages)
-            }
     }
 
 
