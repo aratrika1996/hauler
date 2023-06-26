@@ -390,45 +390,6 @@ struct PostView: View {
         // Perform any additional handling as needed
     }
     
-    func resizePickedImage(aspectMode: Bool){
-        guard let _ = selectedImage else{
-            return
-        }
-        var resizedImage : UIImage? = nil
-        let targetedH : CGFloat = 256
-        let targetedW : CGFloat = 256
-        let targetedSize : CGSize = CGSize(width: targetedW, height: targetedH)
-        var bgSize : CGSize? = nil
-        UIGraphicsBeginImageContextWithOptions(targetedSize, true, 1.0)
-        switch aspectMode{
-        case true:
-            let imgW = (selectedImage?.size.width)!
-            let imgH = (selectedImage?.size.height)!
-            let aspectRatio = imgW/imgH
-            if aspectRatio > 1 {
-                // Landscape image
-                bgSize = CGSize(width: targetedW, height: targetedH / aspectRatio)
-                selectedImage!.draw(in: CGRect(origin: .init(x: 0, y: (targetedH - targetedH / aspectRatio) / 2), size: bgSize!))
-//                selectedImage!.draw(in: CGRect(origin: .zero, size: bgSize!))
-            } else {
-                // Portrait image
-                bgSize = CGSize(width: targetedW * aspectRatio, height: targetedH)
-                selectedImage!.draw(in: CGRect(origin: .init(x: (targetedW - targetedW * aspectRatio) / 2, y: 0), size: bgSize!))
-//                selectedImage!.draw(in: CGRect(origin: .zero, size: bgSize!))
-            }
-            break
-        case false:
-            bgSize = CGSize(width: targetedW, height: targetedH)
-            selectedImage!.draw(in: CGRect(origin: .zero, size: bgSize!))
-            break
-        }
-        defer{UIGraphicsEndImageContext()}
-        resizedImage = UIGraphicsGetImageFromCurrentImageContext()!
-        self.resizedImage = resizedImage
-    }
-
-
-    
     func openImagePicker() {
         isImagePickerPresented = true
     }
