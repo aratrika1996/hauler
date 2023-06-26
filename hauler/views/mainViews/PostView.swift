@@ -125,7 +125,9 @@ struct PostView: View {
                             Toggle(isOn: $aspectMode){
                                 Text("Aspect Mode")
                             }.onChange(of: aspectMode, perform: {_ in
-                                resizePickedImage(aspectMode: aspectMode)
+                                if selectedImage != nil{
+                                    resizedImage = selectedImage!.resizePickedImage(aspectMode: aspectMode, size: 256)
+                                }
                             })
                         } else {
                             HStack{
@@ -546,6 +548,41 @@ class DelayManager {
     }
 }
 
+extension UIImage {
+    func resizePickedImage(aspectMode: Bool, size: CGFloat) -> UIImage{
+        var resizedImage : UIImage? = nil
+        let targetedH : CGFloat = size
+        let targetedW : CGFloat = size
+        let targetedSize : CGSize = CGSize(width: targetedW, height: targetedH)
+        var bgSize : CGSize? = nil
+        UIGraphicsBeginImageContextWithOptions(targetedSize, true, 1.0)
+        switch aspectMode{
+        case true:
+            let imgW = self.size.width
+            let imgH = self.size.height
+            let aspectRatio = imgW/imgH
+            if aspectRatio > 1 {
+                // Landscape image
+                bgSize = CGSize(width: targetedW, height: targetedH / aspectRatio)
+                self.draw(in: CGRect(origin: .init(x: 0, y: (targetedH - targetedH / aspectRatio) / 2), size: bgSize!))
+                //                selectedImage!.draw(in: CGRect(origin: .zero, size: bgSize!))
+            } else {
+                // Portrait image
+                bgSize = CGSize(width: targetedW * aspectRatio, height: targetedH)
+                self.draw(in: CGRect(origin: .init(x: (targetedW - targetedW * aspectRatio) / 2, y: 0), size: bgSize!))
+                //                selectedImage!.draw(in: CGRect(origin: .zero, size: bgSize!))
+            }
+            break
+        case false:
+            bgSize = CGSize(width: targetedW, height: targetedH)
+            self.draw(in: CGRect(origin: .zero, size: bgSize!))
+            break
+        }
+        defer{UIGraphicsEndImageContext()}
+        resizedImage = UIGraphicsGetImageFromCurrentImageContext()!
+        return resizedImage!
+    }
+}
 
 //struct PostView_Previews: PreviewProvider {
 //    static var previews: some View {

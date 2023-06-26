@@ -20,6 +20,7 @@ struct ProfileView: View {
     
     @State private var isImagePickerPresented = false
     @State private var selectedImage: UIImage? = nil
+    @State private var resizedImage: UIImage? = nil
     @State private var imageSourceType : ImagePickerView.ImageSourceType? = nil
     
     @Binding var rootScreen :RootView
@@ -228,7 +229,8 @@ struct ProfileView: View {
         } else {
             // Image picker was dismissed after selecting an image
             print("Image picker dismissed with selected image.")
-            imageController.uploadImage(selectedImage!) {result in
+            resizedImage = selectedImage!.resizePickedImage(aspectMode: false, size: 256)
+            imageController.uploadImage(resizedImage!) {result in
                 switch result {
                 case .success(let url):
                     // Handle the success case with the URL
