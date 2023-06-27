@@ -113,12 +113,13 @@ struct LoginView: View {
                         DispatchQueue.main.async {
                             if found {
                                 userProfileController.updateLoggedInUser()
-                                chatController.fetchChats(completion: {
-                                    print(chatController.chatDict.count)
-                                    chatController.chatDict.forEach{dict in
-                                        userProfileController.getUserByEmail(email: dict.key, completion: {_, _ in
-                                            
-                                        })
+                                chatController.fetchChats(completion: {keys in
+//                                    if(!self.chatController.chatDict.isEmpty){
+                                        keys.forEach{
+                                            userProfileController.getUserByEmail(email: $0, completion: {_,_ in
+                                                
+                                            })
+//                                        }
                                     }
                                 })
                             } else {

@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import PromiseKit
 
 struct ChatView: View {
     @EnvironmentObject var authController : AuthController
@@ -13,46 +14,48 @@ struct ChatView: View {
     @EnvironmentObject var chatController : ChatController
     @Binding var rootScreen :RootView
     @State var isLoading : Bool = true
+    @State private var keycount : Int = 0
     
     @State private var linkSelection : Int? = nil
+    let chatresult : [String] = []
     var body: some View {
-        if(isLoading){
-            SplashScreenView()
-                .onAppear{
-                    if(chatController.chatDict.isEmpty){
-                        chatController.fetchChats(completion: {
-                            Task{
-                                await userProfileController.getUsersByEmail(email: Array(chatController.chatDict.keys), completion: {success in
-                                    if(success){
-                                        isLoading = false
-                                    }
-                                })
-                            }
-                            
-                        })
-                    }else{
-                        Task{
-                            await userProfileController.getUsersByEmail(email: Array(chatController.chatDict.keys), completion: {success in
-                                if(success){
-                                    isLoading = false
-                                }
-                            })
-                        }
+        VStack{
+            if(isLoading){
+                SplashScreenView()
+            }else{
+                VStack{
+                    if userProfileController.loggedInUserEmail == ""{
+                        NoChatView(rootScreen: $rootScreen)
                     }
+                    else if(chatController.chatDict.isEmpty && !chatController.newChatRoom){
+                        ZeroChatView()
+                    }
+                    else{
+                        ChatListView()
+                    }
+                    
                 }
-        }else{
-            VStack{
-                if userProfileController.loggedInUserEmail == ""{
-                    NoChatView(rootScreen: $rootScreen)
-                }
-                else if(chatController.chatDict.isEmpty && !chatController.newChatRoom){
-                    ZeroChatView()
-                }
-                else{
-                    ChatListView()
-                }
-                
             }
+        }
+        .onAppear{
+            print("ChatAppear")
+            chatController.fetchChats(completion: {keys in
+                keys.forEach{
+                    userProfileController.getUserByEmail(email: $0, completion: {_,success in
+                        if(success){
+                            keycount += 1
+                            print("now keycount= \(keycount)")
+                            if(keycount == keys.count){
+                                isLoading = false
+                                keycount = 0
+                            }
+                        }
+                    })
+                }
+            })
+        }
+        .onDisappear{
+            print("ChatGone")
         }
     }
     

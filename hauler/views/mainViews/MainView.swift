@@ -22,6 +22,7 @@ struct MainView: View {
     private let locationController : LocationManager
     @State private var isLoading : Bool = true
     @State private var root : RootView = .HOME
+    @State private var keycount : Int = 0
     @ObservedObject var pageController = ViewRouter()
     
     
@@ -56,13 +57,21 @@ struct MainView: View {
         }
         .onAppear{
             UITabBar.appearance().backgroundColor = UIColor(named: "BackgroundGray") ?? .white
-            chatContoller.fetchChats(completion: {
+            chatContoller.fetchChats(completion: {keys in
                 print("after main appear, chat profile = \(self.chatContoller.chatDict.count)")
-                Task{
-                    await userProfileController.getUsersByEmail(email: Array(chatContoller.chatDict.keys), completion: {_ in
-                        isLoading = false
-                    })
-                }
+                    keys.forEach{
+                        userProfileController.getUserByEmail(email: $0, completion: {_,success in
+                            if(success){
+                                keycount += 1
+                                print("now keycount= \(keycount)")
+                                if(keycount == keys.count){
+                                    isLoading = false
+//                                    keycount = 0
+                                }
+                            }
+                        })
+                    }
+                
             })
         }
 //NavigationView

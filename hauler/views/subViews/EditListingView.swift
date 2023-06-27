@@ -28,28 +28,12 @@ struct EditListingView: View {
     @State private var alertIsPresented : Bool = false
     
     @FocusState private var isTitleFocused : Bool
-    @State private var isTitleEditing : Bool = true{
-        didSet{
-            guard isTitleEditing != oldValue else {return}
-            if(isTitleEditing){isDescEditing = false; isValueEditing = false}
-        }
-    }
-    @State private var isDescEditing : Bool = true{
-        didSet{
-            guard isDescEditing != oldValue else {return}
-            if(isDescEditing){isTitleEditing = false; isValueEditing = false}
-        }
-    }
-    @State private var isValueEditing : Bool = true{
-        didSet{
-            guard isValueEditing != oldValue else {return}
-            if(isValueEditing){isTitleEditing = false; isDescEditing = false}
-        }
-    }
+    @State private var isTitleEditing : Bool = false
+    @State private var isDescEditing : Bool = true
+    @State private var isValueEditing : Bool = true
     
     @Environment(\.presentationMode) private var presentationMode
 
-    
     @EnvironmentObject var imageController : ImageController
     @EnvironmentObject var listingController : ListingController
     @EnvironmentObject var userProfileController : UserProfileController
@@ -88,6 +72,9 @@ struct EditListingView: View {
     @State private var loc : CLLocation = CLLocation(latitude: 0, longitude: 0)
     
     @State private var useDefaultLocation : Bool = true
+    @State private var nonCA : Bool = false
+    @State private var showHint : Bool = false
+    let delayController = DelayManager()
     @FocusState private var focusedField : Fields?
     
     @State private var imageSourceType : ImagePickerView.ImageSourceType? = nil
@@ -128,32 +115,30 @@ struct EditListingView: View {
                 
                 Section ("Info"){
                     VStack{
-                        MaterialDesignTextField($listingTitle, placeholder: "Title", hint: $listingTitleHint, editing: $isTitleEditing, valid: $titleValid)
+                        MaterialDesignTextField($listingTitle, placeholder: "Title", hint: $listingTitleHint, editing: $isTitleEditing, valid: $titleValid, initialEditing: true)
                             .focused($focusedField, equals: .some(.title))
-                            .onTapGesture {
-                                isTitleEditing = true
-                            }
-                        MaterialDesignTextField($listingDesc, placeholder: "Description", hint: $listingDescHint, editing: $isDescEditing, valid: $descValid)
+                        MaterialDesignTextField($listingDesc, placeholder: "Description", hint: $listingDescHint, editing: $isDescEditing, valid: $descValid, initialEditing: true)
                             .focused($focusedField, equals: .some(.desc))
-                            .onTapGesture {
-                                isDescEditing = true
-                            }
-                        MaterialDesignTextField($listingValue, placeholder: "Price", hint: $listingValueHint, editing: $isValueEditing, valid: $valueValid)
+                        MaterialDesignTextField($listingValue, placeholder: "Price", hint: $listingValueHint, editing: $isValueEditing, valid: $valueValid, initialEditing: true)
                             .focused($focusedField, equals: .some(.price))
-                            .onTapGesture {
-                                isValueEditing = true
-                            }
                     }
                     .onChange(of: focusedField, perform: {which in
+                        print("focus changed = \(which)")
                     switch (which){
                     case .some(.title):
+                        clearFocus()
                         isTitleEditing = true
-                        
+                        isDescEditing = false
+                        isValueEditing = false
                     case .none:
                         clearFocus()
                     case .some(.desc):
+                        isTitleEditing = false
                         isDescEditing = true
+                        isValueEditing = false
                     case .some(.price):
+                        isTitleEditing = false
+                        isDescEditing = false
                         isValueEditing = true
                     case .some(.cate):
                         clearFocus()
@@ -184,34 +169,63 @@ struct EditListingView: View {
                     })
                     .pickerStyle(.segmented )
                     .focused($focusedField, equals: .some(.loca))
-                    .onChange(of: useDefaultLocation, perform: {_ in
-                        self.locationController.ReversedLocation = listingLoc
+                    .onChange(of: useDefaultLocation, perform: {
+                        if(!$0){
+                            return
+                        }
+                        if let up = self.userProfileController.userDict[self.userProfileController.loggedInUserEmail]{
+                            if(up.uAddress == ""){
+                                return
+                            }
+                            listingLoc = up.uAddress
+                            delayController.start(delay: 1, closure: {
+                                self.locationController.ReversedLocation = listingLoc
+                            })
+                        }
+                        
+                    })
+                    .onChange(of: listingLoc, perform: {newloc in
+                        var newaddr = newloc
+                        if(!nonCA){
+                            newaddr += ",Canada"
+                        }
+                        delayController.start(delay: 1, closure: {
+                            
+                            if(self.locationController.ReversedLocation != newaddr){
+                                showHint = true
+                            }
+                            self.locationController.ReversedLocation = newaddr
+                            
+                        })
+                        
                     })
                     
                     HStack{
                         TextField("",text: $listingLoc)
                             .disabled(useDefaultLocation ? true : false)
                         if(!useDefaultLocation){
-                            Button("Convert"){
-                                self.locationController.ReversedLocation = listingLoc
-                            }
+                            Toggle("Non CA", isOn: $nonCA)
                             .buttonStyle(.borderedProminent)
                         }
-                    }
-                    
                         
-                        if(!useDefaultLocation){
-                            MapView(location: $loc)
-                                                            .frame(height: 300)
-                                .onChange(of: self.locationController.latitude, perform: {_ in
-                                    self.loc = CLLocation(latitude: self.locationController.latitude, longitude: self.locationController.longitude)
-                                })
-                                .onChange(of: self.locationController.longitude, perform: {_ in
-                                    self.loc = CLLocation(latitude: self.locationController.latitude, longitude: self.locationController.longitude)
-                                })
+                    }
+                    ZStack(alignment: .topLeading){
+                    MapView(nb_location: CLLocation(latitude: self.locationController.latitude, longitude: self.locationController.longitude)).frame(height: 300)
+                        if(!self.locationController.listOfReversedLocation.isEmpty){
+                            if(showHint){
+                                ForEach(self.locationController.listOfReversedLocation, id: \.self){loc in
+                                    HStack{
+                                        Text(loc.name ?? "")
+                                    }
+                                    .onTapGesture {
+                                        self.listingLoc = loc.name ?? ""
+                                        showHint = false
+                                    }
+                                }
+                            }
                         }
-                    
-                    
+
+                    }
                 }
                 
                     
@@ -303,7 +317,8 @@ struct EditListingView: View {
             self.listingTitle = listing.title
             self.listingDesc = listing.desc
             self.listingValue = String(listing.price)
-            self.loc = CLLocation(latitude: locationController.latitude, longitude: locationController.longitude)
+            self.listingLoc = self.userProfileController.userDict[self.userProfileController.loggedInUserEmail]?.uAddress ?? ""
+            self.focusedField = .title
         }
         
     }

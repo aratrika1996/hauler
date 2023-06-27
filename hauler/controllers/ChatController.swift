@@ -10,6 +10,7 @@ import FirebaseFirestore
 import Firebase
 
 
+
 class ChatController: ObservableObject {
     @Published var chatDict : [String:Chat] = [:]
     @Published var chats: [Chat] = []
@@ -18,6 +19,8 @@ class ChatController: ObservableObject {
     @Published var selectedChar : Chat? = nil
     @Published var msgCount : Int = 0
     @Published var sortedKeyDict : [String:Date] = [:]
+    @Published var chatRef : ListenerRegistration? = nil
+    @Published var msgRef : ListenerRegistration? = nil
     
     private static var shared : ChatController?
     private let COLLECTION_CHAT: String = "Chat"
@@ -46,6 +49,22 @@ class ChatController: ObservableObject {
         
         return shared
     }
+    
+    func loginInitialize(who: String){
+        self.loggedInUserEmail = who
+        self.fetchChats(completion: {_ in})
+    }
+    
+    func logoutClear(){
+        chatDict.removeAll()
+        chats.removeAll()
+        messageText = ""
+        toId = nil
+        selectedChar = nil
+        sortedKeyDict.removeAll()
+        userId = nil
+        loggedInUserEmail = nil
+    }
 
     func sendMessage(chatId: String, toId: String, complete: @escaping () -> Void) {
         if(messageText.trimmingCharacters(in: .whitespacesAndNewlines) != ""){
@@ -69,7 +88,7 @@ class ChatController: ObservableObject {
                 } else {
                     self.messageText = ""
                     print("Message sent successfully")
-                    self.fetchChats(completion: {
+                    self.fetchChats(completion: {_ in
                         complete()
                     })
                 }
@@ -117,8 +136,10 @@ class ChatController: ObservableObject {
     }
 
 
-    func fetchChats(completion: @escaping () -> Void){
-        loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
+    func fetchChats(completion: @escaping ([String]) -> Void){
+        self.chatDict = [:]
+        loggedInUserEmail = Auth.auth().currentUser?.email ?? UserDefaults.standard.string(forKey: "KEY_EMAIL")
+        print("Who am I? \(loggedInUserEmail)")
         guard let userId = loggedInUserEmail else {
             return
         }
@@ -134,9 +155,12 @@ class ChatController: ObservableObject {
                 print("No chats found")
                 return
             }
+            let dispatch = DispatchGroup()
+            var key : [String] = []
             documents.forEach{document in
+                dispatch.enter()
                 let chatId = document.documentID
-                self.fetchMessages(for: chatId) { messages in
+                self.initFetchMessages(for: chatId) { messages in
                     print("chatId", chatId)
                     if(!messages.isEmpty){
                         let displayName = messages[0].toId == userId ? messages[0].fromId : messages[0].toId
@@ -144,23 +168,57 @@ class ChatController: ObservableObject {
                         let chat = Chat(participants: participants, id: chatId, displayName: displayName, messages: messages)
                         print(#function, "chatId : \(chatId), name = \(displayName)")
                         self.chatDict[displayName] = chat
-                        self.sortedKeyDict[displayName] = messages.last?.timestamp.dateValue()
+                        if(displayName != self.loggedInUserEmail){
+                            self.sortedKeyDict[displayName] = messages.last?.timestamp.dateValue()
+                            key.append(displayName)
+                        }
                     }
+                    dispatch.leave()
                 }
             }
-            
-            completion()
-            
+            dispatch.notify(queue: .main){
+                print(key)
+                completion(key)
+            }
         }
     }
 
+    private func initFetchMessages(for chatId: String, completion: @escaping([Message]) -> Void){
+        print("started fetching msg for \(chatId)")
+            db.collection(COLLECTION_CHAT).document(chatId).collection("messages")
+                .order(by: "timestamp", descending: false)
+                .getDocuments { snapshot, error in
+                    if let error = error {
+                        print("Error fetching messages for chat \(chatId): \(error.localizedDescription)")
+                        return
+                    }
+                    
+                    guard let documents = snapshot?.documents else {
+                        print("No messages found for chat \(chatId)")
+                        completion([])
+                        return
+                    }
+                    
+                    let messages = documents.compactMap { document -> Message? in
+                        guard let messageDict = document.data() as? [String: Any] else {
+                            return nil
+                        }
+                        var message = Message(dictionary: messageDict)
+                        message?.id = document.documentID
+                        return message
+                    }
+                    
+                    completion(messages)
+                }
+    }
 
 
     private func fetchMessages(for chatId: String, completion: @escaping ([Message]) -> Void) {
-
-        db.collection(COLLECTION_CHAT).document(chatId).collection("messages")
+        print("started fetching msg for \(chatId)")
+        let ref = db.collection(COLLECTION_CHAT).document(chatId).collection("messages")
             .order(by: "timestamp", descending: false)
             .addSnapshotListener{ (snapshot, error) in
+                print("snapshot returned")
                 if let error = error {
                     print("Error fetching messages for chat \(chatId): \(error.localizedDescription)")
                     completion([])
@@ -181,12 +239,11 @@ class ChatController: ObservableObject {
 //                    print("new msg id:\(message?.id)")
                     return message
                 }
-                if self.chatDict[chatId] != nil{
-                    self.msgCount += 1
-                }
                 
                 completion(messages)
+
             }
+        
     }
 
 

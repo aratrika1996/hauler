@@ -84,7 +84,7 @@ struct ConversationView: View {
             
             
         }
-        .navigationTitle("\(userProfileController.userDict[chat]!.uName) ")
+        .navigationTitle("\(userProfileController.userDict[chat]?.uName ?? "") ")
     }
     
     func previousMessage(for message: Message) -> Message? {

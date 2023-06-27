@@ -21,6 +21,7 @@ struct ProductDetailView: View {
     @State var showMore : Bool = false
     @State var path : NavigationPath = NavigationPath()
     @State var inputText : String = "Hi, I am interested in the product with name "
+    @State private var openEditSheet = false
     
     @Binding var rootScreen :RootView
     
@@ -35,10 +36,8 @@ struct ProductDetailView: View {
                             print(#function, "task start")
                             if userProfileController.userDict[listing.email] == nil{
                                 print(#function, "email not found, load profile")
-                                await userProfileController.getUsersByEmail(email: [listing.email], completion: {success in
-                                    if(success){
-                                        isLoading = false
-                                    }
+                                userProfileController.getUserByEmail(email: listing.email, completion: {_,_ in
+                                    isLoading = false
                                 })
                                 
                             }else{
@@ -200,10 +199,10 @@ struct ProductDetailView: View {
                 }
                 .toolbar(){
                     ToolbarItemGroup(placement: .bottomBar){
-                        
                         if(listing.email == chatController.loggedInUserEmail){
-                            Button(action:{}){
-                                NavigationLink(destination: EditListingView(listing: listing).environmentObject(listingController)) {
+                            Button(action:{
+                                self.openEditSheet = true
+                            }){
                                     Text("Manage Item")
                                         .font(.system(size: 20))
                                         .foregroundColor(.white)
@@ -261,6 +260,9 @@ struct ProductDetailView: View {
                         }
                     }
                     
+                }
+                .sheet(isPresented: self.$openEditSheet){
+                    EditListingView(listing: listing)
                 }
             }
         }
