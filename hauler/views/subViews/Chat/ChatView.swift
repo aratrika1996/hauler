@@ -20,52 +20,19 @@ struct ChatView: View {
     let chatresult : [String] = []
     var body: some View {
         VStack{
-            if(isLoading){
-                SplashScreenView()
-            }else{
-                VStack{
-                    if userProfileController.loggedInUserEmail == ""{
-                        NoChatView(rootScreen: $rootScreen)
-                    }
-                    else if(chatController.chatDict.isEmpty && !chatController.newChatRoom){
-                        ZeroChatView()
-                    }
-                    else{
-                        ChatListView()
-                    }
-                    
-                }
+            if userProfileController.loggedInUserEmail == ""{
+                NoChatView(rootScreen: $rootScreen)
             }
-        }
-        .onAppear{
-            print("ChatAppear")
-            chatController.fetchChats(completion: {keys in
-                keys.forEach{
-                    userProfileController.getUserByEmail(email: $0, completion: {_,success in
-                        if(success){
-                            keycount += 1
-                            print("now keycount= \(keycount)")
-                            if(keycount == keys.count){
-                                isLoading = false
-                                keycount = 0
-                            }
-                        }
-                    })
-                }
-            })
-        }
-        .onDisappear{
-            print("ChatGone")
+            else if(chatController.chatDict.isEmpty && !chatController.newChatRoom){
+                ZeroChatView()
+            }
+            else{
+                ChatListView()
+            }
+            
         }
     }
-    
 }
-
-
-
-
-
-
 //struct ChatView_Previews: PreviewProvider {
 //    static var previews: some View {
 //        ChatView()

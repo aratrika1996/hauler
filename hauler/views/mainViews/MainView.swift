@@ -57,8 +57,10 @@ struct MainView: View {
         }
         .onAppear{
             UITabBar.appearance().backgroundColor = UIColor(named: "BackgroundGray") ?? .white
-            chatContoller.fetchChats(completion: {keys in
-                print("after main appear, chat profile = \(self.chatContoller.chatDict.count)")
+            if(self.chatContoller.chatRef == nil){
+                chatContoller.fetchChats(completion: {keys in
+                    print("after main appear, chat profile = \(self.chatContoller.chatDict.count)")
+                    keycount = 0
                     keys.forEach{
                         userProfileController.getUserByEmail(email: $0, completion: {_,success in
                             if(success){
@@ -66,24 +68,28 @@ struct MainView: View {
                                 print("now keycount= \(keycount)")
                                 if(keycount == keys.count){
                                     isLoading = false
-//                                    keycount = 0
+                                    keycount = 0
                                 }
                             }
                         })
                     }
-                
-            })
+                    
+                })
+            }else{
+                isLoading = false
+            }
         }
 //NavigationView
-//        .onChange(of: scenePhase){currentPhase in
-//            switch(currentPhase){
-//            case .active:
-//                print("active")
-//
-//            case .inactive:
-//                print("inactive")
-//            case .background:
-//                print("background")
+        .onChange(of: scenePhase){currentPhase in
+            switch(currentPhase){
+            case .active:
+                print("active")
+
+            case .inactive:
+                print("inactive")
+            case .background:
+                print("background")
+                chatContoller.chatRef?.remove()
 //                if userProfileController.userProfile.uEmail != ""{
 //                    let userProfile = userProfileController.userProfile
 //                    do{
@@ -94,12 +100,12 @@ struct MainView: View {
 //                        print("JSON ENCODE ERROR @ saving user, inactive\(error)")
 //                    }
 //                }
-//            @unknown default:
-//                fatalError()
-//            }
+            @unknown default:
+                fatalError()
+            }
 //
 //
-//        }
+        }
         
         .navigationViewStyle(.stack)
         .environmentObject(pageController)

@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Combine
+import PromiseKit
 
 struct ChatListView: View {
     @EnvironmentObject var chatController: ChatController
@@ -14,6 +15,7 @@ struct ChatListView: View {
     @State private var selectedChat : String? = nil
     @State private var path : NavigationPath = NavigationPath()
     @State private var isLoading : Bool = false
+    @State private var localProfileDict : [String:UserProfile] = [:]
     
     
     var body: some View {
@@ -27,7 +29,7 @@ struct ChatListView: View {
                         NavigationLink(value:key as String)
                         {
                             HStack{
-                                Image(uiImage: userProfileController.userDict[key]?.uProfileImage ?? UIImage(systemName: "person")!)
+                                Image(uiImage: self.userProfileController.userDict[key]?.uProfileImage ?? UIImage(systemName: "person")!)
                                     .resizable()
                                     .cornerRadius(100)
                                     .shadow(radius: 5, x:5, y:5)
@@ -35,7 +37,7 @@ struct ChatListView: View {
                                 HStack{
                                     VStack(alignment: .leading){
                                         HStack{
-                                            Text(userProfileController.userDict[key]?.uName ?? "Unknown")
+                                            Text(self.userProfileController.userDict[key]?.uName ?? "Unknown")
                                             Spacer()
                                             Text((chatController.chatDict[key]?.messages.last?.timestamp.dateValue().convertToDateOrTime()) ?? "")
                                                 .foregroundColor(.gray)
@@ -64,17 +66,19 @@ struct ChatListView: View {
                     }
                 })
                 .onAppear{
+//                    localProfileDict = self.userProfileController.userDict
                     chatController.msgCount = 0
                     if chatController.newChatRoom{
+                        print(#function, "NewChatRoom !!")
                         self.isLoading = true
                         chatController.newChatRoom = false
                         if let newId = chatController.toId{
                             Task{
                                 await chatController.newChatRoom(id: newId, complete:{success in
-                                    chatController.fetchChats(completion: {_ in
+//                                    chatController.fetchChats(completion: {_ in
                                         isLoading = false
                                         redirect(local: false)
-                                    })
+//                                    })
                                 })
                             }
                         }
@@ -85,7 +89,6 @@ struct ChatListView: View {
 
             }
         }
-        
         .navigationTitle("Messages")
     }
     

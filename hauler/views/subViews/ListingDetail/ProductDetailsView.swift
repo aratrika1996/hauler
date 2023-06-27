@@ -70,19 +70,19 @@ struct ProductDetailView: View {
                                     .cornerRadius(5)
                                     .shadow(color: Color.gray.opacity(0.4), radius: 5, x:2, y:4)
                                     .onTapGesture {
-                                    if(
-                                        chatController.chatDict.keys.contains(where: {
-                                            $0 == listing.email
-                                        })){
-                                        viewRouter.currentView = .chat
-                                        chatController.toId = listing.email
-                                        chatController.redirect = true
-                                        dismiss()
+                                        if(
+                                            chatController.chatDict.keys.contains(where: {
+                                                $0 == listing.email
+                                            })){
+                                            viewRouter.currentView = .chat
+                                            chatController.toId = listing.email
+                                            chatController.redirect = true
+                                            dismiss()
+                                        }
+                                        else{
+                                            showAlert = true
+                                        }
                                     }
-                                    else{
-                                        showAlert = true
-                                    }
-                                }
                             }
                             Image(uiImage: UIImage(systemName: "heart.fill")!)
                                 .resizable()
@@ -124,10 +124,10 @@ struct ProductDetailView: View {
                             HStack{
                                 Text("About Seller").font(.system(size: 19)).fontWeight(.medium)
                                 Spacer()
-                                    NavigationLink(destination: UserPublicProfileView(sellerEmail: listing.email, rootScreen: $rootScreen)){
-                                        Text("View Profile").font(.system(size: 19)).fontWeight(.medium)
-                                    }
-
+                                NavigationLink(destination: UserPublicProfileView(sellerEmail: listing.email, rootScreen: $rootScreen)){
+                                    Text("View Profile").font(.system(size: 19)).fontWeight(.medium)
+                                }
+                                
                             }
                             
                             HStack(alignment: .center){
@@ -154,18 +154,6 @@ struct ProductDetailView: View {
                                 VStack(alignment: .leading){
                                     Text(userProfileController.userDict[listing.email]!.uName)
                                         .foregroundColor(Color.black)
-//                                    HStack{
-//                                        ForEach(0..<4){_ in
-//                                            Image(uiImage: UIImage(systemName: "star.fill")!)
-//                                                .resizable()
-//                                                .frame(width: 20, height: 20)
-//                                        }
-//                                        Image(uiImage: UIImage(systemName: "star")!)
-//                                            .resizable()
-//                                            .frame(width: 20, height: 20)
-//                                        Text("4")
-//                                        Text("(8)")
-//                                    }
                                     Text(userProfileController.userDict[listing.email]!.uEmail)
                                         .foregroundColor(Color.black)
                                 }
@@ -182,8 +170,8 @@ struct ProductDetailView: View {
                     }
                     Button("Send"){
                         if(chatController.chatDict.keys.contains(where: {
-                                $0 == listing.email
-                            })){
+                            $0 == listing.email
+                        })){
                             chatController.newChatRoom = false
                         }else{
                             chatController.messageText = inputText + listing.title
@@ -203,7 +191,48 @@ struct ProductDetailView: View {
                             Button(action:{
                                 self.openEditSheet = true
                             }){
-                                    Text("Manage Item")
+                                Text("Manage Item")
+                                    .font(.system(size: 20))
+                                    .foregroundColor(.white)
+                                    .frame(maxWidth: .infinity)
+                            }
+                            .padding(.horizontal, 20)
+                            .padding([.top], 10)
+                            .buttonStyle(.borderedProminent)
+                        }
+                        else if(userProfileController.loggedInUserEmail != ""){
+                            
+                            //                            Button(action:{}){
+                            //                                NavigationLink(destination: BuyPageView()) {
+                            //                                    Text("Buy Now")
+                            //                                        .font(.system(size: 20))
+                            //                                        .foregroundColor(.white)
+                            //                                        .frame(maxWidth: .infinity)
+                            //                                }
+                            //
+                            //                            }
+                            //                            .padding(.horizontal, 20)
+                            //                            .padding([.top], 10)
+                            //                            .buttonStyle(.borderedProminent)
+                        }
+                        else{
+                            //                            Button(action:{}){
+                            //                                NavigationLink(destination: BuyPageView()) {
+                            //                                    Text("Buy Now")
+                            //                                        .font(.system(size: 20))
+                            //                                        .foregroundColor(.white)
+                            //                                        .frame(maxWidth: .infinity)
+                            //                                }
+                            //
+                            //                            }
+                            //                            .padding(.horizontal, 20)
+                            //                            .padding([.top], 10)
+                            //                            .buttonStyle(.borderedProminent)
+                            //
+                            //                            Spacer()
+                            Button(action:{}){
+                                NavigationLink(destination: LoginView(rootScreen: $rootScreen)) {
+                                    Text("Login to Chat")
                                         .font(.system(size: 20))
                                         .foregroundColor(.white)
                                         .frame(maxWidth: .infinity)
@@ -213,58 +242,14 @@ struct ProductDetailView: View {
                             .padding(.horizontal, 20)
                             .padding([.top], 10)
                             .buttonStyle(.borderedProminent)
-                        }
-                        else if(userProfileController.loggedInUserEmail != ""){
-
-//                            Button(action:{}){
-//                                NavigationLink(destination: BuyPageView()) {
-//                                    Text("Buy Now")
-//                                        .font(.system(size: 20))
-//                                        .foregroundColor(.white)
-//                                        .frame(maxWidth: .infinity)
-//                                }
-//
-//                            }
-//                            .padding(.horizontal, 20)
-//                            .padding([.top], 10)
-//                            .buttonStyle(.borderedProminent)
-                        }
-                        else{
-//                            Button(action:{}){
-//                                NavigationLink(destination: BuyPageView()) {
-//                                    Text("Buy Now")
-//                                        .font(.system(size: 20))
-//                                        .foregroundColor(.white)
-//                                        .frame(maxWidth: .infinity)
-//                                }
-//
-//                            }
-//                            .padding(.horizontal, 20)
-//                            .padding([.top], 10)
-//                            .buttonStyle(.borderedProminent)
-//
-//                            Spacer()
-                            Button(action:{}){
-                                NavigationLink(destination: LoginView(rootScreen: $rootScreen)) {
-                                    Text("Login to Chat")
-                                        .font(.system(size: 20))
-                                        .foregroundColor(.white)
-                                        .frame(maxWidth: .infinity)
-                                }
-                               
-                            }
-                            .padding(.horizontal, 20)
-                            .padding([.top], 10)
-                            .buttonStyle(.borderedProminent)
                             .tint(Color(UIColor(named: "HaulerOrange") ?? .blue))
                         }
                     }
-                    
-                }
-                .sheet(isPresented: self.$openEditSheet){
-                    EditListingView(listing: listing)
                 }
             }
+        }
+        .sheet(isPresented: self.$openEditSheet){
+            EditListingView(listing: listing)
         }
         .onDisappear{
             if(chatController.newChatRoom){

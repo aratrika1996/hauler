@@ -110,29 +110,38 @@ struct LoginView: View {
             case .success(_):
                 print("Sign in success")
                 userProfileController.getUserByEmail(email: emailAddress) { user, found in
-                        DispatchQueue.main.async {
-                            if found {
-                                userProfileController.updateLoggedInUser()
+                    DispatchQueue.main.async {
+                        if found {
+                            userProfileController.updateLoggedInUser()
+                            if chatController.chatRef == nil{
                                 chatController.fetchChats(completion: {keys in
-//                                    if(!self.chatController.chatDict.isEmpty){
-                                        keys.forEach{
-                                            userProfileController.getUserByEmail(email: $0, completion: {_,_ in
-                                                
-                                            })
-//                                        }
+                                    print("keys return from fetch chat count = \(self.chatController.chatDict.count)")
+                                    keys.forEach{
+                                        userProfileController.getUserByEmail(email: $0, completion: {up,_ in
+                                            print(up?.uName)
+                                        })
                                     }
                                 })
-                            } else {
-                                print("User not found")
-                                var userProfile = UserProfile()
-                                userProfile.uEmail  = emailAddress
-                                userProfileController.insertUserData(newUserData: userProfile)
-                                userProfileController.updateLoggedInUser()
-
+                            }else{
+                                chatController.chatDict.keys.forEach{key in
+                                    userProfileController.getUserByEmail(email: key, completion: {up,_ in
+                                        print(up?.uName)
+                                    })
+                                }
                             }
+                            presentationMode.wrappedValue.dismiss()
+                        } else {
+                            print("User not found")
+                            var userProfile = UserProfile()
+                            userProfile.uEmail  = emailAddress
+                            userProfileController.insertUserData(newUserData: userProfile)
+                            userProfileController.updateLoggedInUser()
+                            presentationMode.wrappedValue.dismiss()
                         }
+                        
                     }
-                presentationMode.wrappedValue.dismiss()
+                }
+                
             case .failure(let error):
                 print("Error while signing in: \(error.localizedDescription)")
                 self.authError = error.localizedDescription
