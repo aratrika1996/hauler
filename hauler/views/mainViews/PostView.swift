@@ -60,19 +60,19 @@ struct PostView: View {
     }
     
     @State var titleValid = true {
-       didSet {
-           listingTitleHint = titleValid ? self.listingTitleHint : self.listingTitleError
-       }
-     }
-     @State var descValid = true {
-       didSet {
-           listingDescHint = descValid ? self.listingDescHint : self.listingDescError
-       }
-     }
+        didSet {
+            listingTitleHint = titleValid ? self.listingTitleHint : self.listingTitleError
+        }
+    }
+    @State var descValid = true {
+        didSet {
+            listingDescHint = descValid ? self.listingDescHint : self.listingDescError
+        }
+    }
     @State var valueValid = true {
-      didSet {
-          listingValueHint = valueValid ? self.listingValueHint : self.listingValueError
-      }
+        didSet {
+            listingValueHint = valueValid ? self.listingValueHint : self.listingValueError
+        }
     }
     
     @EnvironmentObject var imageController : ImageController
@@ -95,9 +95,6 @@ struct PostView: View {
     @State private var listingDescError = ""
     @State private var listingValueError = ""
     @State private var loc : CLLocation = CLLocation(latitude: 0, longitude: 0)
-    
-    @State private var cd : Date = Date()
-    @State private var incd : Bool = false
     
     @State private var useDefaultLocation : Bool = true
     @State private var nonCA : Bool = false
@@ -125,7 +122,9 @@ struct PostView: View {
                             Toggle(isOn: $aspectMode){
                                 Text("Aspect Mode")
                             }.onChange(of: aspectMode, perform: {_ in
-                                resizePickedImage(aspectMode: aspectMode)
+                                if selectedImage != nil{
+                                    resizedImage = selectedImage!.resizePickedImage(aspectMode: aspectMode, size: 256)
+                                }
                             })
                         } else {
                             HStack{
@@ -145,17 +144,17 @@ struct PostView: View {
                     
                     Section("Info"){
                         VStack{
-                            MaterialDesignTextField($listingTitle, placeholder: "Title", hint: $listingTitleHint, editing: $isTitleEditing, valid: $titleValid)
+                            MaterialDesignTextField($listingTitle, placeholder: "Title", hint: $listingTitleHint, editing: $isTitleEditing, valid: $titleValid, initialEditing: false)
                                 .focused($focusedField, equals: .some(.title))
                                 .onTapGesture {
                                     isTitleEditing = true
                                 }
-                            MaterialDesignTextField($listingDesc, placeholder: "Description", hint: $listingDescHint, editing: $isDescEditing, valid: $descValid)
+                            MaterialDesignTextField($listingDesc, placeholder: "Description", hint: $listingDescHint, editing: $isDescEditing, valid: $descValid, initialEditing: false)
                                 .focused($focusedField, equals: .some(.desc))
                                 .onTapGesture {
                                     isDescEditing = true
                                 }
-                            MaterialDesignTextField($listingValue, placeholder: "Price", hint: $listingValueHint, editing: $isValueEditing, valid: $valueValid)
+                            MaterialDesignTextField($listingValue, placeholder: "Price", hint: $listingValueHint, editing: $isValueEditing, valid: $valueValid, initialEditing: false)
                                 .focused($focusedField, equals: .some(.price))
                                 .onTapGesture {
                                     isValueEditing = true
@@ -303,37 +302,11 @@ struct PostView: View {
                 .padding(.horizontal, 10)
                 .disabled(selectedImage == nil || !valueValid || !descValid || !titleValid)
             }
-            else {
-                Text("Oops, looks like you are not logged in!!")
-                    .padding(.bottom, 0.5)
-                    .font(.system(size: 20))
-                Text("Log in to post.")
-                
-                NavigationLink(destination: LoginView(rootScreen: $rootScreen).environmentObject(authController).environmentObject(userProfileController)) {
-                    Text("Login")
-                        .font(.system(size: 20))
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                    
-                }
-                .padding(.horizontal, 20)
-                .padding([.top], 10)
-                .buttonStyle(.borderedProminent)
-                .tint(Color(UIColor(named: "HaulerOrange") ?? .blue))
-                
-                HStack {
-                    Text("Don't have an account? ")
-                    NavigationLink(destination: SignUpView(rootScreen: $rootScreen).environmentObject(authController).environmentObject(userProfileController)) {
-                        Text("SignUp")
-                            .foregroundColor(Color(UIColor(named: "HaulerOrange") ?? .blue))
-                            .fontWeight(.medium)
-                    }
-                }//HStack ends
-                .padding([.top], 10)
-            }
+            
+            
         }
         .onAppear{
-            self.locationController.ReversedLocation = self.userProfileController.userDict[self.userProfileController.loggedInUserEmail]?.uAddress ?? ""
+            self.listingLoc = self.userProfileController.userDict[self.userProfileController.loggedInUserEmail]?.uAddress ?? ""
         }
         .navigationBarTitle("Post Listing")
         .alert(self.alertTitle, isPresented: $alertIsPresented, actions: {
@@ -372,9 +345,7 @@ struct PostView: View {
             }
             
         }
-        
     }
-    
     func handleImagePickerDismissal() {
         if selectedImage == nil {
             // Image picker was dismissed without selecting an image
@@ -382,50 +353,11 @@ struct PostView: View {
         } else {
             // Image picker was dismissed after selecting an image
             print("Image picker dismissed with selected image.")
-            resizePickedImage(aspectMode: aspectMode)
+            resizedImage = selectedImage!.resizePickedImage(aspectMode: aspectMode, size: 256)
         }
         imageSourceType = nil
         // Perform any additional handling as needed
     }
-    
-    func resizePickedImage(aspectMode: Bool){
-        guard let _ = selectedImage else{
-            return
-        }
-        var resizedImage : UIImage? = nil
-        let targetedH : CGFloat = 256
-        let targetedW : CGFloat = 256
-        let targetedSize : CGSize = CGSize(width: targetedW, height: targetedH)
-        var bgSize : CGSize? = nil
-        UIGraphicsBeginImageContextWithOptions(targetedSize, true, 1.0)
-        switch aspectMode{
-        case true:
-            let imgW = (selectedImage?.size.width)!
-            let imgH = (selectedImage?.size.height)!
-            let aspectRatio = imgW/imgH
-            if aspectRatio > 1 {
-                // Landscape image
-                bgSize = CGSize(width: targetedW, height: targetedH / aspectRatio)
-                selectedImage!.draw(in: CGRect(origin: .init(x: 0, y: (targetedH - targetedH / aspectRatio) / 2), size: bgSize!))
-//                selectedImage!.draw(in: CGRect(origin: .zero, size: bgSize!))
-            } else {
-                // Portrait image
-                bgSize = CGSize(width: targetedW * aspectRatio, height: targetedH)
-                selectedImage!.draw(in: CGRect(origin: .init(x: (targetedW - targetedW * aspectRatio) / 2, y: 0), size: bgSize!))
-//                selectedImage!.draw(in: CGRect(origin: .zero, size: bgSize!))
-            }
-            break
-        case false:
-            bgSize = CGSize(width: targetedW, height: targetedH)
-            selectedImage!.draw(in: CGRect(origin: .zero, size: bgSize!))
-            break
-        }
-        defer{UIGraphicsEndImageContext()}
-        resizedImage = UIGraphicsGetImageFromCurrentImageContext()!
-        self.resizedImage = resizedImage
-    }
-
-
     
     func openImagePicker() {
         isImagePickerPresented = true
@@ -446,6 +378,9 @@ struct PostView: View {
         self.listing.price = Double(self.listingValue)!
         self.listing.createDate = Date.now
         self.listing.available = true
+        self.listing.locString = self.locationController.ReversedLocation
+        self.listing.locLat = self.locationController.latitude
+        self.listing.locLong = self.locationController.longitude
         listingController.insertListing(listing: listing)
         clearAfterListed()
     }
@@ -454,9 +389,10 @@ struct PostView: View {
         self.listing = Listing()
         self.listingTitle = ""
         self.listingDesc = ""
-        self.listingTitle = ""
+        self.listingValue = ""
         self.selectedImage = nil
         self.resizedImage = nil
+        self.clearFocus()
     }
     
     func validateTitle(){
@@ -519,33 +455,42 @@ struct PostView: View {
     }
 }
 
-class DelayManager {
-    var workItem: DispatchWorkItem?
-    
-    func start(delay: TimeInterval, closure: @escaping () -> Void) {
-        cancel()
-        
-        let newWorkItem = DispatchWorkItem { [weak self] in
-            closure()
-            self?.workItem = nil
+
+extension UIImage {
+    func resizePickedImage(aspectMode: Bool, size: CGFloat) -> UIImage{
+        var resizedImage : UIImage? = nil
+        let targetedH : CGFloat = size
+        let targetedW : CGFloat = size
+        let targetedSize : CGSize = CGSize(width: targetedW, height: targetedH)
+        var bgSize : CGSize? = nil
+        UIGraphicsBeginImageContextWithOptions(targetedSize, true, 1.0)
+        switch aspectMode{
+        case true:
+            let imgW = self.size.width
+            let imgH = self.size.height
+            let aspectRatio = imgW/imgH
+            if aspectRatio > 1 {
+                // Landscape image
+                bgSize = CGSize(width: targetedW, height: targetedH / aspectRatio)
+                self.draw(in: CGRect(origin: .init(x: 0, y: (targetedH - targetedH / aspectRatio) / 2), size: bgSize!))
+                //                selectedImage!.draw(in: CGRect(origin: .zero, size: bgSize!))
+            } else {
+                // Portrait image
+                bgSize = CGSize(width: targetedW * aspectRatio, height: targetedH)
+                self.draw(in: CGRect(origin: .init(x: (targetedW - targetedW * aspectRatio) / 2, y: 0), size: bgSize!))
+                //                selectedImage!.draw(in: CGRect(origin: .zero, size: bgSize!))
+            }
+            break
+        case false:
+            bgSize = CGSize(width: targetedW, height: targetedH)
+            self.draw(in: CGRect(origin: .zero, size: bgSize!))
+            break
         }
-        workItem = newWorkItem
-        DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: newWorkItem)
-    }
-    
-    func extend(delay: TimeInterval) {
-        if let existingWorkItem = workItem {
-            existingWorkItem.cancel()
-            DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: existingWorkItem)
-        }
-    }
-    
-    func cancel() {
-        workItem?.cancel()
-        workItem = nil
+        defer{UIGraphicsEndImageContext()}
+        resizedImage = UIGraphicsGetImageFromCurrentImageContext()!
+        return resizedImage!
     }
 }
-
 
 //struct PostView_Previews: PreviewProvider {
 //    static var previews: some View {

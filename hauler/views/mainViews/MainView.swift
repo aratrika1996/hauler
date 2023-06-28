@@ -22,6 +22,7 @@ struct MainView: View {
     private let locationController : LocationManager
     @State private var isLoading : Bool = true
     @State private var root : RootView = .HOME
+    @State private var keycount : Int = 0
     @ObservedObject var pageController = ViewRouter()
     
     
@@ -56,25 +57,42 @@ struct MainView: View {
         }
         .onAppear{
             UITabBar.appearance().backgroundColor = UIColor(named: "BackgroundGray") ?? .white
-            chatContoller.fetchChats(completion: {
-                print("after main appear, chat profile = \(self.chatContoller.chatDict.count)")
-                Task{
-                    await userProfileController.getUsersByEmail(email: Array(chatContoller.chatDict.keys), completion: {_ in
+            if(self.chatContoller.chatRef == nil){
+                chatContoller.fetchChats(completion: {keys in
+                    print("after main appear, chat profile = \(self.chatContoller.chatDict.count)")
+                    keycount = 0
+                    if !keys.isEmpty{
+                        keys.forEach{
+                            userProfileController.getUserByEmail(email: $0, completion: {_,success in
+                                if(success){
+                                    keycount += 1
+                                    print("now keycount= \(keycount)")
+                                    if(keycount == keys.count){
+                                        isLoading = false
+                                        keycount = 0
+                                    }
+                                }
+                            })
+                        }
+                    }else{
                         isLoading = false
-                    })
-                }
-            })
+                    }
+                })
+            }else{
+                isLoading = false
+            }
         }
 //NavigationView
-//        .onChange(of: scenePhase){currentPhase in
-//            switch(currentPhase){
-//            case .active:
-//                print("active")
-//
-//            case .inactive:
-//                print("inactive")
-//            case .background:
-//                print("background")
+        .onChange(of: scenePhase){currentPhase in
+            switch(currentPhase){
+            case .active:
+                print("active")
+
+            case .inactive:
+                print("inactive")
+            case .background:
+                print("background")
+                chatContoller.chatRef?.remove()
 //                if userProfileController.userProfile.uEmail != ""{
 //                    let userProfile = userProfileController.userProfile
 //                    do{
@@ -85,12 +103,12 @@ struct MainView: View {
 //                        print("JSON ENCODE ERROR @ saving user, inactive\(error)")
 //                    }
 //                }
-//            @unknown default:
-//                fatalError()
-//            }
+            @unknown default:
+                fatalError()
+            }
 //
 //
-//        }
+        }
         
         .navigationViewStyle(.stack)
         .environmentObject(pageController)

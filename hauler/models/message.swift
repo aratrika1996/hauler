@@ -17,17 +17,19 @@ struct Message: Identifiable, Codable, Equatable, Hashable {
     var fromId: String = ""
     var toId: String = ""
     var text: String = ""
+    var unread: Bool = true
     var timestamp: Timestamp
 
     init() {
         self.timestamp = Timestamp.init()
     }
 
-    init(id: String? = nil, fromId: String, toId: String, text: String, timestamp: Timestamp) {
+    init(id: String? = nil, fromId: String, toId: String, text: String, unread: Bool, timestamp: Timestamp) {
         self.id = id
         self.fromId = fromId
         self.toId = toId
         self.text = text
+        self.unread = unread
         self.timestamp = timestamp
     }
 
@@ -37,10 +39,11 @@ struct Message: Identifiable, Codable, Equatable, Hashable {
         self.fromId = try container.decode(String.self, forKey: .fromId)
         self.toId = try container.decode(String.self, forKey: .toId)
         self.text = try container.decode(String.self, forKey: .text)
+        self.unread = try container.decodeIfPresent(Bool.self, forKey: .unread) ?? true
         self.timestamp = try container.decode(Timestamp.self, forKey: .timestamp)
     }
 
-    init?(dictionary: [String: Any]) {
+    init?(id: String, dictionary: [String: Any]) {
         guard let fromId = dictionary["fromId"] as? String else {
             print(#function, "Unable to read fromId from the object")
             return nil
@@ -55,12 +58,17 @@ struct Message: Identifiable, Codable, Equatable, Hashable {
             print(#function, "Unable to read text from the object")
             return nil
         }
+        var unRead : Bool = true
+        if let unread = dictionary["unread"] as? Bool {
+            unRead = unread
+        }
+        
         guard let timestamp = dictionary["timestamp"] as? Timestamp else {
             print(#function, "Unable to read timestamp from the object")
             return nil
         }
 
-        self.init(fromId: fromId, toId: toId, text: text, timestamp: timestamp)
+        self.init(id: id, fromId: fromId, toId: toId, text: text, unread: unRead, timestamp: timestamp)
     }
     
     func hash(into hasher: inout Hasher) {

@@ -70,6 +70,9 @@
 		F8B2C3EB2A3B9ABA0077CD13 /* textFieldValidation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8B2C3E92A3B993D0077CD13 /* textFieldValidation.swift */; };
 		F8B2C3EC2A3B9AC00077CD13 /* MaterialDesignTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = F81B0A332A39376B008C2942 /* MaterialDesignTextField.swift */; };
 		F8EA1CE52A3B9CC300DF78BC /* ImagePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8EA1CE42A3B9CC300DF78BC /* ImagePickerView.swift */; };
+		F8FB72552A43EE620088E5B6 /* DelayController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8FB72542A43EE620088E5B6 /* DelayController.swift */; };
+		F8FB72582A4480380088E5B6 /* PromiseKit in Frameworks */ = {isa = PBXBuildFile; productRef = F8FB72572A4480380088E5B6 /* PromiseKit */; };
+		F8FB725C2A44F9CB0088E5B6 /* (null) in Resources */ = {isa = PBXBuildFile; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -131,6 +134,7 @@
 		F8A77E682A1BFF3F005AF90A /* SearchBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBar.swift; sourceTree = "<group>"; };
 		F8B2C3E92A3B993D0077CD13 /* textFieldValidation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = textFieldValidation.swift; sourceTree = "<group>"; };
 		F8EA1CE42A3B9CC300DF78BC /* ImagePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePickerView.swift; sourceTree = "<group>"; };
+		F8FB72542A43EE620088E5B6 /* DelayController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelayController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -143,6 +147,7 @@
 				83F97E9F2A16F075000CB670 /* FirebaseFirestore in Frameworks */,
 				83F97EA32A16F075000CB670 /* FirebaseStorage in Frameworks */,
 				83F97EA62A16F0EB000CB670 /* URLImage in Frameworks */,
+				F8FB72582A4480380088E5B6 /* PromiseKit in Frameworks */,
 				83F97EA12A16F075000CB670 /* FirebaseFirestoreSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -244,6 +249,7 @@
 				838A74762A1BCF0A00F09DB8 /* ImageController.swift */,
 				83678CBB2A2199A300C50603 /* ChatController.swift */,
 				F89F71362A32471800051BFF /* PageController.swift */,
+				F8FB72542A43EE620088E5B6 /* DelayController.swift */,
 			);
 			path = controllers;
 			sourceTree = "<group>";
@@ -365,6 +371,7 @@
 				83F97EA02A16F075000CB670 /* FirebaseFirestoreSwift */,
 				83F97EA22A16F075000CB670 /* FirebaseStorage */,
 				83F97EA52A16F0EB000CB670 /* URLImage */,
+				F8FB72572A4480380088E5B6 /* PromiseKit */,
 			);
 			productName = hauler;
 			productReference = 83F97E882A16E9C0000CB670 /* hauler.app */;
@@ -397,6 +404,7 @@
 			packageReferences = (
 				83F97E992A16F075000CB670 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				83F97EA42A16F0EA000CB670 /* XCRemoteSwiftPackageReference "url-image" */,
+				F8FB72562A4480380088E5B6 /* XCRemoteSwiftPackageReference "PromiseKit" */,
 			);
 			productRefGroup = 83F97E892A16E9C0000CB670 /* Products */;
 			projectDirPath = "";
@@ -414,6 +422,7 @@
 			files = (
 				83F97E932A16E9C6000CB670 /* Preview Assets.xcassets in Resources */,
 				83F97E902A16E9C6000CB670 /* Assets.xcassets in Resources */,
+				F8FB725C2A44F9CB0088E5B6 /* (null) in Resources */,
 				283B43112A197DCB0073EA1B /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -428,6 +437,7 @@
 				288780732A217E050038268E /* ChangePasswordView.swift in Sources */,
 				83F97EAE2A16F1AE000CB670 /* ListingController.swift in Sources */,
 				8348320C2A185FD600CE8E2D /* Listing.swift in Sources */,
+				F8FB72552A43EE620088E5B6 /* DelayController.swift in Sources */,
 				83F97E8E2A16E9C0000CB670 /* ContentView.swift in Sources */,
 				F81B0A2D2A36C286008C2942 /* ChatImageLogo.swift in Sources */,
 				F89F71312A312BED00051BFF /* OverlayApadater.swift in Sources */,
@@ -705,6 +715,14 @@
 				minimumVersion = 3.0.0;
 			};
 		};
+		F8FB72562A4480380088E5B6 /* XCRemoteSwiftPackageReference "PromiseKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/mxcl/PromiseKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -737,6 +755,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 83F97EA42A16F0EA000CB670 /* XCRemoteSwiftPackageReference "url-image" */;
 			productName = URLImage;
+		};
+		F8FB72572A4480380088E5B6 /* PromiseKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F8FB72562A4480380088E5B6 /* XCRemoteSwiftPackageReference "PromiseKit" */;
+			productName = PromiseKit;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

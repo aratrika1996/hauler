@@ -7,18 +7,18 @@
 
 import SwiftUI
 import Combine
+import PromiseKit
 
 struct ChatListView: View {
     @EnvironmentObject var chatController: ChatController
     @EnvironmentObject var userProfileController: UserProfileController
-    @State var localDict : [String:UserProfile] = [:]
-    @State var localChat : [String:Chat] = [:]
     @State private var selectedChat : String? = nil
     @State private var path : NavigationPath = NavigationPath()
     @State private var isLoading : Bool = false
+    @State private var localProfileDict : [String:UserProfile] = [:]
+    
     
     var body: some View {
-        let currentDict = CurrentValueSubject<[String:UserProfile], Never>(userProfileController.userDict)
         NavigationStack(path:$path){
             VStack{
                 List(Array(self.chatController.sortedKey), id:\.self, selection:$selectedChat){key in
@@ -29,45 +29,40 @@ struct ChatListView: View {
                         NavigationLink(value:key as String)
                         {
                             HStack{
-                                if ((localDict[key]?.uProfileImage) != nil) {
-                                    //Text((localDict[key]?.uProfileImage!)! as! DateInterval)
-                                    Image(uiImage: (localDict[key]?.uProfileImage)!)
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fill)
-                                        .frame(width: 65, height: 65)
-                                        .clipShape(Circle())
-                                        .overlay(Circle().stroke(Color.white, lineWidth: 1))
-                                        .scaledToFit()
-                                }
-                                else {
-                                    //Text((localDict[key]?.uProfileImage!)! as! DateInterval)
-                                    Image(systemName: "person")
-                                        .resizable()
-                                        .frame(width: 25, height: 25)
-                                        .foregroundColor(.black)
-                                        .padding(20)
-                                        .background(Color.gray)
-                                        .clipShape(Circle())
-                                }
-                                
+                                Image(uiImage: self.userProfileController.userDict[key]?.uProfileImage ?? UIImage(systemName: "person")!)
+                                    .resizable()
+                                    .cornerRadius(100)
+                                    .shadow(radius: 5, x:5, y:5)
+                                    .frame(width: 50, height: 50)
                                 HStack{
                                     VStack(alignment: .leading){
                                         HStack{
-                                            Text(localDict[key]?.uName ?? "Unknown")
-                                                .font(.system(size: 18))
-                                                .fontWeight(.medium)
+                                            Text(self.userProfileController.userDict[key]?.uName ?? "Unknown")
                                             Spacer()
-                                            Text((chatController.chatDict[key]?.messages.last?.timestamp.dateValue().convertToDateOrTime())!)
+                                            Text((chatController.chatDict[key]?.messages.last?.timestamp.dateValue().convertToDateOrTime()) ?? "")
                                                 .foregroundColor(.gray)
                                                 .font(.system(size: 13))
                                                 
                                         }
                                         .padding(.bottom, 1)
                                         .foregroundColor(.black)
-                                        Text(chatController.chatDict[key]?.messages.last?.text ?? "")
-                                            .foregroundColor(.gray)
-                                            .lineLimit(1)
-                                            .font(.system(size: 16))
+                                        HStack{
+                                            Text(chatController.chatDict[key]?.messages.last?.text ?? "")
+                                                .foregroundColor(self.chatController.chatDict[key]?.unread ?? 0 > 0 ? .black : .gray)
+                                                .lineLimit(1)
+                                                .font(.system(size: 16))
+                                            if(self.chatController.chatDict[key]?.unread ?? 0 > 0){
+                                                Spacer()
+                                                
+                                                Text(self.chatController.chatDict[key]?.unread.formatted() ?? "")
+                                                    .padding(.horizontal, 10)
+                                                    .padding(.vertical, 5)
+                                                    .foregroundColor(.white)
+                                                    .background(Color("HaulerOrange"))
+                                                    .cornerRadius(10)
+                                            }
+                                        }
+                                        
                                     }
                                 }
                                 .padding(5)
@@ -83,21 +78,20 @@ struct ChatListView: View {
                         ConversationView(chat: key)
                     }
                 })
-                .onReceive(currentDict, perform: {dict in
-                    localDict = dict
-                })
                 .onAppear{
+//                    localProfileDict = self.userProfileController.userDict
                     chatController.msgCount = 0
                     if chatController.newChatRoom{
+                        print(#function, "NewChatRoom !!")
                         self.isLoading = true
                         chatController.newChatRoom = false
                         if let newId = chatController.toId{
                             Task{
                                 await chatController.newChatRoom(id: newId, complete:{success in
-                                    chatController.fetchChats(completion: {
+//                                    chatController.fetchChats(completion: {_ in
                                         isLoading = false
                                         redirect(local: false)
-                                    })
+//                                    })
                                 })
                             }
                         }

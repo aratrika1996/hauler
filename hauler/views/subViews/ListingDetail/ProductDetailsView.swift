@@ -21,6 +21,7 @@ struct ProductDetailView: View {
     @State var showMore : Bool = false
     @State var path : NavigationPath = NavigationPath()
     @State var inputText : String = "Hi, I am interested in the product with name "
+    @State private var openEditSheet = false
     
     @Binding var rootScreen :RootView
     
@@ -35,10 +36,8 @@ struct ProductDetailView: View {
                             print(#function, "task start")
                             if userProfileController.userDict[listing.email] == nil{
                                 print(#function, "email not found, load profile")
-                                await userProfileController.getUsersByEmail(email: [listing.email], completion: {success in
-                                    if(success){
-                                        isLoading = false
-                                    }
+                                userProfileController.getUserByEmail(email: listing.email, completion: {_,_ in
+                                    isLoading = false
                                 })
                                 
                             }else{
@@ -71,19 +70,19 @@ struct ProductDetailView: View {
                                     .cornerRadius(5)
                                     .shadow(color: Color.gray.opacity(0.4), radius: 5, x:2, y:4)
                                     .onTapGesture {
-                                    if(
-                                        chatController.chatDict.keys.contains(where: {
-                                            $0 == listing.email
-                                        })){
-                                        viewRouter.currentView = .chat
-                                        chatController.toId = listing.email
-                                        chatController.redirect = true
-                                        dismiss()
+                                        if(
+                                            chatController.chatDict.keys.contains(where: {
+                                                $0 == listing.email
+                                            })){
+                                            viewRouter.currentView = .chat
+                                            chatController.toId = listing.email
+                                            chatController.redirect = true
+                                            dismiss()
+                                        }
+                                        else{
+                                            showAlert = true
+                                        }
                                     }
-                                    else{
-                                        showAlert = true
-                                    }
-                                }
                             }
                             Image(uiImage: UIImage(systemName: "heart.fill")!)
                                 .resizable()
@@ -125,10 +124,10 @@ struct ProductDetailView: View {
                             HStack{
                                 Text("About Seller").font(.system(size: 19)).fontWeight(.medium)
                                 Spacer()
-                                    NavigationLink(destination: UserPublicProfileView(sellerEmail: listing.email, rootScreen: $rootScreen)){
-                                        Text("View Profile").font(.system(size: 19)).fontWeight(.medium)
-                                    }
-
+                                NavigationLink(destination: UserPublicProfileView(sellerEmail: listing.email, rootScreen: $rootScreen)){
+                                    Text("View Profile").font(.system(size: 19)).fontWeight(.medium)
+                                }
+                                
                             }
                             
                             HStack(alignment: .center){
@@ -155,18 +154,6 @@ struct ProductDetailView: View {
                                 VStack(alignment: .leading){
                                     Text(userProfileController.userDict[listing.email]!.uName)
                                         .foregroundColor(Color.black)
-//                                    HStack{
-//                                        ForEach(0..<4){_ in
-//                                            Image(uiImage: UIImage(systemName: "star.fill")!)
-//                                                .resizable()
-//                                                .frame(width: 20, height: 20)
-//                                        }
-//                                        Image(uiImage: UIImage(systemName: "star")!)
-//                                            .resizable()
-//                                            .frame(width: 20, height: 20)
-//                                        Text("4")
-//                                        Text("(8)")
-//                                    }
                                     Text(userProfileController.userDict[listing.email]!.uEmail)
                                         .foregroundColor(Color.black)
                                 }
@@ -183,8 +170,8 @@ struct ProductDetailView: View {
                     }
                     Button("Send"){
                         if(chatController.chatDict.keys.contains(where: {
-                                $0 == listing.email
-                            })){
+                            $0 == listing.email
+                        })){
                             chatController.newChatRoom = false
                         }else{
                             chatController.messageText = inputText + listing.title
@@ -200,51 +187,49 @@ struct ProductDetailView: View {
                 }
                 .toolbar(){
                     ToolbarItemGroup(placement: .bottomBar){
-                        
                         if(listing.email == chatController.loggedInUserEmail){
-//                            Button(action:{}){
-//                                NavigationLink(destination: EditListingView(listing: listing).environmentObject(listingController)) {
-//                                    Text("Manage Item")
-//                                        .font(.system(size: 20))
-//                                        .foregroundColor(.white)
-//                                        .frame(maxWidth: .infinity)
-//                                }
-//
-//                            }
-//                            .padding(.horizontal, 20)
-//                            .padding([.top], 10)
-//                            .buttonStyle(.borderedProminent)
+                            Button(action:{
+                                self.openEditSheet = true
+                            }){
+                                Text("Manage Item")
+                                    .font(.system(size: 20))
+                                    .foregroundColor(.white)
+                                    .frame(maxWidth: .infinity)
+                            }
+                            .padding(.horizontal, 20)
+                            .padding([.top], 10)
+                            .buttonStyle(.borderedProminent)
                         }
                         else if(userProfileController.loggedInUserEmail != ""){
-
-//                            Button(action:{}){
-//                                NavigationLink(destination: BuyPageView()) {
-//                                    Text("Buy Now")
-//                                        .font(.system(size: 20))
-//                                        .foregroundColor(.white)
-//                                        .frame(maxWidth: .infinity)
-//                                }
-//
-//                            }
-//                            .padding(.horizontal, 20)
-//                            .padding([.top], 10)
-//                            .buttonStyle(.borderedProminent)
+                            
+                            //                            Button(action:{}){
+                            //                                NavigationLink(destination: BuyPageView()) {
+                            //                                    Text("Buy Now")
+                            //                                        .font(.system(size: 20))
+                            //                                        .foregroundColor(.white)
+                            //                                        .frame(maxWidth: .infinity)
+                            //                                }
+                            //
+                            //                            }
+                            //                            .padding(.horizontal, 20)
+                            //                            .padding([.top], 10)
+                            //                            .buttonStyle(.borderedProminent)
                         }
                         else{
-//                            Button(action:{}){
-//                                NavigationLink(destination: BuyPageView()) {
-//                                    Text("Buy Now")
-//                                        .font(.system(size: 20))
-//                                        .foregroundColor(.white)
-//                                        .frame(maxWidth: .infinity)
-//                                }
-//
-//                            }
-//                            .padding(.horizontal, 20)
-//                            .padding([.top], 10)
-//                            .buttonStyle(.borderedProminent)
-//
-//                            Spacer()
+                            //                            Button(action:{}){
+                            //                                NavigationLink(destination: BuyPageView()) {
+                            //                                    Text("Buy Now")
+                            //                                        .font(.system(size: 20))
+                            //                                        .foregroundColor(.white)
+                            //                                        .frame(maxWidth: .infinity)
+                            //                                }
+                            //
+                            //                            }
+                            //                            .padding(.horizontal, 20)
+                            //                            .padding([.top], 10)
+                            //                            .buttonStyle(.borderedProminent)
+                            //
+                            //                            Spacer()
                             Button(action:{}){
                                 NavigationLink(destination: LoginView(rootScreen: $rootScreen)) {
                                     Text("Login to Chat")
@@ -252,7 +237,7 @@ struct ProductDetailView: View {
                                         .foregroundColor(.white)
                                         .frame(maxWidth: .infinity)
                                 }
-                               
+                                
                             }
                             .padding(.horizontal, 20)
                             .padding([.top], 10)
@@ -260,9 +245,11 @@ struct ProductDetailView: View {
                             .tint(Color(UIColor(named: "HaulerOrange") ?? .blue))
                         }
                     }
-                    
                 }
             }
+        }
+        .sheet(isPresented: self.$openEditSheet){
+            EditListingView(listing: listing)
         }
         .onDisappear{
             if(chatController.newChatRoom){

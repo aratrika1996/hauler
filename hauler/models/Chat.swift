@@ -11,6 +11,7 @@ struct Chat: Codable, Identifiable, Hashable {
     var id: String
     var displayName: String
     var messages: [Message]
+    var unread: Int = 0
     
     private enum CodingKeys: String, CodingKey {
         case participants
@@ -42,5 +43,17 @@ struct Chat: Codable, Identifiable, Hashable {
         hasher.combine(id)
         hasher.combine(displayName)
         hasher.combine(messages)
+    }
+    
+    mutating func addUnread () {
+        self.unread += 1
+    }
+    
+    mutating func minusUnread () {
+        self.unread -= 1
+    }
+    
+    mutating func resetUnread () {
+        self.unread = 0
     }
 }

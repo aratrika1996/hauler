@@ -73,17 +73,26 @@ struct MaterialDesignTextField: View {
     @State private var image = ""
     @Binding private var text: String
     @Binding private var valid: Bool
+    private let initialEditing: Bool
     
     init(_ text: Binding<String>,
          placeholder: String,
          hint: Binding<String>,
          editing: Binding<Bool>,
-         valid: Binding<Bool>) {
+         valid: Binding<Bool>,
+         initialEditing: Bool) {
         self._text = text
         self.placeholder = placeholder
         self._hint = hint
         self._editing = editing
         self._valid = valid
+        if initialEditing{
+            self.initialEditing = true
+            updatePlaceholder()
+            updateBorder()
+        }else{
+            self.initialEditing = false
+        }
     }
     
     private func updateBorder() {
@@ -167,7 +176,7 @@ struct MaterialDesignTextField: View {
 struct MaterialDesignTextField_Previews: PreviewProvider {
     static var previews: some View {
         
-        MaterialDesignTextField(.constant("1234"), placeholder: "Input", hint: .constant("hint"), editing: .constant(true), valid: .constant(true))
+        MaterialDesignTextField(.constant("1234"), placeholder: "Input", hint: .constant("hint"), editing: .constant(true), valid: .constant(true), initialEditing: true)
     }
 }
 

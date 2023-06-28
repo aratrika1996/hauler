@@ -19,45 +19,42 @@ struct ConversationView: View {
     @State private var localChatDict : [String:Chat] = [:]
 
     var body: some View {
-        let currentChatDict = CurrentValueSubject<[String:Chat], Never>(chatController.chatDict)
         VStack {
             ScrollViewReader { scrollViewProxy in
                 ScrollView(.vertical) {
                     VStack(alignment: .leading, spacing: 10) {
-                        ForEach(localChatDict[chat]?.messages ?? []) { message in
-                            if let previousMessage = previousMessage(for: message) {
-                                if isDifferentDay(date1: previousMessage.timestamp.dateValue(), date2: message.timestamp.dateValue()) {
+                        if let currentChat = self.chatController.chatDict[self.chat]{
+                            ForEach(currentChat.messages) { message in
+                                if let previousMessage = previousMessage(for: message) {
+                                    if isDifferentDay(date1: previousMessage.timestamp.dateValue(), date2: message.timestamp.dateValue()) {
+                                        DayTagView(day: message.timestamp.dateValue().convertToTag())
+                                    }
+                                }else{
                                     DayTagView(day: message.timestamp.dateValue().convertToTag())
                                 }
-                            }else{
-                                DayTagView(day: message.timestamp.dateValue().convertToTag())
-                            }
-                            ChatMessageView(message: message, isSender: message.fromId == chatController.loggedInUserEmail)
-                                .padding(.horizontal)
-                                .id(message.id) // Assign a unique identifier to each message
-                                .onChange(of: messageCount) { num in
-                                    // Automatically scroll to the bottom when a new message arrives
-                                    print("message ++ to :\(num)")
-//                                    if shouldScrollToBottom {
-                                        withAnimation {
-                                            scrollViewProxy.scrollTo(chatController.chatDict[chat]!.messages.last?.id, anchor: .bottom)
-                                        }
-//                                    }
-                                }
-                                .onAppear {
-                                    withAnimation {
-                                        scrollViewProxy.scrollTo(chatController.chatDict[chat]!.messages.last?.id, anchor: .bottom)
+                                ChatMessageView(message: message, isSender: message.fromId == chatController.loggedInUserEmail)
+                                    .padding(.horizontal)
+                                    .id(message.id) // Assign a unique identifier to each message
+                                    .onChange(of: messageCount) { num in
+                                        // Automatically scroll to the bottom when a new message arrives
+    //                                    if shouldScrollToBottom {
+                                            withAnimation {
+                                                scrollViewProxy.scrollTo(currentChat.messages.last?.id, anchor: .bottom)
+                                            }
+    //                                    }
                                     }
-                                }
+                                    .onAppear {
+                                        withAnimation {
+                                            scrollViewProxy.scrollTo(currentChat.messages.last?.id, anchor: .bottom)
+                                        }
+                                    }
+                            }
+                        }
+                        else{
+                            Text("NoThing In Chat")
                         }
                     }
                 }
-                .onAppear{
-                    localChatDict = chatController.chatDict
-                }
-                .onReceive(currentChatDict, perform: {dict in
-                    localChatDict = dict
-                })
             }
 
             HStack {
@@ -68,7 +65,6 @@ struct ConversationView: View {
                     chatController.sendMessage(chatId: chatController.chatDict[chat]!.id, toId: chat, complete: {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
                             shouldScrollToBottom = true // Set shouldScrollToBottom to true after sending a message
-                            messageCount += 1 // Update the message count
                         })
 
                     })
@@ -84,15 +80,21 @@ struct ConversationView: View {
             
             
         }
-        .navigationTitle("\(userProfileController.userDict[chat]!.uName) ")
+        .onAppear{
+            chatController.readAllUnread(userId: chat)
+        }
+        .navigationTitle("\(userProfileController.userDict[chat]?.uName ?? "") ")
     }
     
     func previousMessage(for message: Message) -> Message? {
-        guard let index = localChatDict[chat]?.messages.firstIndex(where: { $0.id == message.id }) else {
+        guard let currentChat = self.chatController.chatDict[self.chat] else{
+            return nil
+        }
+        guard let index = currentChat.messages.firstIndex(where: { $0.id == message.id! }) else {
             return nil
         }
         
-        return index > 0 ? localChatDict[chat]?.messages[index - 1] : nil
+        return index > 0 ? currentChat.messages[index - 1] : nil
     }
 
     func isDifferentDay(date1: Date, date2: Date) -> Bool {
