@@ -61,19 +61,22 @@ struct MainView: View {
                 chatContoller.fetchChats(completion: {keys in
                     print("after main appear, chat profile = \(self.chatContoller.chatDict.count)")
                     keycount = 0
-                    keys.forEach{
-                        userProfileController.getUserByEmail(email: $0, completion: {_,success in
-                            if(success){
-                                keycount += 1
-                                print("now keycount= \(keycount)")
-                                if(keycount == keys.count){
-                                    isLoading = false
-                                    keycount = 0
+                    if !keys.isEmpty{
+                        keys.forEach{
+                            userProfileController.getUserByEmail(email: $0, completion: {_,success in
+                                if(success){
+                                    keycount += 1
+                                    print("now keycount= \(keycount)")
+                                    if(keycount == keys.count){
+                                        isLoading = false
+                                        keycount = 0
+                                    }
                                 }
-                            }
-                        })
+                            })
+                        }
+                    }else{
+                        isLoading = false
                     }
-                    
                 })
             }else{
                 isLoading = false

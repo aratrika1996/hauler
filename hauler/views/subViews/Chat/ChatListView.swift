@@ -46,10 +46,23 @@ struct ChatListView: View {
                                         }
                                         .padding(.bottom, 1)
                                         .foregroundColor(.black)
-                                        Text(chatController.chatDict[key]?.messages.last?.text ?? "")
-                                            .foregroundColor(.gray)
-                                            .lineLimit(1)
-                                            .font(.system(size: 16))
+                                        HStack{
+                                            Text(chatController.chatDict[key]?.messages.last?.text ?? "")
+                                                .foregroundColor(self.chatController.chatDict[key]?.unread ?? 0 > 0 ? .black : .gray)
+                                                .lineLimit(1)
+                                                .font(.system(size: 16))
+                                            if(self.chatController.chatDict[key]?.unread ?? 0 > 0){
+                                                Spacer()
+                                                
+                                                Text(self.chatController.chatDict[key]?.unread.formatted() ?? "")
+                                                    .padding(.horizontal, 10)
+                                                    .padding(.vertical, 5)
+                                                    .foregroundColor(.white)
+                                                    .background(Color("HaulerOrange"))
+                                                    .cornerRadius(10)
+                                            }
+                                        }
+                                        
                                     }
                                 }
                                 .padding(5)

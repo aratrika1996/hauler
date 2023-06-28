@@ -37,7 +37,6 @@ struct ConversationView: View {
                                     .id(message.id) // Assign a unique identifier to each message
                                     .onChange(of: messageCount) { num in
                                         // Automatically scroll to the bottom when a new message arrives
-                                        print("message ++ to :\(num)")
     //                                    if shouldScrollToBottom {
                                             withAnimation {
                                                 scrollViewProxy.scrollTo(currentChat.messages.last?.id, anchor: .bottom)
@@ -66,7 +65,6 @@ struct ConversationView: View {
                     chatController.sendMessage(chatId: chatController.chatDict[chat]!.id, toId: chat, complete: {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
                             shouldScrollToBottom = true // Set shouldScrollToBottom to true after sending a message
-                            messageCount += 1 // Update the message count
                         })
 
                     })
@@ -81,6 +79,9 @@ struct ConversationView: View {
             .padding(10)
             
             
+        }
+        .onAppear{
+            chatController.readAllUnread(userId: chat)
         }
         .navigationTitle("\(userProfileController.userDict[chat]?.uName ?? "") ")
     }

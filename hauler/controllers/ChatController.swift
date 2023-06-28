@@ -60,6 +60,7 @@ class ChatController: ObservableObject {
         chatDict.removeAll()
         sortedKeyDict.removeAll()
         messageText = ""
+        msgCount = 0
         toId = nil
         selectedChar = nil
         userId = nil
@@ -78,6 +79,7 @@ class ChatController: ObservableObject {
                 "fromId": userId,
                 "toId": toId,
                 "text": messageText, // messageText,
+                "unread": true,
                 "timestamp": Date()
             ]
             
@@ -117,6 +119,7 @@ class ChatController: ObservableObject {
             "fromId": userId,
             "toId": id,
             "text": self.messageText, // messageText,
+            "unread": true,
             "timestamp": Date()
         ]
         self.db.collection(self.COLLECTION_CHAT).document(newchatroom.documentID).collection("messages").addDocument(data: messageData){err in
@@ -132,6 +135,18 @@ class ChatController: ObservableObject {
         
     }
     
+    func readAllUnread(userId:String){
+        guard let chatroom = self.chatDict[userId] else{
+            return
+        }
+        let msgs = chatroom.messages.filter{msg in return msg.unread == true && msg.toId == loggedInUserEmail}
+        print("trying to unread msg with count \(msgs.count)...msgs = \(msgs)")
+        if !msgs.isEmpty{
+            msgs.forEach{msg in
+                db.collection(COLLECTION_CHAT).document(chatroom.id).collection("messages").document(msg.id!).setData(["unread":false], merge: true)
+            }
+        }
+    }
     
     func fetchChats(completion: @escaping ([String]) -> Void){
         loggedInUserEmail = Auth.auth().currentUser?.email ?? UserDefaults.standard.string(forKey: "KEY_EMAIL")
@@ -169,12 +184,25 @@ class ChatController: ObservableObject {
                     }
                     switch(obj.type){
                     case .added:
+                        print("got new msg, to\(newmsg.toId), me=\(userId)")
+                        if newmsg.unread && newmsg.toId == userId{
+                            self.chatDict[displayName]?.addUnread()
+                            self.msgCount += 1
+                            print("New Unread!, count=\(self.msgCount)")
+                        }
                         self.chatDict[displayName]?.messages.append(newmsg)
                     case .modified:
                         if let modifiedMsgIdx = self.chatDict[displayName]?.messages.firstIndex(where: {msg in
                             msg.id == newmsg.id
                         }){
+                            let copy = self.chatDict[displayName]?.messages[modifiedMsgIdx]
+                            if copy?.unread ?? true && !newmsg.unread && newmsg.toId == userId{
+                                self.msgCount -= 1
+                                self.chatDict[displayName]?.minusUnread()
+                                print("Unread changed to read, count=\(self.msgCount)")
+                            }
                             self.chatDict[displayName]?.messages[modifiedMsgIdx] = newmsg
+                            
                         }
                     case .removed:
                         if let modifiedMsgIdx = self.chatDict[displayName]?.messages.firstIndex(where: {msg in
