@@ -83,6 +83,9 @@ struct ConversationView: View {
         .onAppear{
             chatController.readAllUnread(userId: chat)
         }
+        .onDisappear{
+            chatController.readAllUnread(userId: chat)
+        }
         .navigationTitle("\(userProfileController.userDict[chat]?.uName ?? "") ")
     }
     
