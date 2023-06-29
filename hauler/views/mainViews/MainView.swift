@@ -57,6 +57,9 @@ struct MainView: View {
         }
         .onAppear{
             UITabBar.appearance().backgroundColor = UIColor(named: "BackgroundGray") ?? .white
+            if let email = UserDefaults.standard.value(forKey: "KEY_EMAIL"){
+                self.userProfileController.getAllUserData(completion: {})
+            }
             if(self.chatContoller.chatRef == nil){
                 chatContoller.fetchChats(completion: {keys in
                     print("after main appear, chat profile = \(self.chatContoller.chatDict.count)")

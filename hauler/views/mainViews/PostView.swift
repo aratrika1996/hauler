@@ -203,15 +203,14 @@ struct PostView: View {
                             if(!$0){
                                 return
                             }
-                            if let up = self.userProfileController.userDict[self.userProfileController.loggedInUserEmail]{
-                                if(up.uAddress == ""){
-                                    return
-                                }
-                                listingLoc = up.uAddress
-                                delayController.start(delay: 1, closure: {
-                                    self.locationController.ReversedLocation = listingLoc
-                                })
+                            if(self.userProfileController.userProfile.uAddress == ""){
+                                return
                             }
+                            listingLoc = self.userProfileController.userProfile.uAddress
+                            delayController.start(delay: 1, closure: {
+                                self.locationController.ReversedLocation = listingLoc
+                            })
+                            
                             
                         })
                         .onChange(of: listingLoc, perform: {newloc in
@@ -306,7 +305,7 @@ struct PostView: View {
             
         }
         .onAppear{
-            self.listingLoc = self.userProfileController.userDict[self.userProfileController.loggedInUserEmail]?.uAddress ?? ""
+            self.listingLoc = self.userProfileController.userProfile.uAddress
         }
         .navigationBarTitle("Post Listing")
         .alert(self.alertTitle, isPresented: $alertIsPresented, actions: {
