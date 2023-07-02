@@ -49,6 +49,7 @@ struct LoginView: View {
             
             NavigationLink(destination: ForgotPasswordView(rootScreen: $rootScreen)) {
                 Text("Forgot password?")
+                    .frame(maxWidth: .infinity, alignment: .leading)
             }
             
             if isUserInputInvalid {
