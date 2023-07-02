@@ -18,6 +18,7 @@
 		288780792A29B8080038268E /* TopTabBarButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 288780782A29B8080038268E /* TopTabBarButton.swift */; };
 		2887807B2A29B8210038268E /* CustomTopTabBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2887807A2A29B8210038268E /* CustomTopTabBarView.swift */; };
 		288780832A32912A0038268E /* UserPublicProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 288780822A32912A0038268E /* UserPublicProfileView.swift */; };
+		288780852A4FA21C0038268E /* ForgotPasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 288780842A4FA21C0038268E /* ForgotPasswordView.swift */; };
 		83318FF42A3E448F00148B7E /* EditListingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83318FF32A3E448F00148B7E /* EditListingView.swift */; };
 		8348320C2A185FD600CE8E2D /* Listing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8348320B2A185FD600CE8E2D /* Listing.swift */; };
 		83678CBC2A2199A400C50603 /* ChatController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83678CBB2A2199A300C50603 /* ChatController.swift */; };
@@ -87,6 +88,7 @@
 		288780782A29B8080038268E /* TopTabBarButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopTabBarButton.swift; sourceTree = "<group>"; };
 		2887807A2A29B8210038268E /* CustomTopTabBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTopTabBarView.swift; sourceTree = "<group>"; };
 		288780822A32912A0038268E /* UserPublicProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPublicProfileView.swift; sourceTree = "<group>"; };
+		288780842A4FA21C0038268E /* ForgotPasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPasswordView.swift; sourceTree = "<group>"; };
 		83318FF32A3E448F00148B7E /* EditListingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditListingView.swift; sourceTree = "<group>"; };
 		8348320B2A185FD600CE8E2D /* Listing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Listing.swift; sourceTree = "<group>"; };
 		83678CBB2A2199A300C50603 /* ChatController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatController.swift; sourceTree = "<group>"; };
@@ -298,6 +300,7 @@
 				F88464AA2A2A7C50007F4C64 /* SplashScreenView.swift */,
 				83318FF32A3E448F00148B7E /* EditListingView.swift */,
 				F8EA1CE42A3B9CC300DF78BC /* ImagePickerView.swift */,
+				288780842A4FA21C0038268E /* ForgotPasswordView.swift */,
 			);
 			path = subViews;
 			sourceTree = "<group>";
@@ -484,6 +487,7 @@
 				83F97ECD2A16F3AD000CB670 /* ProfileView.swift in Sources */,
 				83F97ED42A16F424000CB670 /* MessageDetailView.swift in Sources */,
 				F81B0A312A36C7D7008C2942 /* ZeroChatView.swift in Sources */,
+				288780852A4FA21C0038268E /* ForgotPasswordView.swift in Sources */,
 				83F97EAC2A16F156000CB670 /* AuthController.swift in Sources */,
 				838A74772A1BCF0A00F09DB8 /* ImageController.swift in Sources */,
 				838A74792A1BDA9900F09DB8 /* RootView.swift in Sources */,

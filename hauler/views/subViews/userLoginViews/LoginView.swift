@@ -47,6 +47,10 @@ struct LoginView: View {
             SecureField("Enter password", text: $password)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
             
+            NavigationLink(destination: ForgotPasswordView(rootScreen: $rootScreen)) {
+                Text("Forgot password?")
+            }
+            
             if isUserInputInvalid {
                 Text("Email address / password cannot be empty.")
                     .foregroundColor(.red)
