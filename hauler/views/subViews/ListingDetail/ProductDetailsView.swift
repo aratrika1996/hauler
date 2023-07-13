@@ -120,7 +120,7 @@ struct ProductDetailView: View {
                                 .blur(radius: (listing.locString == "Unknown" ? 10 : 0))
                                 .disabled((listing.locString == "Unknown" ? true : false))
                         }.padding()
-                        VStack{
+                        (listing.email == self.userProfileController.loggedInUserEmail ? nil : VStack{
                             HStack{
                                 Text("About Seller").font(.system(size: 19)).fontWeight(.medium)
                                 Spacer()
@@ -159,7 +159,8 @@ struct ProductDetailView: View {
                                 }
                                 Spacer()
                             }
-                        }.padding()
+                        }.padding())
+                        
                     }
                     .background(Color("HaulerDarkMode"))
                 }
