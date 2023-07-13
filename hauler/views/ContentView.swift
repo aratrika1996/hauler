@@ -107,13 +107,15 @@ struct ContentView: View {
                 
                 ToolbarItem(placement:.navigationBarTrailing){
                     HStack{
-                        Image(uiImage: UIImage(systemName: "heart.fill")!)
-                            .resizable()
-                            .frame(width: 15, height: 15)
-                            .padding(15)
-                            .clipShape(Circle())
-                            .overlay(Circle().strokeBorder(Color(red: 220/255, green: 220/255, blue: 220/255), lineWidth: 1))
+                        NavigationLink(destination: FavoritesView()) {
+                            Image(uiImage: UIImage(systemName: "heart.fill")!)
+                                .resizable()
+                                .frame(width: 15, height: 15)
+                                .padding(15)
+                                .clipShape(Circle())
+                                .overlay(Circle().strokeBorder(Color(red: 220/255, green: 220/255, blue: 220/255), lineWidth: 1))
                             //.background(Color("HaulerOrange"), in:Circle())
+                        }
                         Image(uiImage: UIImage(systemName: "bell")!)
                             .resizable()
                             .frame(width: 15, height: 15)
