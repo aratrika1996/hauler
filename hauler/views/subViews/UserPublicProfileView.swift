@@ -35,11 +35,9 @@ struct UserPublicProfileView: View {
                 }){
                     (userProfileController.userProfile.uFollowedUsers.contains(email) ?
                      Text("Unfollow")
-                     .padding()
                      .foregroundColor(Color(.red))
                      :
                         Text("Follow")
-                        .padding()
                         .foregroundColor(Color("HaulerOrange"))
                      )
                     
@@ -98,6 +96,7 @@ struct UserPublicProfileView: View {
                         }
                     }
                     .padding(.leading, 10)
+                    Spacer()
                 }//HStack ends
                 .padding(.bottom, 20)
             }
