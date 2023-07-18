@@ -25,35 +25,57 @@ struct FollowedUserView: View {
                     ScrollView(.horizontal){
                         HStack{
                             ForEach(userProfileController.userProfile.uFollowedUsers, id: \.self){usr in
-                                Circle()
-                                    .frame(width: 60, height: 60)
-                                    .foregroundColor(usr == self.selectedUser ? Color("HaulerOrange") : Color.gray)
-                                    .shadow(radius: 5, x:5, y:5)
-                                    .overlay{
-                                        Image(uiImage: self.userProfileController.userDict[usr]?.uProfileImage ?? UIImage(systemName: "person")!)
-                                            .resizable()
-                                            .frame(width: 50, height: 50)
-                                            .cornerRadius(100)
-                                            .padding(5)
-                                            .onTapGesture {
-                                                print("selected:\(usr)")
-                                                self.selectedUser = usr
-                                            }
-                                    }
-                                
-                                
+                                VStack{
+                                    Circle()
+                                        .frame(width: 60, height: 60)
+                                        .foregroundColor(usr == self.selectedUser ? Color("HaulerOrange") : Color.gray)
+                                        .shadow(radius: 5, x:5, y:5)
+                                        .overlay{
+                                            Image(uiImage: self.userProfileController.userDict[usr]?.uProfileImage ?? UIImage(systemName: "person")!)
+                                                .resizable()
+                                                .frame(width: 50, height: 50)
+                                                .cornerRadius(100)
+                                                .padding(5)
+                                                .onTapGesture {
+                                                    print("selected:\(usr)")
+                                                    self.selectedUser = usr
+                                                }
+                                        }
+                                    Text(self.userProfileController.userDict[usr]?.uName ?? usr)
+                                        .fontWeight(.light)
+                                        .font(.caption)
+                                }
                                 
                             }
                         }
+                        
                         .padding()
-                    }
+                        
+                    }.overlay(
+                        RoundedRectangle(cornerRadius: 1)
+                            .stroke(Color.gray, lineWidth: 0.2)
+                                    .frame(height: 1)
+                                    .padding(.horizontal)
+                                , alignment: .bottom
+                    )
                     
                     if let selected = self.selectedUser{
                         VStack{
-                            UserPublicProfileView(sellerEmail: selected, rootScreen: $rootScreen)
+                            UserPublicProfileView(passedInTitle: "Following", sellerEmail: selected, rootScreen: $rootScreen)
                                 .id(selected)
-                                .navigationTitle(Text("Following"))
                         }
+                        .onChange(of: self.userProfileController.userProfile.uFollowedUsers, perform: {newlist in
+                            if let usr = self.selectedUser{
+                                if !self.userProfileController.userProfile.uFollowedUsers.isEmpty{
+                                    if newlist.firstIndex(of: usr) == nil{
+                                        self.selectedUser = self.userProfileController.userProfile.uFollowedUsers.first
+                                    }
+                                }else{
+                                    self.selectedUser = nil
+                                }
+                            }
+                            
+                        })
                     }
                     
                     

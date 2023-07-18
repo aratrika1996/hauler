@@ -110,20 +110,33 @@ struct ContentView: View {
                         
                             
                         NavigationLink(destination: FollowedUserView(rootScreen: $rootScreen)){
-                            Image(uiImage: UIImage(systemName: "heart.fill")!)
-                                .resizable()
-                                .frame(width: 15, height: 15)
-                                .padding(15)
-                                .clipShape(Circle())
-                                .overlay(Circle().strokeBorder(Color(red: 220/255, green: 220/255, blue: 220/255), lineWidth: 1))
+                            Circle()
+                                .strokeBorder(Color(red: 220/255, green: 220/255, blue: 220/255), lineWidth: 1)
+                                .frame(width: 45, height: 45)
+                                .overlay{
+                                    Image(uiImage: UIImage(systemName: "person.2")!)
+                                        .resizable()
+                                        .padding(.vertical, 15)
+                                        .padding(.horizontal, 11)
+                                }
                         }
-                            
-                        Image(uiImage: UIImage(systemName: "bell")!)
-                            .resizable()
-                            .frame(width: 15, height: 15)
-                            .padding(15)
-                            .clipShape(Circle())
-                            .overlay(Circle().strokeBorder(Color(red: 220/255, green: 220/255, blue: 220/255), lineWidth: 1))
+                        
+                        Circle()
+                            .strokeBorder(Color(red: 220/255, green: 220/255, blue: 220/255), lineWidth: 1)
+                            .frame(width: 45, height: 45)
+                            .overlay{
+                                Image(uiImage: UIImage(systemName: "heart.fill")!)
+                                    .resizable()
+                                    .padding(15)
+                            }
+                        Circle()
+                            .strokeBorder(Color(red: 220/255, green: 220/255, blue: 220/255), lineWidth: 1)
+                            .frame(width: 45, height: 45)
+                            .overlay{
+                                Image(uiImage: UIImage(systemName: "bell")!)
+                                    .resizable()
+                                    .padding(15)
+                            }
                     }
                     //.padding(.vertical, 30)
                 }
