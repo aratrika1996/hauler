@@ -185,7 +185,7 @@ struct ProductDetailView: View {
                     }
                     Button("Cancel", role: .cancel){}
                 }
-                .toolbar(){
+                .toolbar{
                     ToolbarItemGroup(placement: .bottomBar){
                         if(listing.email == chatController.loggedInUserEmail){
                             Button(action:{

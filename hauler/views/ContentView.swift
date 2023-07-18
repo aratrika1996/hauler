@@ -107,15 +107,17 @@ struct ContentView: View {
                 
                 ToolbarItem(placement:.navigationBarTrailing){
                     HStack{
-                        Image(uiImage: UIImage(systemName: "heart.fill")!)
-                            .resizable()
-                            .frame(width: 15, height: 15)
-                            .padding(15)
-                            .clipShape(Circle())
-                            .overlay(Circle().strokeBorder(Color(red: 220/255, green: 220/255, blue: 220/255), lineWidth: 1))
-                            .onTapGesture {
-                                //
-                            }
+                        
+                            
+                        NavigationLink(destination: FollowedUserView(rootScreen: $rootScreen)){
+                            Image(uiImage: UIImage(systemName: "heart.fill")!)
+                                .resizable()
+                                .frame(width: 15, height: 15)
+                                .padding(15)
+                                .clipShape(Circle())
+                                .overlay(Circle().strokeBorder(Color(red: 220/255, green: 220/255, blue: 220/255), lineWidth: 1))
+                        }
+                            
                         Image(uiImage: UIImage(systemName: "bell")!)
                             .resizable()
                             .frame(width: 15, height: 15)

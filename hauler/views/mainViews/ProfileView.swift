@@ -137,10 +137,16 @@ struct ProfileView: View {
                     }
                     
                     Section(header: Text("Account settings")) {
-                        NavigationLink(destination: ManageAccountView(rootScreen: $rootScreen).environmentObject(userProfileController).environmentObject(authController).environmentObject(listingController)) {
+                        NavigationLink(destination: ManageAccountView(rootScreen: $rootScreen)) {
                             Text("Manage account")
                         }
                         Text("Notification preferences")
+                    }
+                    
+                    Section(header: Text("Following")){
+                        NavigationLink(destination: FollowedUserView(rootScreen: $rootScreen)){
+                            Text("Followed Users")
+                        }
                     }
                     
                     Section(header: Text("General information")) {
