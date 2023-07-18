@@ -19,6 +19,7 @@ struct UserProfile: Identifiable, Codable {
     var uLat : Double = 0.0
     var uProfileImageURL : String? = ""
     var uProfileImage : UIImage? = nil
+    var uFollowedUsers : [String] = []
     
     private enum CodingKeys: String, CodingKey {
         case id
@@ -29,13 +30,14 @@ struct UserProfile: Identifiable, Codable {
         case uLong
         case uLat
         case uProfileImageURL
+        case uFollowedUsers
     }
     
     init(){
         
     }
     
-    init(id: String? = nil, cName: String, cEmail: String, uPhone: String, uAddress: String, uLong: Double, uLat: Double, uProfileImageURL: String? = "") {
+    init(id: String? = nil, cName: String, cEmail: String, uPhone: String, uAddress: String, uLong: Double, uLat: Double, uProfileImageURL: String? = "", uFollowedUsers: [String] = []) {
         self.id = id
         self.uName = cName
         self.uEmail = cEmail
@@ -44,6 +46,7 @@ struct UserProfile: Identifiable, Codable {
         self.uLong = uLong
         self.uLat = uLat
         self.uProfileImageURL = uProfileImageURL
+        self.uFollowedUsers = uFollowedUsers
     }
     
     init(up: UserProfile, img: UIImage?){
@@ -54,6 +57,7 @@ struct UserProfile: Identifiable, Codable {
         self.uPhone = up.uPhone
         self.uLong = up.uLong
         self.uLat = up.uLat
+        self.uFollowedUsers = up.uFollowedUsers
         self.uProfileImageURL = up.uProfileImageURL
         self.uProfileImage = img
     }
@@ -67,6 +71,7 @@ struct UserProfile: Identifiable, Codable {
         self.uPhone = try container.decode(String.self, forKey: .uPhone)
         self.uLong = try container.decode(Double.self, forKey: .uLong)
         self.uLat = try container.decode(Double.self, forKey: .uLat)
+        self.uFollowedUsers = try container.decodeIfPresent([String].self, forKey: .uFollowedUsers) ?? []
         self.uProfileImageURL = try container.decode(String.self, forKey: .uProfileImageURL)
     }
     
@@ -101,11 +106,16 @@ struct UserProfile: Identifiable, Codable {
             return nil
         }
         
+        var FollowedUsers : [String] = []
+        if let retrievedFollowedUsers =  dictionary["uFollowedUsers"] as? [String] {
+            FollowedUsers = retrievedFollowedUsers
+        }
+        
         guard let profileImageURL = dictionary["uProfileImageURL"] as? String else {
             print(#function, "Unable to read latitude from the object")
             return nil
         }
         
-        self.init(cName: name, cEmail: email, uPhone: phone, uAddress: address, uLong: long, uLat: lat, uProfileImageURL: profileImageURL)
+        self.init(cName: name, cEmail: email, uPhone: phone, uAddress: address, uLong: long, uLat: lat, uProfileImageURL: profileImageURL, uFollowedUsers: FollowedUsers)
     }
 }

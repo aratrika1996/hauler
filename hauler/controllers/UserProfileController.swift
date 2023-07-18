@@ -22,6 +22,7 @@ class UserProfileController : ObservableObject{
     private let store : Firestore
     private static var shared : UserProfileController?
     private let COLLECTION_PROFILE : String = "UserProfile"
+    private let FIELD_FOLLOWEDUSERS : String = "uFollowedUsers"
     private let FIELD_NAME = "uName"
     private let FIELD_CONTACT_NUMBER = "uPhone"
     private let FIELD_ADDRESS = "uAddress"
@@ -60,6 +61,7 @@ class UserProfileController : ObservableObject{
     func updateLoggedInUser(){
         self.loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
     }
+    
     func insertUserData(newUserData: UserProfile){
         print(#function, "Trying to insert \(newUserData.uName) to DB")
         print(#function, "current email", loggedInUserEmail)
@@ -80,6 +82,11 @@ class UserProfileController : ObservableObject{
             }
         }
         
+    }
+    
+    
+    func updateFollowedUsers(){
+        self.db.collection(self.COLLECTION_PROFILE).document(self.loggedInUserEmail).setData([self.FIELD_FOLLOWEDUSERS:self.userProfile.uFollowedUsers], mergeFields: [self.FIELD_FOLLOWEDUSERS])
     }
     
     func getPublicProfileByEmail(email: String, completion: @escaping (UserProfile?, Bool) -> Void) {

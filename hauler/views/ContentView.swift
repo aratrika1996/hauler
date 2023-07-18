@@ -114,7 +114,7 @@ struct ContentView: View {
                             .clipShape(Circle())
                             .overlay(Circle().strokeBorder(Color(red: 220/255, green: 220/255, blue: 220/255), lineWidth: 1))
                             .onTapGesture {
-                                <#code#>
+                                //
                             }
                         Image(uiImage: UIImage(systemName: "bell")!)
                             .resizable()

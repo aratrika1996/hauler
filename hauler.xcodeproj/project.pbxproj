@@ -286,6 +286,10 @@
 		83F97ECE2A16F3BD000CB670 /* subViews */ = {
 			isa = PBXGroup;
 			children = (
+				F813E7502A671C5100CFDD3B /* TopBarItems */,
+				F813E74F2A671C3F00CFDD3B /* Misc */,
+				F813E74E2A671BEA00CFDD3B /* ProfileVIew */,
+				F813E74D2A671BBB00CFDD3B /* listingView */,
 				F81B0A322A393737008C2942 /* InputField */,
 				83F97EB62A16F247000CB670 /* userLoginViews */,
 				83678CC12A21B59000C50603 /* Chat */,
@@ -293,22 +297,50 @@
 				F89F712E2A312BA400051BFF /* ExpandableText */,
 				83F97ED12A16F3E4000CB670 /* CommentView.swift */,
 				83F97ED32A16F424000CB670 /* MessageDetailView.swift */,
-				2887806E2A1DBDB70038268E /* PersonalDetailsView.swift */,
-				288780702A1EC0520038268E /* ManageAccountView.swift */,
-				288780722A217E050038268E /* ChangePasswordView.swift */,
-				288780742A29B7D60038268E /* AvailableListingsView.swift */,
+				288780822A32912A0038268E /* UserPublicProfileView.swift */,
+			);
+			path = subViews;
+			sourceTree = "<group>";
+		};
+		F813E74D2A671BBB00CFDD3B /* listingView */ = {
+			isa = PBXGroup;
+			children = (
 				288780762A29B7E80038268E /* SoldListingsView.swift */,
 				288780782A29B8080038268E /* TopTabBarButton.swift */,
 				2887807A2A29B8210038268E /* CustomTopTabBarView.swift */,
-				288780822A32912A0038268E /* UserPublicProfileView.swift */,
-				F88464AA2A2A7C50007F4C64 /* SplashScreenView.swift */,
 				83318FF32A3E448F00148B7E /* EditListingView.swift */,
-				F8EA1CE42A3B9CC300DF78BC /* ImagePickerView.swift */,
+				288780742A29B7D60038268E /* AvailableListingsView.swift */,
+			);
+			path = listingView;
+			sourceTree = "<group>";
+		};
+		F813E74E2A671BEA00CFDD3B /* ProfileVIew */ = {
+			isa = PBXGroup;
+			children = (
+				2887806E2A1DBDB70038268E /* PersonalDetailsView.swift */,
+				288780722A217E050038268E /* ChangePasswordView.swift */,
+				288780702A1EC0520038268E /* ManageAccountView.swift */,
 				288780842A4FA21C0038268E /* ForgotPasswordView.swift */,
+			);
+			path = ProfileVIew;
+			sourceTree = "<group>";
+		};
+		F813E74F2A671C3F00CFDD3B /* Misc */ = {
+			isa = PBXGroup;
+			children = (
+				F88464AA2A2A7C50007F4C64 /* SplashScreenView.swift */,
+				F8EA1CE42A3B9CC300DF78BC /* ImagePickerView.swift */,
+			);
+			path = Misc;
+			sourceTree = "<group>";
+		};
+		F813E7502A671C5100CFDD3B /* TopBarItems */ = {
+			isa = PBXGroup;
+			children = (
 				F813E74B2A66DC4000CFDD3B /* FollowedUserView.swift */,
 				F813E7492A66DC2700CFDD3B /* NotoficationView.swift */,
 			);
-			path = subViews;
+			path = TopBarItems;
 			sourceTree = "<group>";
 		};
 		F81B0A2B2A36B4CE008C2942 /* ListingDetail */ = {
