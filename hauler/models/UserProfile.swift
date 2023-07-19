@@ -19,6 +19,14 @@ struct UserProfile: Identifiable, Codable {
     var uLat : Double = 0.0
     var uProfileImageURL : String? = ""
     var uProfileImage : UIImage? = nil
+    var uFollowedUsers : [FollowedUser] = []
+    var uNotifications : [Notification] = []
+    var uLastLogin : Date = Date()
+    var unreadNotificationCount : Int{
+        get{
+            return self.uNotifications.count
+        }
+    }
     
     private enum CodingKeys: String, CodingKey {
         case id
@@ -29,13 +37,16 @@ struct UserProfile: Identifiable, Codable {
         case uLong
         case uLat
         case uProfileImageURL
+        case uFollowedUsers
+        case uNotifications
+        case uLastLogin
     }
     
     init(){
         
     }
     
-    init(id: String? = nil, cName: String, cEmail: String, uPhone: String, uAddress: String, uLong: Double, uLat: Double, uProfileImageURL: String? = "") {
+    init(id: String? = nil, cName: String, cEmail: String, uPhone: String, uAddress: String, uLong: Double, uLat: Double, uProfileImageURL: String? = "", uFollowedUsers: [FollowedUser] = [], uNotifications: [Notification] = [], uLastLogin: Date = Date()) {
         self.id = id
         self.uName = cName
         self.uEmail = cEmail
@@ -44,6 +55,9 @@ struct UserProfile: Identifiable, Codable {
         self.uLong = uLong
         self.uLat = uLat
         self.uProfileImageURL = uProfileImageURL
+        self.uFollowedUsers = uFollowedUsers
+        self.uNotifications = uNotifications
+        self.uLastLogin = uLastLogin
     }
     
     init(up: UserProfile, img: UIImage?){
@@ -54,7 +68,10 @@ struct UserProfile: Identifiable, Codable {
         self.uPhone = up.uPhone
         self.uLong = up.uLong
         self.uLat = up.uLat
+        self.uFollowedUsers = up.uFollowedUsers
+        self.uNotifications = up.uNotifications
         self.uProfileImageURL = up.uProfileImageURL
+        self.uLastLogin = up.uLastLogin
         self.uProfileImage = img
     }
     
@@ -67,6 +84,9 @@ struct UserProfile: Identifiable, Codable {
         self.uPhone = try container.decode(String.self, forKey: .uPhone)
         self.uLong = try container.decode(Double.self, forKey: .uLong)
         self.uLat = try container.decode(Double.self, forKey: .uLat)
+        self.uFollowedUsers = try container.decodeIfPresent([FollowedUser].self, forKey: .uFollowedUsers) ?? []
+        self.uNotifications = try container.decodeIfPresent([Notification].self, forKey: .uNotifications) ?? []
+        self.uLastLogin = try container.decodeIfPresent(Date.self, forKey: .uLastLogin) ?? Date()
         self.uProfileImageURL = try container.decode(String.self, forKey: .uProfileImageURL)
     }
     
@@ -101,11 +121,29 @@ struct UserProfile: Identifiable, Codable {
             return nil
         }
         
+        var FollowedUsers : [FollowedUser] = []
+        if let retrievedFollowedUsers =  dictionary["uFollowedUsers"] as? [FollowedUser] {
+            FollowedUsers = retrievedFollowedUsers
+        }
+        
+        var Notifications : [Notification] = []
+        if let retrievedNotifications = dictionary["uNotifications"] as? [Notification]{
+            print(#function, "contains [Noti], count=\(retrievedNotifications.count)")
+            Notifications = retrievedNotifications
+        }
+        
+        var lastLogin : Date = Date()
+        
+        if let retrievedLastLogin = dictionary["uLastLogin"] as? Date {
+            print(#function, "Read lastlogin from the object")
+            lastLogin = retrievedLastLogin
+        }
+        
         guard let profileImageURL = dictionary["uProfileImageURL"] as? String else {
             print(#function, "Unable to read latitude from the object")
             return nil
         }
         
-        self.init(cName: name, cEmail: email, uPhone: phone, uAddress: address, uLong: long, uLat: lat, uProfileImageURL: profileImageURL)
+        self.init(cName: name, cEmail: email, uPhone: phone, uAddress: address, uLong: long, uLat: lat, uProfileImageURL: profileImageURL, uFollowedUsers: FollowedUsers, uNotifications: Notifications, uLastLogin: lastLogin)
     }
 }

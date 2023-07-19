@@ -23,6 +23,9 @@ class UserProfileController : ObservableObject{
     private let store : Firestore
     private static var shared : UserProfileController?
     private let COLLECTION_PROFILE : String = "UserProfile"
+    private let FIELD_FOLLOWEDUSERS : String = "uFollowedUsers"
+    private let FIELD_NOTIFICATION : String = "uNotifications"
+    private let FIELD_LASTLOGIN : String = "uLastLogin"
     private let COLLECTION_FAVORITES : String = "Favorites"
     private let FIELD_NAME = "uName"
     private let FIELD_CONTACT_NUMBER = "uPhone"
@@ -62,6 +65,7 @@ class UserProfileController : ObservableObject{
     func updateLoggedInUser(){
         self.loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
     }
+    
     func insertUserData(newUserData: UserProfile){
         print(#function, "Trying to insert \(newUserData.uName) to DB")
         print(#function, "current email", loggedInUserEmail)
@@ -82,6 +86,29 @@ class UserProfileController : ObservableObject{
             }
         }
         
+    }
+    
+    
+    func updateFollowedUsers(){
+        do{
+            try self.db.collection(self.COLLECTION_PROFILE).document(self.loggedInUserEmail).setData(from:[self.FIELD_FOLLOWEDUSERS:self.userProfile.uFollowedUsers], mergeFields: [self.FIELD_FOLLOWEDUSERS])
+        }catch{
+            print(error)
+        }
+        
+    }
+    
+    func updateNotifications(){
+        do{
+            try
+            self.db.collection(self.COLLECTION_PROFILE).document(self.loggedInUserEmail).setData(from:[self.FIELD_NOTIFICATION:self.userProfile.uNotifications], mergeFields: [self.FIELD_NOTIFICATION])
+        }catch{
+            print(error)
+        }
+    }
+    
+    func updateLastLogin(){
+        self.db.collection(self.COLLECTION_PROFILE).document(self.loggedInUserEmail).setData([self.FIELD_LASTLOGIN:Date()], mergeFields: [self.FIELD_LASTLOGIN])
     }
     
     func getPublicProfileByEmail(email: String, completion: @escaping (UserProfile?, Bool) -> Void) {

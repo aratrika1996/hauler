@@ -131,7 +131,7 @@ struct ProductDetailView: View {
                             HStack{
                                 Text("About Seller").font(.system(size: 19)).fontWeight(.medium)
                                 Spacer()
-                                NavigationLink(destination: UserPublicProfileView(sellerEmail: listing.email, rootScreen: $rootScreen)){
+                                NavigationLink(destination: UserPublicProfileView( sellerEmail: listing.email, rootScreen: $rootScreen)){
                                     Text("View Profile").font(.system(size: 19)).fontWeight(.medium)
                                 }
                                 
@@ -192,7 +192,7 @@ struct ProductDetailView: View {
                     }
                     Button("Cancel", role: .cancel){}
                 }
-                .toolbar(){
+                .toolbar{
                     ToolbarItemGroup(placement: .bottomBar){
                         if(listing.email == chatController.loggedInUserEmail){
                             Button(action:{

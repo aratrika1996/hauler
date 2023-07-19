@@ -29,6 +29,7 @@ struct ContentView: View {
     @State private var tabSelection = page.Home
     @State private var title : [String] = ["Hauler","Discover", "Messages", "Posts", "Listings", "Profile"]
     @State var newChatId : String? = nil
+    @State private var isAnimating = false
     
     @EnvironmentObject var authController : AuthController
     @EnvironmentObject var listingController : ListingController
@@ -106,23 +107,56 @@ struct ContentView: View {
                 }
                 
                 ToolbarItem(placement:.navigationBarTrailing){
+                    (self.userProfileController.userProfile.uEmail != "" ?
                     HStack{
-                        NavigationLink(destination: FavoritesView(rootScreen: $rootScreen)) {
-                            Image(uiImage: UIImage(systemName: "heart.fill")!)
-                                .resizable()
-                                .frame(width: 15, height: 15)
-                                .padding(15)
-                                .clipShape(Circle())
-                                .overlay(Circle().strokeBorder(Color(red: 220/255, green: 220/255, blue: 220/255), lineWidth: 1))
-                            //.background(Color("HaulerOrange"), in:Circle())
+                        
+                            
+                        NavigationLink(destination: FollowedUserView(rootScreen: $rootScreen)){
+                            Circle()
+                                .strokeBorder(Color(red: 220/255, green: 220/255, blue: 220/255), lineWidth: 1)
+                                .frame(width: 45, height: 45)
+                                .overlay{
+                                    Image(uiImage: UIImage(systemName: "person.2")!)
+                                        .resizable()
+                                        .padding(.vertical, 15)
+                                        .padding(.horizontal, 11)
+                                }
                         }
-                        Image(uiImage: UIImage(systemName: "bell")!)
-                            .resizable()
-                            .frame(width: 15, height: 15)
-                            .padding(15)
-                            .clipShape(Circle())
-                            .overlay(Circle().strokeBorder(Color(red: 220/255, green: 220/255, blue: 220/255), lineWidth: 1))
+                        NavigationLink(destination: FavoritesView(rootScreen: $rootScreen)) {
+                            Circle()
+                                .strokeBorder(Color(red: 220/255, green: 220/255, blue: 220/255), lineWidth: 1)
+                                .frame(width: 45, height: 45)
+                                .overlay{
+                                    Image(uiImage: UIImage(systemName: "heart.fill")!)
+                                        .resizable()
+                                        .padding(15)
+                                }
+                        }
+                        NavigationLink(destination: NotoficationView(rootScreen: $rootScreen)){
+                            Circle()
+                                .strokeBorder(Color(red: 220/255, green: 220/255, blue: 220/255), lineWidth: 1)
+                                .frame(width: 45, height: 45)
+                                .overlay{
+                                    Image(uiImage: UIImage(systemName: "bell")!)
+                                        .resizable()
+                                        .padding(15)
+                                        .scaleEffect(isAnimating ? 1.2 : 1.0)
+                                        .transition(.scale)
+                                        .onAppear {
+                                            (self.userProfileController.userProfile.uNotifications.count > 0 ? withAnimation(Animation.spring().repeatForever()) {
+                                                isAnimating = true
+                                            } : ())
+                                            
+                                        }
+                                }
+                            
+                            Text("\(self.userProfileController.userProfile.uNotifications.count.formatted())")
+                        }
+                        
                     }
+                     :
+                        nil
+                     )
                     //.padding(.vertical, 30)
                 }
 //            }
@@ -132,7 +166,7 @@ struct ContentView: View {
 //            for: .navigationBar)
 //        .toolbarBackground(.visible, for: .navigationBar)
         .onAppear() {
-            
+
         }
         .environmentObject(authController)
         .environmentObject(listingController)

@@ -143,7 +143,7 @@ class ChatController: ObservableObject {
         print("trying to unread msg with count \(msgs.count)...msgs = \(msgs)")
         if !msgs.isEmpty{
             msgs.forEach{msg in
-                db.collection(COLLECTION_CHAT).document(chatroom.id).collection("messages").document(msg.id!).setData(["unread":false], merge: true)
+                db.collection(COLLECTION_CHAT).document(chatroom.id).collection("messages").document(msg.id!).setData(["unread":false], mergeFields: ["unread"])
             }
         }
     }

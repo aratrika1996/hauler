@@ -54,6 +54,9 @@ class ListingController : ObservableObject{
         if(searchText.count > 0){
             list = list.filter{$0.title.localizedCaseInsensitiveContains(searchText)}
         }
+        list.sort{
+            $0.createDate > $1.createDate
+        }
         return list
     }
     
@@ -99,7 +102,6 @@ class ListingController : ObservableObject{
                 }
                 
                 var listings: [Listing] = []
-                
                 querySnapshot?.documents.forEach { document in
                     do {
                         var listing: Listing = try document.data(as: Listing.self)
