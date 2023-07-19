@@ -29,6 +29,7 @@ struct ContentView: View {
     @State private var tabSelection = page.Home
     @State private var title : [String] = ["Hauler","Discover", "Messages", "Posts", "Listings", "Profile"]
     @State var newChatId : String? = nil
+    @State private var isAnimating = false
     
     @EnvironmentObject var authController : AuthController
     @EnvironmentObject var listingController : ListingController
@@ -137,8 +138,18 @@ struct ContentView: View {
                                     Image(uiImage: UIImage(systemName: "bell")!)
                                         .resizable()
                                         .padding(15)
+                                        .scaleEffect(isAnimating ? 1.2 : 1.0)
+                                        .transition(.scale)
+                                        .onAppear {
+                                            withAnimation(Animation.spring().repeatForever()) {
+                                                isAnimating = true
+                                            }
+                                        }
                                 }
+                            
+                            Text("\(self.userProfileController.userProfile.uNotifications.count.formatted())")
                         }
+                        
                     }
                     //.padding(.vertical, 30)
                 }

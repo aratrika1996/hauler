@@ -21,6 +21,11 @@ struct UserProfile: Identifiable, Codable {
     var uProfileImage : UIImage? = nil
     var uFollowedUsers : [String] = []
     var uNotifications : [Notification] = []
+    var unreadNotificationCount : Int{
+        get{
+            return self.uNotifications.count
+        }
+    }
     
     private enum CodingKeys: String, CodingKey {
         case id
@@ -118,6 +123,7 @@ struct UserProfile: Identifiable, Codable {
         
         var Notifications : [Notification] = []
         if let retrievedNotifications = dictionary["uNotifications"] as? [Notification]{
+            print(#function, "contains [Noti], count=\(retrievedNotifications.count)")
             Notifications = retrievedNotifications
         }
         
