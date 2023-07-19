@@ -107,7 +107,7 @@ struct ChatListView: View {
     
     func redirect(local: Bool){
         if(!local){
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
                 if (self.chatController.redirect){
                     if(!path.isEmpty){
                         path.removeLast(path.count)

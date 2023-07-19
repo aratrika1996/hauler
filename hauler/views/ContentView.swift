@@ -132,7 +132,7 @@ struct ContentView: View {
                                         .padding(15)
                                 }
                         }
-                        NavigationLink(destination: NotoficationView()){
+                        NavigationLink(destination: NotoficationView(rootScreen: $rootScreen)){
                             Circle()
                                 .strokeBorder(Color(red: 220/255, green: 220/255, blue: 220/255), lineWidth: 1)
                                 .frame(width: 45, height: 45)
