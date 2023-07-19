@@ -309,12 +309,13 @@ class UserProfileController : ObservableObject{
                     }
                     
                     self.userFavList = favList
+                    print(self.userFavList)
                 }
         }
 
     }
     
-    func updateFavoriteList(listingToAdd: Favorites) {
+    func updateFavoriteList(listingToAdd: Favorites, completion: @escaping () -> Void) {
         loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
         
         if loggedInUserEmail.isEmpty{
@@ -335,7 +336,7 @@ class UserProfileController : ObservableObject{
                         else {
                             print(#function, "Successfully deleted user from firestore")
                         }
-//                        completion()
+                        completion()
                     }
             }
             else {
@@ -348,8 +349,45 @@ class UserProfileController : ObservableObject{
                 } catch let error as NSError {
                     print("Unable to add document to firestore: \(error)")
                 }
+                
+                completion()
             }
         }
+    }
+    
+    func removeAllFavourites(completion: @escaping () -> Void) {
+        self.store
+            .collection(COLLECTION_PROFILE)
+            .document(loggedInUserEmail)
+            .collection(COLLECTION_FAVORITES)
+            .addSnapshotListener { (querySnapshot, error) in
+                if let error = error {
+                    print(#function, "Unable to retrieve data from Firestore : \(error)")
+                    //                            completion(nil, error)
+                    return
+                }
+                
+                querySnapshot?.documents.forEach { document in
+                    do {
+                        self.store
+                            .collection(self.COLLECTION_PROFILE)
+                            .document(self.loggedInUserEmail)
+                            .collection(self.COLLECTION_FAVORITES)
+                            .document(document.documentID)
+                            .delete {error in
+                                if let error = error {
+                                    print(#function, "Unable to delete user : \(error)")
+                                }
+                                else {
+                                    print(#function, "Successfully deleted user from firestore")
+                                }
+                                completion()
+                            }
+                    } catch let error {
+                        print(#function, "Unable to convert the document into object : \(error)")
+                    }
+                }
+            }
     }
     
 }

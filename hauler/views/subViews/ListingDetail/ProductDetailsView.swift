@@ -94,7 +94,9 @@ struct ProductDetailView: View {
                                 .cornerRadius(5)
                                 .shadow(color: Color.gray.opacity(0.4), radius: 5, x:2, y:4)
                                 .onTapGesture {
-                                    self.userProfileController.updateFavoriteList(listingToAdd: Favorites(listingID: listing.id!))
+                                    self.userProfileController.updateFavoriteList(listingToAdd: Favorites(listingID: listing.id!), completion: {
+                                        print("Updated fav list")
+                                    })
                                 }
                         }
                         .padding()

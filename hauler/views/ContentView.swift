@@ -107,7 +107,7 @@ struct ContentView: View {
                 
                 ToolbarItem(placement:.navigationBarTrailing){
                     HStack{
-                        NavigationLink(destination: FavoritesView()) {
+                        NavigationLink(destination: FavoritesView(rootScreen: $rootScreen)) {
                             Image(uiImage: UIImage(systemName: "heart.fill")!)
                                 .resizable()
                                 .frame(width: 15, height: 15)
