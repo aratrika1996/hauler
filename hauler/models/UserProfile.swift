@@ -20,6 +20,7 @@ struct UserProfile: Identifiable, Codable {
     var uProfileImageURL : String? = ""
     var uProfileImage : UIImage? = nil
     var uFollowedUsers : [String] = []
+    var uNotifications : [Notification] = []
     
     private enum CodingKeys: String, CodingKey {
         case id
@@ -31,13 +32,14 @@ struct UserProfile: Identifiable, Codable {
         case uLat
         case uProfileImageURL
         case uFollowedUsers
+        case uNotifications
     }
     
     init(){
         
     }
     
-    init(id: String? = nil, cName: String, cEmail: String, uPhone: String, uAddress: String, uLong: Double, uLat: Double, uProfileImageURL: String? = "", uFollowedUsers: [String] = []) {
+    init(id: String? = nil, cName: String, cEmail: String, uPhone: String, uAddress: String, uLong: Double, uLat: Double, uProfileImageURL: String? = "", uFollowedUsers: [String] = [], uNotifications: [Notification] = []) {
         self.id = id
         self.uName = cName
         self.uEmail = cEmail
@@ -47,6 +49,7 @@ struct UserProfile: Identifiable, Codable {
         self.uLat = uLat
         self.uProfileImageURL = uProfileImageURL
         self.uFollowedUsers = uFollowedUsers
+        self.uNotifications = uNotifications
     }
     
     init(up: UserProfile, img: UIImage?){
@@ -58,6 +61,7 @@ struct UserProfile: Identifiable, Codable {
         self.uLong = up.uLong
         self.uLat = up.uLat
         self.uFollowedUsers = up.uFollowedUsers
+        self.uNotifications = up.uNotifications
         self.uProfileImageURL = up.uProfileImageURL
         self.uProfileImage = img
     }
@@ -72,6 +76,7 @@ struct UserProfile: Identifiable, Codable {
         self.uLong = try container.decode(Double.self, forKey: .uLong)
         self.uLat = try container.decode(Double.self, forKey: .uLat)
         self.uFollowedUsers = try container.decodeIfPresent([String].self, forKey: .uFollowedUsers) ?? []
+        self.uNotifications = try container.decodeIfPresent([Notification].self, forKey: .uNotifications) ?? []
         self.uProfileImageURL = try container.decode(String.self, forKey: .uProfileImageURL)
     }
     
@@ -111,11 +116,16 @@ struct UserProfile: Identifiable, Codable {
             FollowedUsers = retrievedFollowedUsers
         }
         
+        var Notifications : [Notification] = []
+        if let retrievedNotifications = dictionary["uNotifications"] as? [Notification]{
+            Notifications = retrievedNotifications
+        }
+        
         guard let profileImageURL = dictionary["uProfileImageURL"] as? String else {
             print(#function, "Unable to read latitude from the object")
             return nil
         }
         
-        self.init(cName: name, cEmail: email, uPhone: phone, uAddress: address, uLong: long, uLat: lat, uProfileImageURL: profileImageURL, uFollowedUsers: FollowedUsers)
+        self.init(cName: name, cEmail: email, uPhone: phone, uAddress: address, uLong: long, uLat: lat, uProfileImageURL: profileImageURL, uFollowedUsers: FollowedUsers, uNotifications: Notifications)
     }
 }

@@ -124,7 +124,7 @@ struct ProductDetailView: View {
                             HStack{
                                 Text("About Seller").font(.system(size: 19)).fontWeight(.medium)
                                 Spacer()
-                                NavigationLink(destination: UserPublicProfileView(passedInTitle: "Following", sellerEmail: listing.email, rootScreen: $rootScreen)){
+                                NavigationLink(destination: UserPublicProfileView( sellerEmail: listing.email, rootScreen: $rootScreen)){
                                     Text("View Profile").font(.system(size: 19)).fontWeight(.medium)
                                 }
                                 

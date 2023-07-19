@@ -129,14 +129,16 @@ struct ContentView: View {
                                     .resizable()
                                     .padding(15)
                             }
-                        Circle()
-                            .strokeBorder(Color(red: 220/255, green: 220/255, blue: 220/255), lineWidth: 1)
-                            .frame(width: 45, height: 45)
-                            .overlay{
-                                Image(uiImage: UIImage(systemName: "bell")!)
-                                    .resizable()
-                                    .padding(15)
-                            }
+                        NavigationLink(destination: NotoficationView()){
+                            Circle()
+                                .strokeBorder(Color(red: 220/255, green: 220/255, blue: 220/255), lineWidth: 1)
+                                .frame(width: 45, height: 45)
+                                .overlay{
+                                    Image(uiImage: UIImage(systemName: "bell")!)
+                                        .resizable()
+                                        .padding(15)
+                                }
+                        }
                     }
                     //.padding(.vertical, 30)
                 }

@@ -8,8 +8,14 @@
 import SwiftUI
 
 struct NotoficationView: View {
+    @EnvironmentObject var userProfileController : UserProfileController
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        List(userProfileController.userProfile.uNotifications, id: \.self){noti in
+            VStack{
+                Text(noti.createdBy)
+                Text(noti.timestamp.dateValue().formatted())
+            }
+        }
     }
 }
 

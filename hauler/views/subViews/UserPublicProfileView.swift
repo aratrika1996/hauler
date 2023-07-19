@@ -12,7 +12,7 @@ struct UserPublicProfileView: View {
     @EnvironmentObject var listingController : ListingController
     @EnvironmentObject var imageController : ImageController
     @EnvironmentObject private var viewRouter: ViewRouter
-    var passedInTitle : String? = ""
+    var passedInTitle : String? = nil
     @State var sellerEmail : String
     @State private var name : String = ""
     @State private var email : String = ""

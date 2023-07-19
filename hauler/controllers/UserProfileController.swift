@@ -23,6 +23,7 @@ class UserProfileController : ObservableObject{
     private static var shared : UserProfileController?
     private let COLLECTION_PROFILE : String = "UserProfile"
     private let FIELD_FOLLOWEDUSERS : String = "uFollowedUsers"
+    private let FIELD_NOTIFICATION : String = "uNotifications"
     private let FIELD_NAME = "uName"
     private let FIELD_CONTACT_NUMBER = "uPhone"
     private let FIELD_ADDRESS = "uAddress"
@@ -87,6 +88,10 @@ class UserProfileController : ObservableObject{
     
     func updateFollowedUsers(){
         self.db.collection(self.COLLECTION_PROFILE).document(self.loggedInUserEmail).setData([self.FIELD_FOLLOWEDUSERS:self.userProfile.uFollowedUsers], mergeFields: [self.FIELD_FOLLOWEDUSERS])
+    }
+    
+    func updateNotifications(){
+        self.db.collection(self.COLLECTION_PROFILE).document(self.loggedInUserEmail).setData([self.FIELD_NOTIFICATION:self.userProfile.uNotifications], mergeFields: [self.FIELD_NOTIFICATION])
     }
     
     func getPublicProfileByEmail(email: String, completion: @escaping (UserProfile?, Bool) -> Void) {
