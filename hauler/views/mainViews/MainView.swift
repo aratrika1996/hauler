@@ -14,11 +14,11 @@ import FirebaseStorage
 struct MainView: View {
     @Environment(\.scenePhase) var scenePhase
     
-    private let authController : AuthController;
-    private let listingController : ListingController;
-    private let userProfileController : UserProfileController;
-    private let imageController : ImageController;
-    private let chatContoller : ChatController;
+    private let authController : AuthController
+    private let listingController : ListingController
+    private let userProfileController : UserProfileController
+    private let imageController : ImageController
+    private let chatContoller : ChatController
     private let locationController : LocationManager
     @State private var isLoading : Bool = true
     @State private var root : RootView = .HOME
