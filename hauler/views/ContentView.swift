@@ -122,15 +122,16 @@ struct ContentView: View {
                                         .padding(.horizontal, 11)
                                 }
                         }
-                        
-                        Circle()
-                            .strokeBorder(Color(red: 220/255, green: 220/255, blue: 220/255), lineWidth: 1)
-                            .frame(width: 45, height: 45)
-                            .overlay{
-                                Image(uiImage: UIImage(systemName: "heart.fill")!)
-                                    .resizable()
-                                    .padding(15)
-                            }
+                        NavigationLink(destination: FavoritesView(rootScreen: $rootScreen)) {
+                            Circle()
+                                .strokeBorder(Color(red: 220/255, green: 220/255, blue: 220/255), lineWidth: 1)
+                                .frame(width: 45, height: 45)
+                                .overlay{
+                                    Image(uiImage: UIImage(systemName: "heart.fill")!)
+                                        .resizable()
+                                        .padding(15)
+                                }
+                        }
                         NavigationLink(destination: NotoficationView()){
                             Circle()
                                 .strokeBorder(Color(red: 220/255, green: 220/255, blue: 220/255), lineWidth: 1)

@@ -86,11 +86,18 @@ struct ProductDetailView: View {
                             }
                             Image(uiImage: UIImage(systemName: "heart.fill")!)
                                 .resizable()
+                                .foregroundColor(.white)
                                 .frame(width: 20, height: 20)
                                 .padding(15)
-                                .background(.white, in: RoundedRectangle(cornerRadius: 5))
+                                .background(self.userProfileController.userFavList.contains(where: {$0.listingID == listing.id}) ? Color("HaulerOrange") : .white, in: RoundedRectangle(cornerRadius: 5))
+                                
                                 .cornerRadius(5)
                                 .shadow(color: Color.gray.opacity(0.4), radius: 5, x:2, y:4)
+                                .onTapGesture {
+                                    self.userProfileController.updateFavoriteList(listingToAdd: Favorites(listingID: listing.id!), completion: {
+                                        print("Updated fav list")
+                                    })
+                                }
                         }
                         .padding()
                         VStack(alignment: .leading){

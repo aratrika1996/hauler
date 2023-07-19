@@ -104,7 +104,7 @@ struct HomeView: View {
         .onAppear{
             if(listingController.listingsList.isEmpty){
                 listingController.getAllListings(adminMode: listingController.adminMode,completion: {_, err in
-                    print(#function, "all got")
+                    userProfileController.getUserFavList()
                     if let err = err{
                         print(err)
                     }
