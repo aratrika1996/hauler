@@ -9,6 +9,7 @@ import SwiftUI
 
 struct HomeView: View {
     @EnvironmentObject var listingController : ListingController
+    @EnvironmentObject var userProfileController : UserProfileController
     @EnvironmentObject private var viewRouter: ViewRouter
     @Environment(\.dismiss) var dismiss
     
@@ -103,6 +104,7 @@ struct HomeView: View {
         .onAppear{
             if(listingController.listingsList.isEmpty){
                 listingController.getAllListings(adminMode: listingController.adminMode,completion: {_, err in
+                    userProfileController.getUserFavList()
                     if let err = err{
                         print(err)
                     }

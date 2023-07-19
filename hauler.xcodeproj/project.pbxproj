@@ -19,6 +19,7 @@
 		2887807B2A29B8210038268E /* CustomTopTabBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2887807A2A29B8210038268E /* CustomTopTabBarView.swift */; };
 		288780832A32912A0038268E /* UserPublicProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 288780822A32912A0038268E /* UserPublicProfileView.swift */; };
 		288780852A4FA21C0038268E /* ForgotPasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 288780842A4FA21C0038268E /* ForgotPasswordView.swift */; };
+		288780872A5F6E0E0038268E /* Favorites.swift in Sources */ = {isa = PBXBuildFile; fileRef = 288780862A5F6E0E0038268E /* Favorites.swift */; };
 		83318FF42A3E448F00148B7E /* EditListingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83318FF32A3E448F00148B7E /* EditListingView.swift */; };
 		8348320C2A185FD600CE8E2D /* Listing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8348320B2A185FD600CE8E2D /* Listing.swift */; };
 		83678CBC2A2199A400C50603 /* ChatController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83678CBB2A2199A300C50603 /* ChatController.swift */; };
@@ -89,6 +90,7 @@
 		2887807A2A29B8210038268E /* CustomTopTabBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTopTabBarView.swift; sourceTree = "<group>"; };
 		288780822A32912A0038268E /* UserPublicProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPublicProfileView.swift; sourceTree = "<group>"; };
 		288780842A4FA21C0038268E /* ForgotPasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPasswordView.swift; sourceTree = "<group>"; };
+		288780862A5F6E0E0038268E /* Favorites.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Favorites.swift; sourceTree = "<group>"; };
 		83318FF32A3E448F00148B7E /* EditListingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditListingView.swift; sourceTree = "<group>"; };
 		8348320B2A185FD600CE8E2D /* Listing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Listing.swift; sourceTree = "<group>"; };
 		83678CBB2A2199A300C50603 /* ChatController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatController.swift; sourceTree = "<group>"; };
@@ -227,6 +229,7 @@
 				8348320B2A185FD600CE8E2D /* Listing.swift */,
 				83678CBD2A219FC200C50603 /* message.swift */,
 				83678CBF2A21B09900C50603 /* Chat.swift */,
+				288780862A5F6E0E0038268E /* Favorites.swift */,
 			);
 			path = models;
 			sourceTree = "<group>";
@@ -476,6 +479,7 @@
 				83F97EC92A16F36E000CB670 /* FavoritesView.swift in Sources */,
 				F871F7652A302BD2003E1019 /* ProductDetailsView.swift in Sources */,
 				83678CC52A21B5CC00C50603 /* ConversationView.swift in Sources */,
+				288780872A5F6E0E0038268E /* Favorites.swift in Sources */,
 				288780832A32912A0038268E /* UserPublicProfileView.swift in Sources */,
 				288780772A29B7E80038268E /* SoldListingsView.swift in Sources */,
 				83F97ED22A16F3E4000CB670 /* CommentView.swift in Sources */,
@@ -621,7 +625,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"hauler/Preview Content\"";
-				DEVELOPMENT_TEAM = XXVRQ5LRDV;
+				DEVELOPMENT_TEAM = 68NFY26D49;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_LSApplicationCategoryType = "";
@@ -654,7 +658,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"hauler/Preview Content\"";
-				DEVELOPMENT_TEAM = XXVRQ5LRDV;
+				DEVELOPMENT_TEAM = 68NFY26D49;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_LSApplicationCategoryType = "";

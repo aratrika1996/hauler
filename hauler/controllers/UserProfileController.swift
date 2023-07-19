@@ -15,6 +15,7 @@ class UserProfileController : ObservableObject{
     
     @Published var userProfile = UserProfile()
     @Published var publicProfile = UserProfile()
+    @Published var userFavList = [Favorites]()
     
     @Published var userDict : [String : UserProfile] = [:]
     
@@ -22,6 +23,7 @@ class UserProfileController : ObservableObject{
     private let store : Firestore
     private static var shared : UserProfileController?
     private let COLLECTION_PROFILE : String = "UserProfile"
+    private let COLLECTION_FAVORITES : String = "Favorites"
     private let FIELD_NAME = "uName"
     private let FIELD_CONTACT_NUMBER = "uPhone"
     private let FIELD_ADDRESS = "uAddress"
@@ -273,6 +275,118 @@ class UserProfileController : ObservableObject{
                     print(#function, "Successfully deleted user from firestore")
                 }
                 completion()
+            }
+    }
+    
+    func getUserFavList() {
+        loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
+        
+        if loggedInUserEmail.isEmpty{
+            print("Logged in user not identified")
+        }
+        else{
+            self.store
+                .collection(COLLECTION_PROFILE)
+                .document(loggedInUserEmail)
+                .collection(COLLECTION_FAVORITES)
+                .addSnapshotListener { (querySnapshot, error) in
+                    if let error = error {
+                        print(#function, "Unable to retrieve data from Firestore : \(error)")
+                        //                            completion(nil, error)
+                        return
+                    }
+                    
+                    var favList: [Favorites] = []
+                    
+                    querySnapshot?.documents.forEach { document in
+                        do {
+                            var favItem: Favorites = try document.data(as: Favorites.self)
+                            favItem.id = document.documentID
+                            favList.append(favItem)
+                        } catch let error {
+                            print(#function, "Unable to convert the document into object : \(error)")
+                        }
+                    }
+                    
+                    self.userFavList = favList
+                    print(self.userFavList)
+                }
+        }
+
+    }
+    
+    func updateFavoriteList(listingToAdd: Favorites, completion: @escaping () -> Void) {
+        loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
+        
+        if loggedInUserEmail.isEmpty{
+            print("Logged in user not identified")
+        }
+        else{
+            self.getUserFavList()
+            if let favListing = userFavList.first(where: {$0.listingID == listingToAdd.listingID}) {
+                self.store
+                    .collection(COLLECTION_PROFILE)
+                    .document(loggedInUserEmail)
+                    .collection(COLLECTION_FAVORITES)
+                    .document(favListing.id!)
+                    .delete {error in
+                        if let error = error {
+                            print(#function, "Unable to delete user : \(error)")
+                        }
+                        else {
+                            print(#function, "Successfully deleted user from firestore")
+                        }
+                        completion()
+                    }
+            }
+            else {
+                do{
+                    try self.store
+                        .collection(COLLECTION_PROFILE)
+                        .document(loggedInUserEmail)
+                        .collection(COLLECTION_FAVORITES)
+                        .addDocument(from: listingToAdd)
+                } catch let error as NSError {
+                    print("Unable to add document to firestore: \(error)")
+                }
+                
+                completion()
+            }
+        }
+    }
+    
+    func removeAllFavourites(completion: @escaping () -> Void) {
+        self.store
+            .collection(COLLECTION_PROFILE)
+            .document(loggedInUserEmail)
+            .collection(COLLECTION_FAVORITES)
+            .addSnapshotListener { (querySnapshot, error) in
+                if let error = error {
+                    print(#function, "Unable to retrieve data from Firestore : \(error)")
+                    //                            completion(nil, error)
+                    return
+                }
+                
+                querySnapshot?.documents.forEach { document in
+                    do {
+                        self.store
+                            .collection(self.COLLECTION_PROFILE)
+                            .document(self.loggedInUserEmail)
+                            .collection(self.COLLECTION_FAVORITES)
+                            .document(document.documentID)
+                            .delete {error in
+                                if let error = error {
+                                    print(#function, "Unable to delete user : \(error)")
+                                }
+                                else {
+                                    print(#function, "Successfully deleted user from firestore")
+                                }
+                                completion()
+                            }
+                    } catch let error {
+                        print(#function, "Unable to convert the document into object : \(error)")
+                    }
+                }
             }
     }
     
