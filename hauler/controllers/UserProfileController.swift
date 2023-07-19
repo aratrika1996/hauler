@@ -24,6 +24,7 @@ class UserProfileController : ObservableObject{
     private let COLLECTION_PROFILE : String = "UserProfile"
     private let FIELD_FOLLOWEDUSERS : String = "uFollowedUsers"
     private let FIELD_NOTIFICATION : String = "uNotifications"
+    private let FIELD_LASTLOGIN : String = "uLastLogin"
     private let FIELD_NAME = "uName"
     private let FIELD_CONTACT_NUMBER = "uPhone"
     private let FIELD_ADDRESS = "uAddress"
@@ -96,7 +97,16 @@ class UserProfileController : ObservableObject{
     }
     
     func updateNotifications(){
-        self.db.collection(self.COLLECTION_PROFILE).document(self.loggedInUserEmail).setData([self.FIELD_NOTIFICATION:self.userProfile.uNotifications], mergeFields: [self.FIELD_NOTIFICATION])
+        do{
+            try
+            self.db.collection(self.COLLECTION_PROFILE).document(self.loggedInUserEmail).setData(from:[self.FIELD_NOTIFICATION:self.userProfile.uNotifications], mergeFields: [self.FIELD_NOTIFICATION])
+        }catch{
+            print(error)
+        }
+    }
+    
+    func updateLastLogin(){
+        self.db.collection(self.COLLECTION_PROFILE).document(self.loggedInUserEmail).setData([self.FIELD_LASTLOGIN:Date()], mergeFields: [self.FIELD_LASTLOGIN])
     }
     
     func getPublicProfileByEmail(email: String, completion: @escaping (UserProfile?, Bool) -> Void) {

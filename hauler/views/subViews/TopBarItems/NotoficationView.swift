@@ -12,8 +12,19 @@ struct NotoficationView: View {
     var body: some View {
         List(userProfileController.userProfile.uNotifications, id: \.self){noti in
             VStack{
-                Text(noti.createdBy)
-                Text(noti.timestamp.dateValue().formatted())
+                
+                HStack{
+                    VStack(alignment: .leading){
+                        Text(noti.createdBy)
+                            .font(.title2)
+                        Text(noti.msg ?? "")
+                            .font(.caption)
+                    }
+                    Spacer()
+                    Text(noti.timestamp.convertToTag())
+                }
+                
+                
             }
         }
     }

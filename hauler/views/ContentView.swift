@@ -107,6 +107,7 @@ struct ContentView: View {
                 }
                 
                 ToolbarItem(placement:.navigationBarTrailing){
+                    (self.userProfileController.userProfile.uEmail != "" ?
                     HStack{
                         
                             
@@ -152,6 +153,9 @@ struct ContentView: View {
                         }
                         
                     }
+                     :
+                        nil
+                     )
                     //.padding(.vertical, 30)
                 }
 //            }
@@ -161,7 +165,7 @@ struct ContentView: View {
 //            for: .navigationBar)
 //        .toolbarBackground(.visible, for: .navigationBar)
         .onAppear() {
-            
+
         }
         .environmentObject(authController)
         .environmentObject(listingController)

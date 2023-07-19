@@ -32,8 +32,8 @@ struct ProfileView: View {
                     Section {
                         HStack(alignment: .center) {
                             ZStack(alignment: .bottomTrailing) {
-                                if selectedImage != nil {
-                                    Image(uiImage: selectedImage!)
+                                if self.selectedImage != nil {
+                                    Image(uiImage: self.selectedImage!)
                                         .resizable()
                                         .aspectRatio(contentMode: .fill)
                                         .frame(width: 100, height: 100)
@@ -91,12 +91,12 @@ struct ProfileView: View {
                                 }
                             }
                             VStack(alignment: .leading) {
-                                Text(self.name)
+                                Text(self.userProfileController.userProfile.uName)
                                     .foregroundColor(Color(UIColor(named: "HaulerOrange") ?? .blue))
                                     .font(.system(size: 22))
                                     .fontWeight(.medium)
                                     .padding(.bottom, 0.3)
-                                Text(self.email)
+                                Text(self.userProfileController.userProfile.uEmail)
                                     .padding(.bottom, 0.3)
 //                                HStack {
 //                                    Image(systemName: "star.fill")
@@ -208,17 +208,20 @@ struct ProfileView: View {
             
         }
         .onAppear {
-            self.userProfileController.getAllUserData {
-                print("data retrieved")
-                self.name = self.userProfileController.userProfile.uName
-                if let email = UserDefaults.standard.value(forKey: "KEY_EMAIL"){
-                    self.email = email as! String
-                }else{
-                    self.email = ""
+            if self.userProfileController.userProfile.uName == ""{
+                self.userProfileController.getAllUserData {
+                    print("data retrieved")
+                    self.name = self.userProfileController.userProfile.uName
+                    if let email = UserDefaults.standard.value(forKey: "KEY_EMAIL"){
+                        self.email = email as! String
+                    }else{
+                        self.email = ""
+                    }
                 }
+            }
+            if(self.userProfileController.userProfile.uProfileImage == nil){
                 self.loadImage(from: self.userProfileController.userProfile.uProfileImageURL ?? "")
             }
-              
         }
         
     }

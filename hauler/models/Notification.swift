@@ -15,7 +15,7 @@ struct Notification: Identifiable, Codable, Hashable {
     var createdBy : String = "system"
     var item : String? = nil
     var msg : String? = nil
-    var timestamp : Timestamp = Timestamp.init()
+    var timestamp : Date = Date()
     var unread : Bool = true
     
     private enum CodingKeys: String, CodingKey {
@@ -27,13 +27,20 @@ struct Notification: Identifiable, Codable, Hashable {
         case unread
     }
     
+    init(by:String, item:String, at:Date){
+        self.item = item
+        self.timestamp = at
+        self.createdBy = by
+        self.msg = "New Item by \(by) posted at \(at.convertToDateOrTime())"
+    }
+    
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.id = try container.decodeIfPresent(String.self, forKey: .id)
         self.createdBy = try container.decode(String.self, forKey: .createdBy)
         self.item = try container.decodeIfPresent(String.self, forKey: .item)
         self.msg = try container.decodeIfPresent(String.self, forKey: .msg)
-        self.timestamp = try container.decode(Timestamp.self, forKey: .timestamp)
+        self.timestamp = try container.decode(Date.self, forKey: .timestamp)
         self.unread = try container.decode(Bool.self, forKey: .unread)
     }
     

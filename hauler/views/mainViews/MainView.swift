@@ -96,6 +96,7 @@ struct MainView: View {
             case .background:
                 print("background")
                 chatContoller.chatRef?.remove()
+                userProfileController.updateLastLogin()
 //                if userProfileController.userProfile.uEmail != ""{
 //                    let userProfile = userProfileController.userProfile
 //                    do{

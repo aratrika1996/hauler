@@ -9,6 +9,7 @@ import SwiftUI
 
 struct HomeView: View {
     @EnvironmentObject var listingController : ListingController
+    @EnvironmentObject var userProfileController : UserProfileController
     @EnvironmentObject private var viewRouter: ViewRouter
     @Environment(\.dismiss) var dismiss
     
@@ -103,17 +104,31 @@ struct HomeView: View {
         .onAppear{
             if(listingController.listingsList.isEmpty){
                 listingController.getAllListings(adminMode: listingController.adminMode,completion: {_, err in
+                    print(#function, "all got")
                     if let err = err{
                         print(err)
                     }
+                    if self.userProfileController.userProfile.uName == ""{
+                        print(#function, "entered")
+                        self.userProfileController.getAllUserData {
+                            
+                        }
+                    }
+                    print(#function, "last login, \(self.userProfileController.userProfile.uLastLogin)")
+                    
                     isLoading = false
                 })
             }else{
                 isLoading = false
             }
-            
-            
         }
+        .onChange(of: self.listingController.listingsList, perform: {_ in
+            self.listingController.listingsList.forEach{item in
+                if item.createDate > self.userProfileController.userProfile.uLastLogin && self.userProfileController.userProfile.uFollowedUsers.contains(where:{$0.email == item.email}) && self.userProfileController.userProfile.uNotifications.first(where: {$0.item == item.id}) == nil{
+                    self.userProfileController.userProfile.uNotifications.append(Notification(by: item.email, item: item.id!, at: item.createDate))
+                }
+            }
+        })
     }
 }
 

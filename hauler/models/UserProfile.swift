@@ -21,6 +21,7 @@ struct UserProfile: Identifiable, Codable {
     var uProfileImage : UIImage? = nil
     var uFollowedUsers : [FollowedUser] = []
     var uNotifications : [Notification] = []
+    var uLastLogin : Date = Date()
     var unreadNotificationCount : Int{
         get{
             return self.uNotifications.count
@@ -38,13 +39,14 @@ struct UserProfile: Identifiable, Codable {
         case uProfileImageURL
         case uFollowedUsers
         case uNotifications
+        case uLastLogin
     }
     
     init(){
         
     }
     
-    init(id: String? = nil, cName: String, cEmail: String, uPhone: String, uAddress: String, uLong: Double, uLat: Double, uProfileImageURL: String? = "", uFollowedUsers: [FollowedUser] = [], uNotifications: [Notification] = []) {
+    init(id: String? = nil, cName: String, cEmail: String, uPhone: String, uAddress: String, uLong: Double, uLat: Double, uProfileImageURL: String? = "", uFollowedUsers: [FollowedUser] = [], uNotifications: [Notification] = [], uLastLogin: Date = Date()) {
         self.id = id
         self.uName = cName
         self.uEmail = cEmail
@@ -55,6 +57,7 @@ struct UserProfile: Identifiable, Codable {
         self.uProfileImageURL = uProfileImageURL
         self.uFollowedUsers = uFollowedUsers
         self.uNotifications = uNotifications
+        self.uLastLogin = uLastLogin
     }
     
     init(up: UserProfile, img: UIImage?){
@@ -68,6 +71,7 @@ struct UserProfile: Identifiable, Codable {
         self.uFollowedUsers = up.uFollowedUsers
         self.uNotifications = up.uNotifications
         self.uProfileImageURL = up.uProfileImageURL
+        self.uLastLogin = up.uLastLogin
         self.uProfileImage = img
     }
     
@@ -82,6 +86,7 @@ struct UserProfile: Identifiable, Codable {
         self.uLat = try container.decode(Double.self, forKey: .uLat)
         self.uFollowedUsers = try container.decodeIfPresent([FollowedUser].self, forKey: .uFollowedUsers) ?? []
         self.uNotifications = try container.decodeIfPresent([Notification].self, forKey: .uNotifications) ?? []
+        self.uLastLogin = try container.decodeIfPresent(Date.self, forKey: .uLastLogin) ?? Date()
         self.uProfileImageURL = try container.decode(String.self, forKey: .uProfileImageURL)
     }
     
@@ -127,11 +132,18 @@ struct UserProfile: Identifiable, Codable {
             Notifications = retrievedNotifications
         }
         
+        var lastLogin : Date = Date()
+        
+        if let retrievedLastLogin = dictionary["uLastLogin"] as? Date {
+            print(#function, "Read lastlogin from the object")
+            lastLogin = retrievedLastLogin
+        }
+        
         guard let profileImageURL = dictionary["uProfileImageURL"] as? String else {
             print(#function, "Unable to read latitude from the object")
             return nil
         }
         
-        self.init(cName: name, cEmail: email, uPhone: phone, uAddress: address, uLong: long, uLat: lat, uProfileImageURL: profileImageURL, uFollowedUsers: FollowedUsers, uNotifications: Notifications)
+        self.init(cName: name, cEmail: email, uPhone: phone, uAddress: address, uLong: long, uLat: lat, uProfileImageURL: profileImageURL, uFollowedUsers: FollowedUsers, uNotifications: Notifications, uLastLogin: lastLogin)
     }
 }
