@@ -26,14 +26,14 @@ struct UserPublicProfileView: View {
 //            Profile overview
             ZStack(alignment: .topTrailing){
                 Button(action: {
-                    if let uIdx = userProfileController.userProfile.uFollowedUsers.firstIndex(of: email){
+                    if let uIdx = userProfileController.userProfile.uFollowedUsers.firstIndex(where: {$0.email == email}){
                         userProfileController.userProfile.uFollowedUsers.remove(at: uIdx)
                     }else{
-                        userProfileController.userProfile.uFollowedUsers.append(email)
+                        userProfileController.userProfile.uFollowedUsers.append(FollowedUser(email: email))
                     }
                     userProfileController.updateFollowedUsers()
                 }){
-                    (userProfileController.userProfile.uFollowedUsers.contains(email) ?
+                    (userProfileController.userProfile.uFollowedUsers.contains(where: {$0.email == email}) ?
                      Text("Unfollow")
                      .foregroundColor(Color(.red))
                      :

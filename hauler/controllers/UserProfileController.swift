@@ -87,7 +87,12 @@ class UserProfileController : ObservableObject{
     
     
     func updateFollowedUsers(){
-        self.db.collection(self.COLLECTION_PROFILE).document(self.loggedInUserEmail).setData([self.FIELD_FOLLOWEDUSERS:self.userProfile.uFollowedUsers], mergeFields: [self.FIELD_FOLLOWEDUSERS])
+        do{
+            try self.db.collection(self.COLLECTION_PROFILE).document(self.loggedInUserEmail).setData(from:[self.FIELD_FOLLOWEDUSERS:self.userProfile.uFollowedUsers], mergeFields: [self.FIELD_FOLLOWEDUSERS])
+        }catch{
+            print(error)
+        }
+        
     }
     
     func updateNotifications(){

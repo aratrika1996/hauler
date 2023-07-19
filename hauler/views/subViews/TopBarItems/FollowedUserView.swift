@@ -28,20 +28,20 @@ struct FollowedUserView: View {
                                 VStack{
                                     Circle()
                                         .frame(width: 60, height: 60)
-                                        .foregroundColor(usr == self.selectedUser ? Color("HaulerOrange") : Color.gray)
+                                        .foregroundColor(usr.email == self.selectedUser ? Color("HaulerOrange") : Color.gray)
                                         .shadow(radius: 5, x:5, y:5)
                                         .overlay{
-                                            Image(uiImage: self.userProfileController.userDict[usr]?.uProfileImage ?? UIImage(systemName: "person")!)
+                                            Image(uiImage: self.userProfileController.userDict[usr.email]?.uProfileImage ?? UIImage(systemName: "person")!)
                                                 .resizable()
                                                 .frame(width: 50, height: 50)
                                                 .cornerRadius(100)
                                                 .padding(5)
                                                 .onTapGesture {
                                                     print("selected:\(usr)")
-                                                    self.selectedUser = usr
+                                                    self.selectedUser = usr.email
                                                 }
                                         }
-                                    Text(self.userProfileController.userDict[usr]?.uName ?? usr)
+                                    Text(self.userProfileController.userDict[usr.email]?.uName ?? usr.email)
                                         .fontWeight(.light)
                                         .font(.caption)
                                 }
@@ -67,8 +67,8 @@ struct FollowedUserView: View {
                         .onChange(of: self.userProfileController.userProfile.uFollowedUsers, perform: {newlist in
                             if let usr = self.selectedUser{
                                 if !self.userProfileController.userProfile.uFollowedUsers.isEmpty{
-                                    if newlist.firstIndex(of: usr) == nil{
-                                        self.selectedUser = self.userProfileController.userProfile.uFollowedUsers.first
+                                    if newlist.first(where: {$0.email == usr}) == nil{
+                                        self.selectedUser = self.userProfileController.userProfile.uFollowedUsers.first?.email
                                     }
                                 }else{
                                     self.selectedUser = nil
@@ -87,10 +87,10 @@ struct FollowedUserView: View {
         }
         .onAppear{
             if !userProfileController.userProfile.uFollowedUsers.isEmpty && self.selectedUser == nil{
-                self.selectedUser = userProfileController.userProfile.uFollowedUsers.first
+                self.selectedUser = userProfileController.userProfile.uFollowedUsers.first?.email
             }
             userProfileController.userProfile.uFollowedUsers.forEach{usr in
-                userProfileController.getUserByEmail(email: usr, completion: {_,_  in
+                userProfileController.getUserByEmail(email: usr.email, completion: {_,_  in
                     
                 })
             }

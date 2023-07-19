@@ -19,7 +19,7 @@ struct UserProfile: Identifiable, Codable {
     var uLat : Double = 0.0
     var uProfileImageURL : String? = ""
     var uProfileImage : UIImage? = nil
-    var uFollowedUsers : [String] = []
+    var uFollowedUsers : [FollowedUser] = []
     var uNotifications : [Notification] = []
     var unreadNotificationCount : Int{
         get{
@@ -44,7 +44,7 @@ struct UserProfile: Identifiable, Codable {
         
     }
     
-    init(id: String? = nil, cName: String, cEmail: String, uPhone: String, uAddress: String, uLong: Double, uLat: Double, uProfileImageURL: String? = "", uFollowedUsers: [String] = [], uNotifications: [Notification] = []) {
+    init(id: String? = nil, cName: String, cEmail: String, uPhone: String, uAddress: String, uLong: Double, uLat: Double, uProfileImageURL: String? = "", uFollowedUsers: [FollowedUser] = [], uNotifications: [Notification] = []) {
         self.id = id
         self.uName = cName
         self.uEmail = cEmail
@@ -80,7 +80,7 @@ struct UserProfile: Identifiable, Codable {
         self.uPhone = try container.decode(String.self, forKey: .uPhone)
         self.uLong = try container.decode(Double.self, forKey: .uLong)
         self.uLat = try container.decode(Double.self, forKey: .uLat)
-        self.uFollowedUsers = try container.decodeIfPresent([String].self, forKey: .uFollowedUsers) ?? []
+        self.uFollowedUsers = try container.decodeIfPresent([FollowedUser].self, forKey: .uFollowedUsers) ?? []
         self.uNotifications = try container.decodeIfPresent([Notification].self, forKey: .uNotifications) ?? []
         self.uProfileImageURL = try container.decode(String.self, forKey: .uProfileImageURL)
     }
@@ -116,8 +116,8 @@ struct UserProfile: Identifiable, Codable {
             return nil
         }
         
-        var FollowedUsers : [String] = []
-        if let retrievedFollowedUsers =  dictionary["uFollowedUsers"] as? [String] {
+        var FollowedUsers : [FollowedUser] = []
+        if let retrievedFollowedUsers =  dictionary["uFollowedUsers"] as? [FollowedUser] {
             FollowedUsers = retrievedFollowedUsers
         }
         

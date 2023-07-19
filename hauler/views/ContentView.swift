@@ -141,9 +141,10 @@ struct ContentView: View {
                                         .scaleEffect(isAnimating ? 1.2 : 1.0)
                                         .transition(.scale)
                                         .onAppear {
-                                            withAnimation(Animation.spring().repeatForever()) {
+                                            (self.userProfileController.userProfile.uNotifications.count > 0 ? withAnimation(Animation.spring().repeatForever()) {
                                                 isAnimating = true
-                                            }
+                                            } : ())
+                                            
                                         }
                                 }
                             
