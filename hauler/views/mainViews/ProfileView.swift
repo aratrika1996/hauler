@@ -149,15 +149,15 @@ struct ProfileView: View {
                         }
                     }
                     
-                    Section(header: Text("General information")) {
-                        Text("Terms of use")
-                        Text("Privacy policy")
-                        Text("Help")
-                    }
-                    
-                    Section(header: Text("Display settings")) {
-                        Text("App theme")
-                    }
+//                    Section(header: Text("General information")) {
+//                        Text("Terms of use")
+//                        Text("Privacy policy")
+//                        Text("Help")
+//                    }
+//                    
+//                    Section(header: Text("Display settings")) {
+//                        Text("App theme")
+//                    }
                     
                     Section {
                         

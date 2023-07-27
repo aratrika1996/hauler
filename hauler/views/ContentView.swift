@@ -102,7 +102,8 @@ struct ContentView: View {
 //                        .bold()
                     Text(title[tabSelection.rawValue])
                         .font(.system(size: 32))
-                        .fontWeight(.bold)
+                        .fontWeight(.medium)
+                        .foregroundColor(Color("HaulerOrange"))
                         //.padding(.vertical, 30)
                 }
                 

@@ -83,21 +83,23 @@ struct ProductDetailView: View {
                                             showAlert = true
                                         }
                                     }
-                            }
-                            Image(uiImage: UIImage(systemName: "heart.fill")!)
-                                .resizable()
-                                .foregroundColor(.white)
-                                .frame(width: 20, height: 20)
-                                .padding(15)
-                                .background(self.userProfileController.userFavList.contains(where: {$0.listingID == listing.id}) ? Color("HaulerOrange") : .white, in: RoundedRectangle(cornerRadius: 5))
                                 
-                                .cornerRadius(5)
-                                .shadow(color: Color.gray.opacity(0.4), radius: 5, x:2, y:4)
-                                .onTapGesture {
-                                    self.userProfileController.updateFavoriteList(listingToAdd: Favorites(listingID: listing.id!), completion: {
-                                        print("Updated fav list")
-                                    })
-                                }
+                                Image(systemName: "heart.fill")
+                                    .resizable()
+                                    .foregroundColor(self.userProfileController.userFavList.contains(where: {$0.listingID == listing.id}) ? .white : .black)
+                                    .frame(width: 20, height: 20)
+                                    .padding(15)
+                                    .background(self.userProfileController.userFavList.contains(where: {$0.listingID == listing.id}) ? Color("HaulerOrange") : .white, in: RoundedRectangle(cornerRadius: 5))
+                                    
+                                    .cornerRadius(5)
+                                    .shadow(color: Color.gray.opacity(0.4), radius: 5, x:2, y:4)
+                                    .onTapGesture {
+                                        self.userProfileController.updateFavoriteList(listingToAdd: Favorites(listingID: listing.id!), completion: {
+                                            print("Updated fav list")
+                                        })
+                                    }
+                            }
+                            
                         }
                         .padding()
                         VStack(alignment: .leading){
@@ -121,11 +123,15 @@ struct ProductDetailView: View {
                                 Text("Where to meet").font(.system(size: 19)).fontWeight(.medium)
                                 Spacer()
                             }
-                            Text((listing.locString == "Unknown" ? "Contact User" : listing.locString))
-                            MapView(nb_location: CLLocation(latitude: listing.locLat, longitude: listing.locLong) )
-                                .frame(height: 150)
-                                .blur(radius: (listing.locString == "Unknown" ? 10 : 0))
-                                .disabled((listing.locString == "Unknown" ? true : false))
+                            
+                            
+                            VStack(alignment:.leading){
+                                MapView(nb_location: CLLocation(latitude: listing.locLat, longitude: listing.locLong) )
+                                    .frame(height: 150)
+                                    .blur(radius: (listing.locString == "Unknown" ? 10 : 0))
+                                    .disabled((listing.locString == "Unknown" ? true : false))
+                                Text((listing.locString == "Unknown" ? "Contact User" : listing.locString))
+                            }
                         }.padding()
                         (listing.email == self.userProfileController.loggedInUserEmail ? nil : VStack{
                             HStack{
@@ -151,9 +157,9 @@ struct ProductDetailView: View {
                                 else {
                                     Image(systemName: "person")
                                         .resizable()
-                                        .frame(width: 40, height: 40)
+                                        .frame(width: 30, height: 30)
                                         .foregroundColor(.black)
-                                        .padding(30)
+                                        .padding(20)
                                         .background(Color.gray)
                                         .clipShape(Circle())
                                 }
@@ -161,6 +167,8 @@ struct ProductDetailView: View {
                                 VStack(alignment: .leading){
                                     Text(userProfileController.userDict[listing.email]!.uName)
                                         .foregroundColor(Color.black)
+                                        .fontWeight(.medium)
+                                        .font(.system(size: 18))
                                     Text(userProfileController.userDict[listing.email]!.uEmail)
                                         .foregroundColor(Color.black)
                                 }
