@@ -29,11 +29,30 @@ struct ChatListView: View {
                         NavigationLink(value:key as String)
                         {
                             HStack{
-                                Image(uiImage: self.userProfileController.userDict[key]?.uProfileImage ?? UIImage(systemName: "person")!)
-                                    .resizable()
-                                    .cornerRadius(100)
-                                    .shadow(radius: 5, x:5, y:5)
-                                    .frame(width: 50, height: 50)
+//                                Image(uiImage: self.userProfileController.userDict[key]?.uProfileImage ?? UIImage(systemName: "person")!)
+//                                    .resizable()
+//                                    .cornerRadius(100)
+//                                    .shadow(radius: 5, x:5, y:5)
+//                                    .frame(width: 50, height: 50)
+                                if (userProfileController.userDict[key]?.uProfileImage != nil) {
+                                    Image(uiImage: (userProfileController.userDict[key]?.uProfileImage!)!)
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fill)
+                                        .frame(width: 60, height: 60)
+                                        .background(Color.gray)
+                                        .clipShape(Circle())
+                                        .overlay(Circle().stroke(Color.white, lineWidth: 1))
+                                        .scaledToFit()
+                                }
+                                else {
+                                    Image(systemName: "person")
+                                        .resizable()
+                                        .frame(width: 30, height: 30)
+                                        .foregroundColor(.black)
+                                        .padding(15)
+                                        .background(Color.gray)
+                                        .clipShape(Circle())
+                                }
                                 HStack{
                                     VStack(alignment: .leading){
                                         HStack{

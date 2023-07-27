@@ -127,15 +127,18 @@ struct PostView: View {
                                 }
                             })
                         } else {
-                            HStack{
-                                Spacer()
+                            VStack{
+//                                Spacer()
                                 Image(systemName: "plus.square")
                                     .resizable()
-                                    .frame(width: 70, height: 70)
-                                
-                                    .padding(.vertical, 100)
-                                Spacer()
+                                    .frame(width: 30, height: 30)
+                                    .foregroundColor(Color("HaulerOrange"))
+//                                    .padding(.vertical, 100)
+                                Text("Add Photo")
+//                                Spacer()
                             }
+                            .frame(maxWidth: .infinity, alignment: .center)
+                            .padding(.vertical, 30)
                             .onTapGesture {
                                 openImagePicker()
                             }
@@ -259,7 +262,7 @@ struct PostView: View {
                     
                 }
                 .tint(Color("HaulerOrange"))
-                .shadow(radius: 5)
+                .shadow(color: Color.gray.opacity(0.2), radius: 5, x:0, y:0)
                 .scrollContentBackground(.hidden)
                 
                 

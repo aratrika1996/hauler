@@ -66,6 +66,8 @@ struct HomeView: View {
                                                     .font(.system(size: 18))
                                                     .fontWeight(.medium)
                                                     .foregroundColor(Color.black)
+                                                    .lineLimit(1)
+                                                    .truncationMode(.tail)
                                                 Text("$" + String(item.price)).foregroundColor(Color(UIColor(named: "HaulerOrange") ?? .black))
                                                     .font(.system(size: 15))
                                             }

@@ -208,7 +208,7 @@ class UserProfileController : ObservableObject{
                 }
             }
             
-            user = UserProfile(up: user, img: UIImage(systemName: "person")!)
+            user = UserProfile(up: user, img: nil)
             self.userDict[user.uEmail] = user
             completion(user)
         }

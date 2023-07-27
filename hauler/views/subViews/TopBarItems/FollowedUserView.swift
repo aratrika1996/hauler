@@ -26,21 +26,33 @@ struct FollowedUserView: View {
                         HStack{
                             ForEach(userProfileController.userProfile.uFollowedUsers, id: \.self){usr in
                                 VStack{
-                                    Circle()
-                                        .frame(width: 60, height: 60)
-                                        .foregroundColor(usr.email == self.selectedUser ? Color("HaulerOrange") : Color.gray)
-                                        .shadow(radius: 5, x:5, y:5)
-                                        .overlay{
-                                            Image(uiImage: self.userProfileController.userDict[usr.email]?.uProfileImage ?? UIImage(systemName: "person")!)
-                                                .resizable()
-                                                .frame(width: 50, height: 50)
-                                                .cornerRadius(100)
-                                                .padding(5)
-                                                .onTapGesture {
-                                                    print("selected:\(usr)")
-                                                    self.selectedUser = usr.email
-                                                }
-                                        }
+                                    if self.userProfileController.userDict[usr.email]?.uProfileImage != nil {
+                                        Image(uiImage: (self.userProfileController.userDict[usr.email]?.uProfileImage!)!)
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fill)
+                                            .frame(width: 60, height: 60)
+                                            .clipShape(Circle())
+                                            .overlay(Circle().stroke(usr.email == self.selectedUser ? Color("HaulerOrange") : Color.white, lineWidth: 4))
+                                            .scaledToFit()
+                                            .onTapGesture {
+                                                print("selected:\(usr)")
+                                                self.selectedUser = usr.email
+                                            }
+                                    }
+                                    else {
+                                        Image(systemName: "person")
+                                            .resizable()
+                                            .frame(width: 30, height: 30)
+                                            .foregroundColor(.black)
+                                            .padding(15)
+                                            .background(Color.gray)
+                                            .clipShape(Circle())
+                                            .overlay(Circle().stroke(usr.email == self.selectedUser ? Color("HaulerOrange") : Color.white, lineWidth: 4))
+                                            .onTapGesture {
+                                                print("selected:\(usr)")
+                                                self.selectedUser = usr.email
+                                            }
+                                    }
                                     Text(self.userProfileController.userDict[usr.email]?.uName ?? usr.email)
                                         .fontWeight(.light)
                                         .font(.caption)
