@@ -19,6 +19,8 @@ struct HomeView: View {
     @State var activeLink : Bool = false
     @State var hideParentNavigation : Visibility = .visible
     @State var isLoading : Bool = true
+    @State private var progress: Double = 0
+    
     
     @Binding var rootScreen :RootView
     
@@ -28,6 +30,7 @@ struct HomeView: View {
         NavigationView{
             if(isLoading){
                 SplashScreenView()
+                
             }else{
                 ScrollView(.vertical){
                     HStack{
@@ -131,6 +134,27 @@ struct HomeView: View {
                 }
             }
         })
+    }
+}
+
+struct CustomCircularProgressViewStyle: ProgressViewStyle {
+    @State private var animationCompleted = false
+    @State private var animationOn = true
+    func makeBody(configuration: Configuration) -> some View {
+        VStack {
+            Image(uiImage: UIImage(named: "HaulerLogo")!)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 150, height: 150)
+                .border(.black, width: 5)
+                .animation(.ripple().repeatForever(), value: animationOn)
+                .offset(animationOn ? CGSize(width: 0, height: 0) :CGSize(width: 0, height: 10))
+                .onAppear {
+                    withAnimation{
+                        animationOn.toggle()
+                    }
+                }
+        }
     }
 }
 
