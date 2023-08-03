@@ -9,6 +9,7 @@ import SwiftUI
 
 struct HomeView: View {
     @EnvironmentObject var listingController : ListingController
+    @EnvironmentObject var userProfileController : UserProfileController
     @EnvironmentObject private var viewRouter: ViewRouter
     @Environment(\.dismiss) var dismiss
     
@@ -18,6 +19,8 @@ struct HomeView: View {
     @State var activeLink : Bool = false
     @State var hideParentNavigation : Visibility = .visible
     @State var isLoading : Bool = true
+    @State private var progress: Double = 0
+    
     
     @Binding var rootScreen :RootView
     
@@ -27,6 +30,7 @@ struct HomeView: View {
         NavigationView{
             if(isLoading){
                 SplashScreenView()
+                
             }else{
                 ScrollView(.vertical){
                     HStack{
@@ -65,6 +69,8 @@ struct HomeView: View {
                                                     .font(.system(size: 18))
                                                     .fontWeight(.medium)
                                                     .foregroundColor(Color.black)
+                                                    .lineLimit(1)
+                                                    .truncationMode(.tail)
                                                 Text("$" + String(item.price)).foregroundColor(Color(UIColor(named: "HaulerOrange") ?? .black))
                                                     .font(.system(size: 15))
                                             }
@@ -95,7 +101,7 @@ struct HomeView: View {
                             tokens: $listingController.selectedTokens,
                             suggestedTokens: $listingController.suggestedTokens,
                             token: { token in
-                    Label("Search", systemImage: token.icon())
+                    Label(token.rawValue, systemImage: token.icon())
                 })
                 
             }
@@ -103,16 +109,51 @@ struct HomeView: View {
         .onAppear{
             if(listingController.listingsList.isEmpty){
                 listingController.getAllListings(adminMode: listingController.adminMode,completion: {_, err in
+                    userProfileController.getUserFavList()
                     if let err = err{
                         print(err)
                     }
+                    if self.userProfileController.userProfile.uName == ""{
+                        print(#function, "entered")
+                        self.userProfileController.getAllUserData {
+                            
+                        }
+                    }
+                    print(#function, "last login, \(self.userProfileController.userProfile.uLastLogin)")
+                    
                     isLoading = false
                 })
             }else{
                 isLoading = false
             }
-            
-            
+        }
+        .onChange(of: self.listingController.listingsList, perform: {_ in
+            self.listingController.listingsList.forEach{item in
+                if item.createDate > self.userProfileController.userProfile.uLastLogin && self.userProfileController.userProfile.uFollowedUsers.contains(where:{$0.email == item.email}) && self.userProfileController.userProfile.uNotifications.first(where: {$0.item == item.id}) == nil{
+                    self.userProfileController.userProfile.uNotifications.append(Notification(by: item.email, item: item.id!, at: item.createDate))
+                }
+            }
+        })
+    }
+}
+
+struct CustomCircularProgressViewStyle: ProgressViewStyle {
+    @State private var animationCompleted = false
+    @State private var animationOn = true
+    func makeBody(configuration: Configuration) -> some View {
+        VStack {
+            Image(uiImage: UIImage(named: "HaulerLogo")!)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 150, height: 150)
+                .border(.black, width: 5)
+                .animation(.ripple().repeatForever(), value: animationOn)
+                .offset(animationOn ? CGSize(width: 0, height: 0) :CGSize(width: 0, height: 10))
+                .onAppear {
+                    withAnimation{
+                        animationOn.toggle()
+                    }
+                }
         }
     }
 }

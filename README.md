@@ -10,15 +10,38 @@ HAULER is designed to create an interactive and efficient platform where users c
 
 # Features
 
-- Product Search : Users can easily search for products available on the app based on keywords or categories.
+## Done
 
-- Address Management : Users can add their addresses or opt for meetups as pick-up locations, providing flexibility for transactions.
-- Messaging : HAULER enables users to communicate with each other through an in-app messaging system, facilitating inquiries about products and negotiations.
-- Chat Enable/Disable : Users can choose to enable or disable the chat feature as per their preference.
-- Favorites and Following : Users can mark products as favorites and follow specific sellers to receive updates and notifications about their listings.
-- Personalized Feeds : Users can view a customized feed of products from sellers they follow or explore the general marketplace.
-- Profile Management : Users have a dedicated profile screen where they can manage their personal information, such as name, email, and phone number.
-- Post History : Users can access a screen that displays their own listings and their respective statuses.
+- Product Search: Users can easily search for products available on the app based on keywords or categories.
+![ezgif com-video-to-gif (1)](https://github.com/m-mraisi/hauler/assets/34162216/45f04b3c-27ad-4482-8ba5-b3a91860431b)  
+
+- Messaging: HAULER enables users to communicate with each other through an in-app messaging system, facilitating inquiries about products and negotiations.
+
+![Simulator Screen Recording - iPhone 14 Pro Max - 2023-06-27 at 21 21 09](https://github.com/m-mraisi/hauler/assets/34162216/c5b22f4c-35fa-4245-83d5-9c047aed79dd)
+
+- Post History: Users can access a screen that displays their own listings and their respective statuses.
+
+![ezgif com-crop](https://github.com/m-mraisi/hauler/assets/34162216/56007ff6-bb88-4c1f-af8d-34254d05e290)
+
+
+- Profile Management: Users have a dedicated profile screen where they can manage their personal information, such as name, email, and phone number.
+
+![ezgif com-video-to-gif (5)](https://github.com/m-mraisi/hauler/assets/34162216/e9ef7798-b180-454b-9d8f-b9325a692e7a)
+
+
+- Favorites: Users can mark products as favorites.
+
+![ezgif com-video-to-gif (6)](https://github.com/m-mraisi/hauler/assets/34162216/caf806a0-a2f9-4a85-8aa0-7ba2f5e1986f)
+
+
+- Following Users can follow specific sellers to receive updates and notifications about their listings.
+
+![ezgif com-video-to-gif (4)](https://github.com/m-mraisi/hauler/assets/34162216/c57f6b9f-9ffd-4f3f-b885-c8b10cc1cf74)
+
+
+- Following and Personalized Feeds: Users can view a customized feed of products from sellers they follow or explore the general marketplace.
+
+![ezgif com-video-to-gif (3)](https://github.com/m-mraisi/hauler/assets/34162216/b3153b2b-33e7-40a0-b71f-63165106580d)
 
 # Technologies Used
 

@@ -23,6 +23,9 @@ extension UIImage {
 
 
 struct PostView: View {
+    @EnvironmentObject var authController : AuthController
+    @EnvironmentObject var userProfileController : UserProfileController
+    @Binding var rootScreen :RootView
     
     
     @State private var selectedImage: UIImage? = nil
@@ -57,24 +60,24 @@ struct PostView: View {
     }
     
     @State var titleValid = true {
-       didSet {
-           listingTitleHint = titleValid ? self.listingTitleHint : self.listingTitleError
-       }
-     }
-     @State var descValid = true {
-       didSet {
-           listingDescHint = descValid ? self.listingDescHint : self.listingDescError
-       }
-     }
+        didSet {
+            listingTitleHint = titleValid ? self.listingTitleHint : self.listingTitleError
+        }
+    }
+    @State var descValid = true {
+        didSet {
+            listingDescHint = descValid ? self.listingDescHint : self.listingDescError
+        }
+    }
     @State var valueValid = true {
-      didSet {
-          listingValueHint = valueValid ? self.listingValueHint : self.listingValueError
-      }
+        didSet {
+            listingValueHint = valueValid ? self.listingValueHint : self.listingValueError
+        }
     }
     
     @EnvironmentObject var imageController : ImageController
     @EnvironmentObject var listingController : ListingController
-    @EnvironmentObject var userProfileController : UserProfileController
+    //@EnvironmentObject var userProfileController : UserProfileController
     @EnvironmentObject var routeController : ViewRouter
     @EnvironmentObject var locationController : LocationManager
     
@@ -93,9 +96,6 @@ struct PostView: View {
     @State private var listingValueError = ""
     @State private var loc : CLLocation = CLLocation(latitude: 0, longitude: 0)
     
-    @State private var cd : Date = Date()
-    @State private var incd : Bool = false
-    
     @State private var useDefaultLocation : Bool = true
     @State private var nonCA : Bool = false
     @State private var showHint : Bool = false
@@ -107,8 +107,9 @@ struct PostView: View {
     
     var body: some View {
         VStack{
-            Form {
-                Section("Photo") {
+            if userProfileController.loggedInUserEmail != "" {
+                Form {
+                    Section("Photo") {
                         if let image = resizedImage {
                             HStack {
                                 Spacer()
@@ -121,186 +122,193 @@ struct PostView: View {
                             Toggle(isOn: $aspectMode){
                                 Text("Aspect Mode")
                             }.onChange(of: aspectMode, perform: {_ in
-                                resizePickedImage(aspectMode: aspectMode)
+                                if selectedImage != nil{
+                                    resizedImage = selectedImage!.resizePickedImage(aspectMode: aspectMode, size: 256)
+                                }
                             })
                         } else {
-                            HStack{
-                                Spacer()
+                            VStack{
+//                                Spacer()
                                 Image(systemName: "plus.square")
                                     .resizable()
-                                    .frame(width: 70, height: 70)
-                                    
-                                    .padding(.vertical, 100)
-                                Spacer()
+                                    .frame(width: 30, height: 30)
+                                    .foregroundColor(Color("HaulerOrange"))
+//                                    .padding(.vertical, 100)
+                                Text("Add Photo")
+//                                Spacer()
                             }
+                            .frame(maxWidth: .infinity, alignment: .center)
+                            .padding(.vertical, 30)
                             .onTapGesture {
                                 openImagePicker()
                             }
+                        }
                     }
-                }
-                
-                Section("Info"){
-                    VStack{
-                        MaterialDesignTextField($listingTitle, placeholder: "Title", hint: $listingTitleHint, editing: $isTitleEditing, valid: $titleValid)
-                            .focused($focusedField, equals: .some(.title))
-                            .onTapGesture {
+                    
+                    Section("Info"){
+                        VStack{
+                            MaterialDesignTextField($listingTitle, placeholder: "Title", hint: $listingTitleHint, editing: $isTitleEditing, valid: $titleValid, initialEditing: false)
+                                .focused($focusedField, equals: .some(.title))
+                                .onTapGesture {
+                                    isTitleEditing = true
+                                }
+                            MaterialDesignTextField($listingDesc, placeholder: "Description", hint: $listingDescHint, editing: $isDescEditing, valid: $descValid, initialEditing: false)
+                                .focused($focusedField, equals: .some(.desc))
+                                .onTapGesture {
+                                    isDescEditing = true
+                                }
+                            MaterialDesignTextField($listingValue, placeholder: "Price", hint: $listingValueHint, editing: $isValueEditing, valid: $valueValid, initialEditing: false)
+                                .focused($focusedField, equals: .some(.price))
+                                .onTapGesture {
+                                    isValueEditing = true
+                                }
+                        }
+                        .onChange(of: focusedField, perform: {which in
+                            switch (which){
+                            case .some(.title):
                                 isTitleEditing = true
-                            }
-                        MaterialDesignTextField($listingDesc, placeholder: "Description", hint: $listingDescHint, editing: $isDescEditing, valid: $descValid)
-                            .focused($focusedField, equals: .some(.desc))
-                            .onTapGesture {
+                            case .none:
+                                clearFocus()
+                            case .some(.desc):
                                 isDescEditing = true
-                            }
-                        MaterialDesignTextField($listingValue, placeholder: "Price", hint: $listingValueHint, editing: $isValueEditing, valid: $valueValid)
-                            .focused($focusedField, equals: .some(.price))
-                            .onTapGesture {
+                            case .some(.price):
                                 isValueEditing = true
+                            case .some(.cate):
+                                clearFocus()
+                            case .some(.loca):
+                                clearFocus()
                             }
+                        })
                     }
-                    .onChange(of: focusedField, perform: {which in
-                    switch (which){
-                    case .some(.title):
-                        isTitleEditing = true
-                    case .none:
-                        clearFocus()
-                    case .some(.desc):
-                        isDescEditing = true
-                    case .some(.price):
-                        isValueEditing = true
-                    case .some(.cate):
-                        clearFocus()
-                    case .some(.loca):
-                        clearFocus()
-                    }
-                    })
-                }
-                
-                Section("Detail"){
-                    HStack{
-                        Text("Category")
-                        Picker(selection: $listing.category, label: Text("")) {
-                            ForEach(ListingCategory.allCases, id: \.self) { category in
-                                Text(category.displayName).tag(category)
+                    
+                    Section("Detail"){
+                        HStack{
+                            Text("Category")
+                            Picker(selection: $listing.category, label: Text("")) {
+                                ForEach(ListingCategory.allCases, id: \.self) { category in
+                                    Text(category.displayName).tag(category)
                                     
+                                }
                             }
+                            .pickerStyle(.menu)
+                            .focused($focusedField, equals: .some(.cate))
                         }
-                        .pickerStyle(.menu)
-                        .focused($focusedField, equals: .some(.cate))
                     }
-                }
-
-                Section("Location"){
-                    Picker("Where To Meet", selection: $useDefaultLocation, content: {
-                        Text("Default").tag(true)
-                        Text("Specfic").tag(false)
-                    })
-                    .pickerStyle(.segmented )
-                    .focused($focusedField, equals: .some(.loca))
-                    .onChange(of: useDefaultLocation, perform: {
-                        if(!$0){
-                            return
-                        }
-                        if let up = self.userProfileController.userDict[self.userProfileController.loggedInUserEmail]{
-                            if(up.uAddress == ""){
+                    
+                    Section("Location"){
+                        Picker("Where To Meet", selection: $useDefaultLocation, content: {
+                            Text("Default").tag(true)
+                            Text("Specfic").tag(false)
+                        })
+                        .pickerStyle(.segmented )
+                        .focused($focusedField, equals: .some(.loca))
+                        .onChange(of: useDefaultLocation, perform: {
+                            if(!$0){
                                 return
                             }
-                            listingLoc = up.uAddress
+                            if(self.userProfileController.userProfile.uAddress == ""){
+                                return
+                            }
+                            listingLoc = self.userProfileController.userProfile.uAddress
                             delayController.start(delay: 1, closure: {
                                 self.locationController.ReversedLocation = listingLoc
                             })
-                        }
-                        
-                    })
-                    .onChange(of: listingLoc, perform: {newloc in
-                        var newaddr = newloc
-                        if(!nonCA){
-                            newaddr += ",Canada"
-                        }
-                        delayController.start(delay: 1, closure: {
                             
-                            if(self.locationController.ReversedLocation != newaddr){
-                                showHint = true
+                            
+                        })
+                        .onChange(of: listingLoc, perform: {newloc in
+                            var newaddr = newloc
+                            if(!nonCA){
+                                newaddr += ",Canada"
                             }
-                            self.locationController.ReversedLocation = newaddr
+                            delayController.start(delay: 1, closure: {
+                                
+                                if(self.locationController.ReversedLocation != newaddr){
+                                    showHint = true
+                                }
+                                self.locationController.ReversedLocation = newaddr
+                                
+                            })
                             
                         })
                         
-                    })
-                    
-                    HStack{
-                        TextField("",text: $listingLoc)
-                            .disabled(useDefaultLocation ? true : false)
-                        if(!useDefaultLocation){
-                            Toggle("Non CA", isOn: $nonCA)
-                            .buttonStyle(.borderedProminent)
+                        HStack{
+                            TextField("",text: $listingLoc)
+                                .disabled(useDefaultLocation ? true : false)
+                            if(!useDefaultLocation){
+                                Toggle("Non CA", isOn: $nonCA)
+                                    .buttonStyle(.borderedProminent)
+                            }
+                            
                         }
-                        
-                    }
-                    ZStack(alignment: .topLeading){
-                                                MapView(nb_location: CLLocation(latitude: self.locationController.latitude, longitude: self.locationController.longitude)).frame(height: 300)
-                        if(!self.locationController.listOfReversedLocation.isEmpty){
-                            if(showHint){
-                                ForEach(self.locationController.listOfReversedLocation, id: \.self){loc in
-                                    HStack{
-                                        Text(loc.name ?? "")
-                                    }
-                                    .onTapGesture {
-                                        self.listingLoc = loc.name ?? ""
-                                        showHint = false
+                        ZStack(alignment: .topLeading){
+                            MapView(nb_location: CLLocation(latitude: self.locationController.latitude, longitude: self.locationController.longitude)).frame(height: 300)
+                            if(!self.locationController.listOfReversedLocation.isEmpty){
+                                if(showHint){
+                                    ForEach(self.locationController.listOfReversedLocation, id: \.self){loc in
+                                        HStack{
+                                            Text(loc.name ?? "")
+                                        }
+                                        .onTapGesture {
+                                            self.listingLoc = loc.name ?? ""
+                                            showHint = false
+                                        }
                                     }
                                 }
                             }
+                            
                         }
-
                     }
-                }
-
-            }
-            .tint(Color("HaulerOrange"))
-            .shadow(radius: 5)
-            .scrollContentBackground(.hidden)
-            
-            
-            Button(action: {
-                guard let _ = resizedImage else {
-                    print("No image selected.")
-                    return
-                }
-                listing.email = listingController.loggedInUserEmail
-                imageController.uploadImage(resizedImage!) { result in
-                    switch result {
-                    case .success(let url):
-                        // Handle the success case with the URL
-                        print("Image uploaded successfully. URL: \(url)")
-                        // Once we get the URL, we can update the imageURI field in the listing
-                        listing.imageURI = url.absoluteString
-                        // Perform any additional operations with the completed listing
-                        saveListing()
-                        self.alertTitle = "Success"
-                        self.alertMsg = "PostSuccess"
-                        
-                    case .failure(let error):
-                        // Handle the error case
-                        print("Error uploading image: \(error)")
-                        self.alertTitle = "Failed"
-                        self.alertMsg = "PostFailed"
-                    }
-                    alertIsPresented = true
                     
                 }
-            }) {
-                Text("Post Listing")
-                    .foregroundColor(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(selectedImage == nil ? Color.gray : Color.green)
-                    .cornerRadius(10)
+                .tint(Color("HaulerOrange"))
+                .shadow(color: Color.gray.opacity(0.2), radius: 5, x:0, y:0)
+                .scrollContentBackground(.hidden)
+                
+                
+                Button(action: {
+                    guard let _ = resizedImage else {
+                        print("No image selected.")
+                        return
+                    }
+                    listing.email = listingController.loggedInUserEmail
+                    imageController.uploadImage(resizedImage!) { result in
+                        switch result {
+                        case .success(let url):
+                            // Handle the success case with the URL
+                            print("Image uploaded successfully. URL: \(url)")
+                            // Once we get the URL, we can update the imageURI field in the listing
+                            listing.imageURI = url.absoluteString
+                            // Perform any additional operations with the completed listing
+                            saveListing()
+                            self.alertTitle = "Success"
+                            self.alertMsg = "PostSuccess"
+                            
+                        case .failure(let error):
+                            // Handle the error case
+                            print("Error uploading image: \(error)")
+                            self.alertTitle = "Failed"
+                            self.alertMsg = "PostFailed"
+                        }
+                        alertIsPresented = true
+                        
+                    }
+                }) {
+                    Text("Post Listing")
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(selectedImage == nil ? Color.gray : Color.green)
+                        .cornerRadius(10)
+                }
+                .padding(.horizontal, 10)
+                .disabled(selectedImage == nil || !valueValid || !descValid || !titleValid)
             }
-            .padding(.horizontal, 10)
-            .disabled(selectedImage == nil || !valueValid || !descValid || !titleValid)
+            
+            
         }
         .onAppear{
-            self.locationController.ReversedLocation = self.userProfileController.userDict[self.userProfileController.loggedInUserEmail]?.uAddress ?? ""
+            self.listingLoc = self.userProfileController.userProfile.uAddress
         }
         .navigationBarTitle("Post Listing")
         .alert(self.alertTitle, isPresented: $alertIsPresented, actions: {
@@ -339,9 +347,7 @@ struct PostView: View {
             }
             
         }
-        
     }
-    
     func handleImagePickerDismissal() {
         if selectedImage == nil {
             // Image picker was dismissed without selecting an image
@@ -349,50 +355,11 @@ struct PostView: View {
         } else {
             // Image picker was dismissed after selecting an image
             print("Image picker dismissed with selected image.")
-            resizePickedImage(aspectMode: aspectMode)
+            resizedImage = selectedImage!.resizePickedImage(aspectMode: aspectMode, size: 256)
         }
         imageSourceType = nil
         // Perform any additional handling as needed
     }
-    
-    func resizePickedImage(aspectMode: Bool){
-        guard let _ = selectedImage else{
-            return
-        }
-        var resizedImage : UIImage? = nil
-        let targetedH : CGFloat = 256
-        let targetedW : CGFloat = 256
-        let targetedSize : CGSize = CGSize(width: targetedW, height: targetedH)
-        var bgSize : CGSize? = nil
-        UIGraphicsBeginImageContextWithOptions(targetedSize, true, 1.0)
-        switch aspectMode{
-        case true:
-            let imgW = (selectedImage?.size.width)!
-            let imgH = (selectedImage?.size.height)!
-            let aspectRatio = imgW/imgH
-            if aspectRatio > 1 {
-                // Landscape image
-                bgSize = CGSize(width: targetedW, height: targetedH / aspectRatio)
-                selectedImage!.draw(in: CGRect(origin: .init(x: 0, y: (targetedH - targetedH / aspectRatio) / 2), size: bgSize!))
-//                selectedImage!.draw(in: CGRect(origin: .zero, size: bgSize!))
-            } else {
-                // Portrait image
-                bgSize = CGSize(width: targetedW * aspectRatio, height: targetedH)
-                selectedImage!.draw(in: CGRect(origin: .init(x: (targetedW - targetedW * aspectRatio) / 2, y: 0), size: bgSize!))
-//                selectedImage!.draw(in: CGRect(origin: .zero, size: bgSize!))
-            }
-            break
-        case false:
-            bgSize = CGSize(width: targetedW, height: targetedH)
-            selectedImage!.draw(in: CGRect(origin: .zero, size: bgSize!))
-            break
-        }
-        defer{UIGraphicsEndImageContext()}
-        resizedImage = UIGraphicsGetImageFromCurrentImageContext()!
-        self.resizedImage = resizedImage
-    }
-
-
     
     func openImagePicker() {
         isImagePickerPresented = true
@@ -413,6 +380,9 @@ struct PostView: View {
         self.listing.price = Double(self.listingValue)!
         self.listing.createDate = Date.now
         self.listing.available = true
+        self.listing.locString = self.locationController.ReversedLocation
+        self.listing.locLat = self.locationController.latitude
+        self.listing.locLong = self.locationController.longitude
         listingController.insertListing(listing: listing)
         clearAfterListed()
     }
@@ -421,9 +391,10 @@ struct PostView: View {
         self.listing = Listing()
         self.listingTitle = ""
         self.listingDesc = ""
-        self.listingTitle = ""
+        self.listingValue = ""
         self.selectedImage = nil
         self.resizedImage = nil
+        self.clearFocus()
     }
     
     func validateTitle(){
@@ -486,36 +457,45 @@ struct PostView: View {
     }
 }
 
-class DelayManager {
-    var workItem: DispatchWorkItem?
-    
-    func start(delay: TimeInterval, closure: @escaping () -> Void) {
-        cancel()
-        
-        let newWorkItem = DispatchWorkItem { [weak self] in
-            closure()
-            self?.workItem = nil
+
+extension UIImage {
+    func resizePickedImage(aspectMode: Bool, size: CGFloat) -> UIImage{
+        var resizedImage : UIImage? = nil
+        let targetedH : CGFloat = size
+        let targetedW : CGFloat = size
+        let targetedSize : CGSize = CGSize(width: targetedW, height: targetedH)
+        var bgSize : CGSize? = nil
+        UIGraphicsBeginImageContextWithOptions(targetedSize, true, 1.0)
+        switch aspectMode{
+        case true:
+            let imgW = self.size.width
+            let imgH = self.size.height
+            let aspectRatio = imgW/imgH
+            if aspectRatio > 1 {
+                // Landscape image
+                bgSize = CGSize(width: targetedW, height: targetedH / aspectRatio)
+                self.draw(in: CGRect(origin: .init(x: 0, y: (targetedH - targetedH / aspectRatio) / 2), size: bgSize!))
+                //                selectedImage!.draw(in: CGRect(origin: .zero, size: bgSize!))
+            } else {
+                // Portrait image
+                bgSize = CGSize(width: targetedW * aspectRatio, height: targetedH)
+                self.draw(in: CGRect(origin: .init(x: (targetedW - targetedW * aspectRatio) / 2, y: 0), size: bgSize!))
+                //                selectedImage!.draw(in: CGRect(origin: .zero, size: bgSize!))
+            }
+            break
+        case false:
+            bgSize = CGSize(width: targetedW, height: targetedH)
+            self.draw(in: CGRect(origin: .zero, size: bgSize!))
+            break
         }
-        workItem = newWorkItem
-        DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: newWorkItem)
-    }
-    
-    func extend(delay: TimeInterval) {
-        if let existingWorkItem = workItem {
-            existingWorkItem.cancel()
-            DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: existingWorkItem)
-        }
-    }
-    
-    func cancel() {
-        workItem?.cancel()
-        workItem = nil
+        defer{UIGraphicsEndImageContext()}
+        resizedImage = UIGraphicsGetImageFromCurrentImageContext()!
+        return resizedImage!
     }
 }
 
-
-struct PostView_Previews: PreviewProvider {
-    static var previews: some View {
-        PostView()
-    }
-}
+//struct PostView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        PostView()
+//    }
+//}

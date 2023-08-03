@@ -14,14 +14,28 @@ import FirebaseFirestore
 @main
 struct haulerApp: App {
     
-    
+    @State var isActive: Bool = false
     init(){
         FirebaseApp.configure()
     }
         
     var body: some Scene {
         WindowGroup {
-            MainView()
+            VStack {
+                if self.isActive {
+                    MainView()
+                } else {
+                    SplashScreenView()
+                }
+            }//VStack ends
+            .onAppear {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                    withAnimation {
+                        self.isActive = true
+                    }
+                }
+            }
+            
 //            SplashScreenView()
         }
     }

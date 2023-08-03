@@ -10,14 +10,16 @@ import FirebaseFirestore
 import Firebase
 
 
+
 class ChatController: ObservableObject {
     @Published var chatDict : [String:Chat] = [:]
-    @Published var chats: [Chat] = []
     @Published var messageText: String = ""
     @Published var toId : String? = nil
     @Published var selectedChar : Chat? = nil
     @Published var msgCount : Int = 0
     @Published var sortedKeyDict : [String:Date] = [:]
+    @Published var chatRef : ListenerRegistration? = nil
+    @Published var msgRef : ListenerRegistration? = nil
     
     private static var shared : ChatController?
     private let COLLECTION_CHAT: String = "Chat"
@@ -34,7 +36,7 @@ class ChatController: ObservableObject {
             }
         }
     }
-
+    
     init() {
         loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
     }
@@ -46,7 +48,25 @@ class ChatController: ObservableObject {
         
         return shared
     }
-
+    
+    func loginInitialize(who: String){
+        self.loggedInUserEmail = who
+        self.fetchChats(completion: {_ in})
+    }
+    
+    func logoutClear(){
+        chatRef!.remove()
+        chatRef = nil
+        chatDict.removeAll()
+        sortedKeyDict.removeAll()
+        messageText = ""
+        msgCount = 0
+        toId = nil
+        selectedChar = nil
+        userId = nil
+        loggedInUserEmail = nil
+    }
+    
     func sendMessage(chatId: String, toId: String, complete: @escaping () -> Void) {
         if(messageText.trimmingCharacters(in: .whitespacesAndNewlines) != ""){
             loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
@@ -59,20 +79,18 @@ class ChatController: ObservableObject {
                 "fromId": userId,
                 "toId": toId,
                 "text": messageText, // messageText,
+                "unread": true,
                 "timestamp": Date()
             ]
             
             db.collection(COLLECTION_CHAT).document(chatId).collection("messages").addDocument(data: messageData) { error in
                 if let error = error {
                     print("Error sending message: \(error.localizedDescription)")
-                    complete()
                 } else {
                     self.messageText = ""
                     print("Message sent successfully")
-                    self.fetchChats(completion: {
-                        complete()
-                    })
                 }
+                complete()
             }
         }
         
@@ -101,6 +119,7 @@ class ChatController: ObservableObject {
             "fromId": userId,
             "toId": id,
             "text": self.messageText, // messageText,
+            "unread": true,
             "timestamp": Date()
         ]
         self.db.collection(self.COLLECTION_CHAT).document(newchatroom.documentID).collection("messages").addDocument(data: messageData){err in
@@ -115,81 +134,107 @@ class ChatController: ObservableObject {
         }
         
     }
-
-
-    func fetchChats(completion: @escaping () -> Void){
-        loggedInUserEmail = Auth.auth().currentUser?.email ?? ""
+    
+    func readAllUnread(userId:String){
+        guard let chatroom = self.chatDict[userId] else{
+            return
+        }
+        let msgs = chatroom.messages.filter{msg in return msg.unread == true && msg.toId == loggedInUserEmail}
+        print("trying to unread msg with count \(msgs.count)...msgs = \(msgs)")
+        if !msgs.isEmpty{
+            msgs.forEach{msg in
+                db.collection(COLLECTION_CHAT).document(chatroom.id).collection("messages").document(msg.id!).setData(["unread":false], mergeFields: ["unread"])
+            }
+        }
+    }
+    
+    func fetchChats(completion: @escaping ([String]) -> Void){
+        loggedInUserEmail = Auth.auth().currentUser?.email ?? UserDefaults.standard.string(forKey: "KEY_EMAIL")
         guard let userId = loggedInUserEmail else {
             return
         }
-
-        db.collection(COLLECTION_CHAT).whereField("participants", arrayContains: userId).addSnapshotListener { snapshot, error in
-            print("started fetching data")
-            if let error = error {
-                print("Error fetching chats: \(error.localizedDescription)")
-                return
-            }
-
-            guard let documents = snapshot?.documents else {
-                print("No chats found")
-                return
-            }
-            documents.forEach{document in
-                let chatId = document.documentID
-                self.fetchMessages(for: chatId) { messages in
-                    print("chatId", chatId)
-                    if(!messages.isEmpty){
-                        let displayName = messages[0].toId == userId ? messages[0].fromId : messages[0].toId
-                        let participants = [messages[0].toId, messages[0].fromId]
-                        let chat = Chat(participants: participants, id: chatId, displayName: displayName, messages: messages)
-                        print(#function, "chatId : \(chatId), name = \(displayName)")
-                        self.chatDict[displayName] = chat
-                        self.sortedKeyDict[displayName] = messages.last?.timestamp.dateValue()
-                    }
-                }
-            }
-            
-            completion()
-            
-        }
-    }
-
-
-
-    private func fetchMessages(for chatId: String, completion: @escaping ([Message]) -> Void) {
-
-        db.collection(COLLECTION_CHAT).document(chatId).collection("messages")
-            .order(by: "timestamp", descending: false)
-            .addSnapshotListener{ (snapshot, error) in
+        let dp = DispatchGroup()
+        self.chatRef = db.collectionGroup("messages")
+            .whereFilter(.orFilter([Filter.whereField("fromId", isEqualTo: userId),Filter.whereField("toId", isEqualTo: userId)]))
+            .addSnapshotListener({snapshot, error in
+                print("started fetching data")
                 if let error = error {
-                    print("Error fetching messages for chat \(chatId): \(error.localizedDescription)")
-                    completion([])
+                    print("Error fetching chats: \(error.localizedDescription)")
                     return
-                }
-
-                guard let documents = snapshot?.documents else {
-                    print("No messages found for chat \(chatId)")
-                    completion([])
-                    return
-                }
-                var messages = documents.compactMap { document -> Message? in
-                    guard let messageDict = document.data() as? [String: Any] else {
-                        return nil
-                    }
-                    var message = Message(dictionary: messageDict)
-                    message?.id = document.documentID
-//                    print("new msg id:\(message?.id)")
-                    return message
-                }
-                if self.chatDict[chatId] != nil{
-                    self.msgCount += 1
                 }
                 
-                completion(messages)
-            }
+                guard let documents = snapshot?.documents else {
+                    print("No chats found")
+                    return
+                }
+                print(#function, "msg found: \(documents.count)")
+                var key : [String] = []
+                snapshot?.documentChanges.forEach{obj in
+                    dp.enter()
+                    guard let newmsg = Message(id: obj.document.documentID, dictionary: obj.document.data()) else{
+                        return
+                    }
+                    guard let parentId = obj.document.reference.parent.parent?.documentID else{
+                        return
+                    }
+                    let displayName = newmsg.fromId == self.loggedInUserEmail ? newmsg.toId : newmsg.fromId
+                    if self.chatDict[displayName] == nil{
+                        let pp = [newmsg.fromId, newmsg.toId]
+                        self.chatDict[displayName] = Chat(participants: pp, id: parentId, displayName: displayName, messages: [])
+                    }
+                    switch(obj.type){
+                    case .added:
+                        print("got new msg, to\(newmsg.toId), me=\(userId)")
+                        if newmsg.unread && newmsg.toId == userId{
+                            self.chatDict[displayName]?.addUnread()
+                            self.msgCount += 1
+                            print("New Unread!, count=\(self.msgCount)")
+                        }
+                        self.chatDict[displayName]?.messages.append(newmsg)
+                    case .modified:
+                        if let modifiedMsgIdx = self.chatDict[displayName]?.messages.firstIndex(where: {msg in
+                            msg.id == newmsg.id
+                        }){
+                            let copy = self.chatDict[displayName]?.messages[modifiedMsgIdx]
+                            if copy?.unread ?? true && !newmsg.unread && newmsg.toId == userId{
+                                self.msgCount -= 1
+                                self.chatDict[displayName]?.minusUnread()
+                                print("Unread changed to read, count=\(self.msgCount)")
+                            }
+                            self.chatDict[displayName]?.messages[modifiedMsgIdx] = newmsg
+                            
+                        }
+                    case .removed:
+                        if let modifiedMsgIdx = self.chatDict[displayName]?.messages.firstIndex(where: {msg in
+                            msg.id == newmsg.id
+                        }){
+                            self.chatDict[displayName]?.messages.remove(at: modifiedMsgIdx)
+                        }
+                    }
+//                    print("After changed, chatroom \(parentId) has \(self.chatDict[parentId]?.messages.count) msg")
+                    self.chatDict[displayName]?.messages.sort{
+                        $0.timestamp.dateValue() < $1.timestamp.dateValue()
+                    }
+                    if(displayName != self.loggedInUserEmail){
+                        self.sortedKeyDict[displayName] = self.chatDict[displayName]?.messages.last?.timestamp.dateValue()
+                    }
+                    dp.leave()
+                }
+                let result = dp.wait(timeout: .now() + 5)
+                if result.self == .success{
+                    key = self.sortedKeyDict.keys.sorted{
+                        $0 < $1
+                    }
+                    completion(key)
+                }else{
+                    key = self.sortedKeyDict.keys.sorted{
+                        $0 < $1
+                    }
+                    completion(key)
+                }
+            })
+        
     }
-
-
 }
 
 

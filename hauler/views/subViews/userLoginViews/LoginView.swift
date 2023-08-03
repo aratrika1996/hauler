@@ -47,6 +47,11 @@ struct LoginView: View {
             SecureField("Enter password", text: $password)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
             
+            NavigationLink(destination: ForgotPasswordView(rootScreen: $rootScreen)) {
+                Text("Forgot password?")
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            
             if isUserInputInvalid {
                 Text("Email address / password cannot be empty.")
                     .foregroundColor(.red)
@@ -110,28 +115,38 @@ struct LoginView: View {
             case .success(_):
                 print("Sign in success")
                 userProfileController.getUserByEmail(email: emailAddress) { user, found in
-                        DispatchQueue.main.async {
-                            if found {
-                                userProfileController.updateLoggedInUser()
-                                chatController.fetchChats(completion: {
-                                    print(chatController.chatDict.count)
-                                    chatController.chatDict.forEach{dict in
-                                        userProfileController.getUserByEmail(email: dict.key, completion: {_, _ in
-                                            
+                    DispatchQueue.main.async {
+                        if found {
+                            userProfileController.updateLoggedInUser()
+                            if chatController.chatRef == nil{
+                                chatController.fetchChats(completion: {keys in
+                                    print("keys return from fetch chat count = \(self.chatController.chatDict.count)")
+                                    keys.forEach{
+                                        userProfileController.getUserByEmail(email: $0, completion: {up,_ in
+                                            print(up?.uName)
                                         })
                                     }
                                 })
-                            } else {
-                                print("User not found")
-                                var userProfile = UserProfile()
-                                userProfile.uEmail  = emailAddress
-                                userProfileController.insertUserData(newUserData: userProfile)
-                                userProfileController.updateLoggedInUser()
-
+                            }else{
+                                chatController.chatDict.keys.forEach{key in
+                                    userProfileController.getUserByEmail(email: key, completion: {up,_ in
+                                        print(up?.uName)
+                                    })
+                                }
                             }
+                            presentationMode.wrappedValue.dismiss()
+                        } else {
+                            print("User not found")
+                            var userProfile = UserProfile()
+                            userProfile.uEmail  = emailAddress
+                            userProfileController.insertUserData(newUserData: userProfile)
+                            userProfileController.updateLoggedInUser()
+                            presentationMode.wrappedValue.dismiss()
                         }
+                        
                     }
-                presentationMode.wrappedValue.dismiss()
+                }
+                
             case .failure(let error):
                 print("Error while signing in: \(error.localizedDescription)")
                 self.authError = error.localizedDescription

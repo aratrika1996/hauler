@@ -29,6 +29,7 @@ struct ContentView: View {
     @State private var tabSelection = page.Home
     @State private var title : [String] = ["Hauler","Discover", "Messages", "Posts", "Listings", "Profile"]
     @State var newChatId : String? = nil
+    @State private var isAnimating = false
     
     @EnvironmentObject var authController : AuthController
     @EnvironmentObject var listingController : ListingController
@@ -56,13 +57,13 @@ struct ContentView: View {
             .tag(page.Chats)
             .badge(chatController.msgCount)
             
-            PostView().tabItem {
+            PostView(rootScreen: $rootScreen).tabItem {
                 Image(systemName: "camera")
                 Text(page.Posts.name)
             }
             .tag(page.Posts)
             
-            UserListingsView().tabItem{
+            UserListingsView(rootScreen: $rootScreen).tabItem{
                 Image(systemName: "list.bullet.rectangle.portrait")
                 Text(page.Listings.name)
                 
@@ -101,26 +102,80 @@ struct ContentView: View {
 //                        .bold()
                     Text(title[tabSelection.rawValue])
                         .font(.system(size: 32))
-                        .fontWeight(.bold)
+                        .fontWeight(.medium)
+                        .foregroundColor(Color("HaulerOrange"))
                         //.padding(.vertical, 30)
                 }
                 
                 ToolbarItem(placement:.navigationBarTrailing){
+                    (self.userProfileController.userProfile.uEmail != "" ?
                     HStack{
-                        Image(uiImage: UIImage(systemName: "heart.fill")!)
-                            .resizable()
-                            .frame(width: 15, height: 15)
-                            .padding(15)
-                            .clipShape(Circle())
-                            .overlay(Circle().strokeBorder(Color(red: 220/255, green: 220/255, blue: 220/255), lineWidth: 1))
-                            //.background(Color("HaulerOrange"), in:Circle())
-                        Image(uiImage: UIImage(systemName: "bell")!)
-                            .resizable()
-                            .frame(width: 15, height: 15)
-                            .padding(15)
-                            .clipShape(Circle())
-                            .overlay(Circle().strokeBorder(Color(red: 220/255, green: 220/255, blue: 220/255), lineWidth: 1))
+                        
+                            
+                        NavigationLink(destination: FollowedUserView(rootScreen: $rootScreen)){
+                            Circle()
+                                .strokeBorder(Color(red: 220/255, green: 220/255, blue: 220/255), lineWidth: 1)
+                                .frame(width: 45, height: 45)
+                                .overlay{
+                                    Image(uiImage: UIImage(systemName: "person.2")!)
+                                        .resizable()
+                                        .padding(.vertical, 15)
+                                        .padding(.horizontal, 11)
+                                }
+                        }
+                        NavigationLink(destination: FavoritesView(rootScreen: $rootScreen)) {
+                            Circle()
+                                .strokeBorder(Color(red: 220/255, green: 220/255, blue: 220/255), lineWidth: 1)
+                                .frame(width: 45, height: 45)
+                                .overlay{
+                                    Image(uiImage: UIImage(systemName: "heart.fill")!)
+                                        .resizable()
+                                        .padding(15)
+                                }
+                        }
+                        NavigationLink(destination: NotoficationView(rootScreen: $rootScreen)){
+                            Circle()
+                                .strokeBorder(Color(red: 220/255, green: 220/255, blue: 220/255), lineWidth: 1)
+                                .frame(width: 45, height: 45)
+                                .overlay{
+                                    if self.userProfileController.userProfile.uNotifications.count > 0 {
+                                        Image(systemName: "bell.badge")
+                                            .resizable()
+                                            .foregroundStyle(Color("HaulerOrange"), .black)
+                                            .padding(15)
+                                            .scaleEffect(isAnimating ? 1.2 : 1.0)
+                                            .transition(.scale)
+//
+                                            
+                                            .onAppear {
+                                                (self.userProfileController.userProfile.uNotifications.count > 0 ? withAnimation(Animation.spring().repeatForever()) {
+                                                    isAnimating = true
+                                                } : ())
+
+                                            }
+                                    }
+                                    else {
+                                        Image(uiImage: UIImage(systemName: "bell")!)
+                                            .resizable()
+                                            .padding(15)
+                                            .scaleEffect(isAnimating ? 1.2 : 1.0)
+                                            .transition(.scale)
+                                            .onAppear {
+                                                (self.userProfileController.userProfile.uNotifications.count > 0 ? withAnimation(Animation.spring().repeatForever()) {
+                                                    isAnimating = true
+                                                } : ())
+                                                
+                                            }
+                                    }
+
+                                }
+                        }
+                        
+                        
                     }
+                     :
+                        nil
+                     )
                     //.padding(.vertical, 30)
                 }
 //            }
@@ -130,7 +185,7 @@ struct ContentView: View {
 //            for: .navigationBar)
 //        .toolbarBackground(.visible, for: .navigationBar)
         .onAppear() {
-            
+
         }
         .environmentObject(authController)
         .environmentObject(listingController)

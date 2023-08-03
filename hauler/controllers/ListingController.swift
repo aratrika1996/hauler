@@ -24,6 +24,7 @@ class ListingController : ObservableObject{
     @Published var searchText: String = ""
     @Published var selectedTokens : [ListingCategory] = []
     @Published var suggestedTokens : [ListingCategory] = ListingCategory.allCases
+    @Published var favLists = [Listing]()
     
     
     private let store : Firestore
@@ -52,6 +53,9 @@ class ListingController : ObservableObject{
         }
         if(searchText.count > 0){
             list = list.filter{$0.title.localizedCaseInsensitiveContains(searchText)}
+        }
+        list.sort{
+            $0.createDate > $1.createDate
         }
         return list
     }
@@ -98,7 +102,6 @@ class ListingController : ObservableObject{
                 }
                 
                 var listings: [Listing] = []
-                
                 querySnapshot?.documents.forEach { document in
                     do {
                         var listing: Listing = try document.data(as: Listing.self)
@@ -358,6 +361,59 @@ class ListingController : ObservableObject{
                     self.sellerListings = listings
                     //print(self.userListings)
                     completion(listings, nil)
+                }
+            }
+    }
+    
+    func getListingByID(listingID:String, completion: @escaping (Listing?, Error?) -> Void) {
+        self.favLists = []
+        self
+            .store
+            .collection(COLLECTION_LISTING)
+            .document(listingID)
+            .getDocument { (document, error) in
+                if let error = error {
+                    print(#function, "Unable to retrieve data from Firestore : \(error)")
+                    completion(nil, error)
+                    return
+                }
+                
+                var listing: Listing = Listing()
+                
+                
+                    do {
+                        listing = try document!.data(as: Listing.self)
+                        listing.id = document?.documentID
+                    } catch let error {
+                        print(#function, "Unable to convert the document into object : \(error)")
+                    }
+                
+                DispatchQueue.main.async {
+                    
+                        let dispatchGroup = DispatchGroup()
+                        var img: UIImage? = nil
+                        dispatchGroup.enter()
+                        if let link = URL(string: listing.imageURI){
+                            link.fetchImage(completion: {
+                                picData in
+                                if let picData = picData{
+                                    if let Uiimage = UIImage(data: picData){
+                                        img = Uiimage
+                                        dispatchGroup.leave()
+                                    }else{
+                                        print(#function, "Cast uiImage Error")
+                                    }
+                                }else{
+                                    print(#function, "no picData")
+                                }
+                            })
+                        }
+                        dispatchGroup.wait()
+                        listing = Listing(id: listing.id, title: listing.title, desc: listing.desc, price: listing.price, email: listing.email, image: img, imageURI: listing.imageURI, category: listing.category, available: listing.available, createDate: listing.createDate, sellDate: listing.sellDate, locString: listing.locString, locLong: listing.locLong, locLat: listing.locLat)
+                    
+                    self.favLists.append(listing)
+                    //print(self.userListings)
+                    completion(listing, nil)
                 }
             }
     }

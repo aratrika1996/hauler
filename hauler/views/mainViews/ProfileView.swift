@@ -20,6 +20,7 @@ struct ProfileView: View {
     
     @State private var isImagePickerPresented = false
     @State private var selectedImage: UIImage? = nil
+    @State private var resizedImage: UIImage? = nil
     @State private var imageSourceType : ImagePickerView.ImageSourceType? = nil
     
     @Binding var rootScreen :RootView
@@ -31,8 +32,8 @@ struct ProfileView: View {
                     Section {
                         HStack(alignment: .center) {
                             ZStack(alignment: .bottomTrailing) {
-                                if selectedImage != nil {
-                                    Image(uiImage: selectedImage!)
+                                if self.selectedImage != nil {
+                                    Image(uiImage: self.selectedImage!)
                                         .resizable()
                                         .aspectRatio(contentMode: .fill)
                                         .frame(width: 100, height: 100)
@@ -90,36 +91,38 @@ struct ProfileView: View {
                                 }
                             }
                             VStack(alignment: .leading) {
-                                Text(self.name)
+                                Text(self.userProfileController.userProfile.uName)
                                     .foregroundColor(Color(UIColor(named: "HaulerOrange") ?? .blue))
                                     .font(.system(size: 22))
                                     .fontWeight(.medium)
                                     .padding(.bottom, 0.3)
-                                Text(self.email)
-                                HStack {
-                                    Image(systemName: "star.fill")
-                                        .resizable()
-                                        .frame(width: 20, height: 20)
-                                        .foregroundColor(Color.yellow)
-                                    Image(systemName: "star.fill")
-                                        .resizable()
-                                        .frame(width: 20, height: 20)
-                                        .foregroundColor(Color.yellow)
-                                    Image(systemName: "star.fill")
-                                        .resizable()
-                                        .frame(width: 20, height: 20)
-                                        .foregroundColor(Color.yellow)
-                                    Image(systemName: "star.fill")
-                                        .resizable()
-                                        .frame(width: 20, height: 20)
-                                        .foregroundColor(Color.yellow)
-                                    Image(systemName: "star.fill")
-                                        .resizable()
-                                        .frame(width: 20, height: 20)
-                                        .foregroundColor(Color.yellow)
-                                    Text("5.0")
-                                    Text("(8)")
-                                }
+                                Text(self.userProfileController.userProfile.uEmail)
+                                    .padding(.bottom, 0.3)
+//                                HStack {
+//                                    Image(systemName: "star.fill")
+//                                        .resizable()
+//                                        .frame(width: 20, height: 20)
+//                                        .foregroundColor(Color.yellow)
+//                                    Image(systemName: "star.fill")
+//                                        .resizable()
+//                                        .frame(width: 20, height: 20)
+//                                        .foregroundColor(Color.yellow)
+//                                    Image(systemName: "star.fill")
+//                                        .resizable()
+//                                        .frame(width: 20, height: 20)
+//                                        .foregroundColor(Color.yellow)
+//                                    Image(systemName: "star.fill")
+//                                        .resizable()
+//                                        .frame(width: 20, height: 20)
+//                                        .foregroundColor(Color.yellow)
+//                                    Image(systemName: "star.fill")
+//                                        .resizable()
+//                                        .frame(width: 20, height: 20)
+//                                        .foregroundColor(Color.yellow)
+//                                    Text("5.0")
+//                                    Text("(8)")
+//                                }
+                                Text("+1\(self.userProfileController.userProfile.uPhone)")
                             }
                             .padding(.leading, 10)
                         }//HStack ends
@@ -134,34 +137,35 @@ struct ProfileView: View {
                     }
                     
                     Section(header: Text("Account settings")) {
-                        NavigationLink(destination: ManageAccountView(rootScreen: $rootScreen).environmentObject(userProfileController).environmentObject(authController).environmentObject(listingController)) {
+                        NavigationLink(destination: ManageAccountView(rootScreen: $rootScreen)) {
                             Text("Manage account")
                         }
-                        Text("Notification preferences")
+//                        Text("Notification preferences")
                     }
                     
-                    Section(header: Text("General information")) {
-                        Text("Terms of use")
-                        Text("Privacy policy")
-                        Text("Help")
+                    Section(header: Text("Following")){
+                        NavigationLink(destination: FollowedUserView(rootScreen: $rootScreen)){
+                            Text("Followed Users")
+                        }
                     }
                     
-                    Section(header: Text("Display settings")) {
-                        Text("App theme")
-                    }
+//                    Section(header: Text("General information")) {
+//                        Text("Terms of use")
+//                        Text("Privacy policy")
+//                        Text("Help")
+//                    }
+//
+//                    Section(header: Text("Display settings")) {
+//                        Text("App theme")
+//                    }
                     
                     Section {
                         
                         Button(action: {
                             authController.signOut()
-                            userProfileController.updateLoggedInUser()
-                            userProfileController.loggedInUserEmail = ""
-                            userProfileController.userProfile = UserProfile()
-                            userProfileController.userDict = [:]
-                            chatController.chatDict = [:]
+                            userProfileController.logoutClear()
+                            chatController.logoutClear()
                             pageController.currentView = .main
-                            
-                            
                         }){
                             Text("Log out")
                                 .font(.system(size: 20))
@@ -204,17 +208,20 @@ struct ProfileView: View {
             
         }
         .onAppear {
-            self.userProfileController.getAllUserData {
-                print("data retrieved")
-                self.name = self.userProfileController.userProfile.uName
-                if let email = UserDefaults.standard.value(forKey: "KEY_EMAIL"){
-                    self.email = email as! String
-                }else{
-                    self.email = ""
+            if self.userProfileController.userProfile.uName == ""{
+                self.userProfileController.getAllUserData {
+                    print("data retrieved")
+                    self.name = self.userProfileController.userProfile.uName
+                    if let email = UserDefaults.standard.value(forKey: "KEY_EMAIL"){
+                        self.email = email as! String
+                    }else{
+                        self.email = ""
+                    }
                 }
+            }
+            if(self.userProfileController.userProfile.uProfileImage == nil){
                 self.loadImage(from: self.userProfileController.userProfile.uProfileImageURL ?? "")
             }
-              
         }
         
     }
@@ -226,7 +233,8 @@ struct ProfileView: View {
         } else {
             // Image picker was dismissed after selecting an image
             print("Image picker dismissed with selected image.")
-            imageController.uploadImage(selectedImage!) {result in
+            resizedImage = selectedImage!.resizePickedImage(aspectMode: false, size: 256)
+            imageController.uploadImage(resizedImage!) {result in
                 switch result {
                 case .success(let url):
                     // Handle the success case with the URL

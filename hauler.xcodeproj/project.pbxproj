@@ -18,6 +18,8 @@
 		288780792A29B8080038268E /* TopTabBarButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 288780782A29B8080038268E /* TopTabBarButton.swift */; };
 		2887807B2A29B8210038268E /* CustomTopTabBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2887807A2A29B8210038268E /* CustomTopTabBarView.swift */; };
 		288780832A32912A0038268E /* UserPublicProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 288780822A32912A0038268E /* UserPublicProfileView.swift */; };
+		288780852A4FA21C0038268E /* ForgotPasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 288780842A4FA21C0038268E /* ForgotPasswordView.swift */; };
+		288780872A5F6E0E0038268E /* Favorites.swift in Sources */ = {isa = PBXBuildFile; fileRef = 288780862A5F6E0E0038268E /* Favorites.swift */; };
 		83318FF42A3E448F00148B7E /* EditListingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83318FF32A3E448F00148B7E /* EditListingView.swift */; };
 		8348320C2A185FD600CE8E2D /* Listing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8348320B2A185FD600CE8E2D /* Listing.swift */; };
 		83678CBC2A2199A400C50603 /* ChatController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83678CBB2A2199A300C50603 /* ChatController.swift */; };
@@ -54,6 +56,10 @@
 		83F97ED62A16F7AF000CB670 /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83F97ED52A16F7AF000CB670 /* MapView.swift */; };
 		83F97ED82A16F8B2000CB670 /* PostView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83F97ED72A16F8B2000CB670 /* PostView.swift */; };
 		83F97EDA2A16F9E7000CB670 /* UserProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83F97ED92A16F9E7000CB670 /* UserProfile.swift */; };
+		F813E74A2A66DC2700CFDD3B /* NotoficationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F813E7492A66DC2700CFDD3B /* NotoficationView.swift */; };
+		F813E74C2A66DC4000CFDD3B /* FollowedUserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F813E74B2A66DC4000CFDD3B /* FollowedUserView.swift */; };
+		F813E7522A67640C00CFDD3B /* Notification.swift in Sources */ = {isa = PBXBuildFile; fileRef = F813E7512A67640C00CFDD3B /* Notification.swift */; };
+		F813E7542A67816F00CFDD3B /* FollowedUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = F813E7532A67816F00CFDD3B /* FollowedUser.swift */; };
 		F81B0A282A32C36A008C2942 /* BuyPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F81B0A272A32C36A008C2942 /* BuyPageView.swift */; };
 		F81B0A2A2A32C3E5008C2942 /* ManageItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F81B0A292A32C3E5008C2942 /* ManageItemView.swift */; };
 		F81B0A2D2A36C286008C2942 /* ChatImageLogo.swift in Sources */ = {isa = PBXBuildFile; fileRef = F81B0A2C2A36C286008C2942 /* ChatImageLogo.swift */; };
@@ -70,6 +76,9 @@
 		F8B2C3EB2A3B9ABA0077CD13 /* textFieldValidation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8B2C3E92A3B993D0077CD13 /* textFieldValidation.swift */; };
 		F8B2C3EC2A3B9AC00077CD13 /* MaterialDesignTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = F81B0A332A39376B008C2942 /* MaterialDesignTextField.swift */; };
 		F8EA1CE52A3B9CC300DF78BC /* ImagePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8EA1CE42A3B9CC300DF78BC /* ImagePickerView.swift */; };
+		F8FB72552A43EE620088E5B6 /* DelayController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8FB72542A43EE620088E5B6 /* DelayController.swift */; };
+		F8FB72582A4480380088E5B6 /* PromiseKit in Frameworks */ = {isa = PBXBuildFile; productRef = F8FB72572A4480380088E5B6 /* PromiseKit */; };
+		F8FB725C2A44F9CB0088E5B6 /* (null) in Resources */ = {isa = PBXBuildFile; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -84,6 +93,8 @@
 		288780782A29B8080038268E /* TopTabBarButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopTabBarButton.swift; sourceTree = "<group>"; };
 		2887807A2A29B8210038268E /* CustomTopTabBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTopTabBarView.swift; sourceTree = "<group>"; };
 		288780822A32912A0038268E /* UserPublicProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPublicProfileView.swift; sourceTree = "<group>"; };
+		288780842A4FA21C0038268E /* ForgotPasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPasswordView.swift; sourceTree = "<group>"; };
+		288780862A5F6E0E0038268E /* Favorites.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Favorites.swift; sourceTree = "<group>"; };
 		83318FF32A3E448F00148B7E /* EditListingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditListingView.swift; sourceTree = "<group>"; };
 		8348320B2A185FD600CE8E2D /* Listing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Listing.swift; sourceTree = "<group>"; };
 		83678CBB2A2199A300C50603 /* ChatController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatController.swift; sourceTree = "<group>"; };
@@ -116,6 +127,10 @@
 		83F97ED52A16F7AF000CB670 /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
 		83F97ED72A16F8B2000CB670 /* PostView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostView.swift; sourceTree = "<group>"; };
 		83F97ED92A16F9E7000CB670 /* UserProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfile.swift; sourceTree = "<group>"; };
+		F813E7492A66DC2700CFDD3B /* NotoficationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotoficationView.swift; sourceTree = "<group>"; };
+		F813E74B2A66DC4000CFDD3B /* FollowedUserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowedUserView.swift; sourceTree = "<group>"; };
+		F813E7512A67640C00CFDD3B /* Notification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notification.swift; sourceTree = "<group>"; };
+		F813E7532A67816F00CFDD3B /* FollowedUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowedUser.swift; sourceTree = "<group>"; };
 		F81B0A272A32C36A008C2942 /* BuyPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuyPageView.swift; sourceTree = "<group>"; };
 		F81B0A292A32C3E5008C2942 /* ManageItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManageItemView.swift; sourceTree = "<group>"; };
 		F81B0A2C2A36C286008C2942 /* ChatImageLogo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatImageLogo.swift; sourceTree = "<group>"; };
@@ -131,6 +146,7 @@
 		F8A77E682A1BFF3F005AF90A /* SearchBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBar.swift; sourceTree = "<group>"; };
 		F8B2C3E92A3B993D0077CD13 /* textFieldValidation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = textFieldValidation.swift; sourceTree = "<group>"; };
 		F8EA1CE42A3B9CC300DF78BC /* ImagePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePickerView.swift; sourceTree = "<group>"; };
+		F8FB72542A43EE620088E5B6 /* DelayController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelayController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -143,6 +159,7 @@
 				83F97E9F2A16F075000CB670 /* FirebaseFirestore in Frameworks */,
 				83F97EA32A16F075000CB670 /* FirebaseStorage in Frameworks */,
 				83F97EA62A16F0EB000CB670 /* URLImage in Frameworks */,
+				F8FB72582A4480380088E5B6 /* PromiseKit in Frameworks */,
 				83F97EA12A16F075000CB670 /* FirebaseFirestoreSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -220,6 +237,9 @@
 				8348320B2A185FD600CE8E2D /* Listing.swift */,
 				83678CBD2A219FC200C50603 /* message.swift */,
 				83678CBF2A21B09900C50603 /* Chat.swift */,
+				F813E7512A67640C00CFDD3B /* Notification.swift */,
+				F813E7532A67816F00CFDD3B /* FollowedUser.swift */,
+				288780862A5F6E0E0038268E /* Favorites.swift */,
 			);
 			path = models;
 			sourceTree = "<group>";
@@ -244,6 +264,7 @@
 				838A74762A1BCF0A00F09DB8 /* ImageController.swift */,
 				83678CBB2A2199A300C50603 /* ChatController.swift */,
 				F89F71362A32471800051BFF /* PageController.swift */,
+				F8FB72542A43EE620088E5B6 /* DelayController.swift */,
 			);
 			path = controllers;
 			sourceTree = "<group>";
@@ -274,6 +295,10 @@
 		83F97ECE2A16F3BD000CB670 /* subViews */ = {
 			isa = PBXGroup;
 			children = (
+				F813E7502A671C5100CFDD3B /* TopBarItems */,
+				F813E74F2A671C3F00CFDD3B /* Misc */,
+				F813E74E2A671BEA00CFDD3B /* ProfileVIew */,
+				F813E74D2A671BBB00CFDD3B /* listingView */,
 				F81B0A322A393737008C2942 /* InputField */,
 				83F97EB62A16F247000CB670 /* userLoginViews */,
 				83678CC12A21B59000C50603 /* Chat */,
@@ -281,19 +306,50 @@
 				F89F712E2A312BA400051BFF /* ExpandableText */,
 				83F97ED12A16F3E4000CB670 /* CommentView.swift */,
 				83F97ED32A16F424000CB670 /* MessageDetailView.swift */,
-				2887806E2A1DBDB70038268E /* PersonalDetailsView.swift */,
-				288780702A1EC0520038268E /* ManageAccountView.swift */,
-				288780722A217E050038268E /* ChangePasswordView.swift */,
-				288780742A29B7D60038268E /* AvailableListingsView.swift */,
+				288780822A32912A0038268E /* UserPublicProfileView.swift */,
+			);
+			path = subViews;
+			sourceTree = "<group>";
+		};
+		F813E74D2A671BBB00CFDD3B /* listingView */ = {
+			isa = PBXGroup;
+			children = (
 				288780762A29B7E80038268E /* SoldListingsView.swift */,
 				288780782A29B8080038268E /* TopTabBarButton.swift */,
 				2887807A2A29B8210038268E /* CustomTopTabBarView.swift */,
-				288780822A32912A0038268E /* UserPublicProfileView.swift */,
-				F88464AA2A2A7C50007F4C64 /* SplashScreenView.swift */,
 				83318FF32A3E448F00148B7E /* EditListingView.swift */,
+				288780742A29B7D60038268E /* AvailableListingsView.swift */,
+			);
+			path = listingView;
+			sourceTree = "<group>";
+		};
+		F813E74E2A671BEA00CFDD3B /* ProfileVIew */ = {
+			isa = PBXGroup;
+			children = (
+				2887806E2A1DBDB70038268E /* PersonalDetailsView.swift */,
+				288780722A217E050038268E /* ChangePasswordView.swift */,
+				288780702A1EC0520038268E /* ManageAccountView.swift */,
+				288780842A4FA21C0038268E /* ForgotPasswordView.swift */,
+			);
+			path = ProfileVIew;
+			sourceTree = "<group>";
+		};
+		F813E74F2A671C3F00CFDD3B /* Misc */ = {
+			isa = PBXGroup;
+			children = (
+				F88464AA2A2A7C50007F4C64 /* SplashScreenView.swift */,
 				F8EA1CE42A3B9CC300DF78BC /* ImagePickerView.swift */,
 			);
-			path = subViews;
+			path = Misc;
+			sourceTree = "<group>";
+		};
+		F813E7502A671C5100CFDD3B /* TopBarItems */ = {
+			isa = PBXGroup;
+			children = (
+				F813E74B2A66DC4000CFDD3B /* FollowedUserView.swift */,
+				F813E7492A66DC2700CFDD3B /* NotoficationView.swift */,
+			);
+			path = TopBarItems;
 			sourceTree = "<group>";
 		};
 		F81B0A2B2A36B4CE008C2942 /* ListingDetail */ = {
@@ -365,6 +421,7 @@
 				83F97EA02A16F075000CB670 /* FirebaseFirestoreSwift */,
 				83F97EA22A16F075000CB670 /* FirebaseStorage */,
 				83F97EA52A16F0EB000CB670 /* URLImage */,
+				F8FB72572A4480380088E5B6 /* PromiseKit */,
 			);
 			productName = hauler;
 			productReference = 83F97E882A16E9C0000CB670 /* hauler.app */;
@@ -397,6 +454,7 @@
 			packageReferences = (
 				83F97E992A16F075000CB670 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				83F97EA42A16F0EA000CB670 /* XCRemoteSwiftPackageReference "url-image" */,
+				F8FB72562A4480380088E5B6 /* XCRemoteSwiftPackageReference "PromiseKit" */,
 			);
 			productRefGroup = 83F97E892A16E9C0000CB670 /* Products */;
 			projectDirPath = "";
@@ -414,6 +472,7 @@
 			files = (
 				83F97E932A16E9C6000CB670 /* Preview Assets.xcassets in Resources */,
 				83F97E902A16E9C6000CB670 /* Assets.xcassets in Resources */,
+				F8FB725C2A44F9CB0088E5B6 /* (null) in Resources */,
 				283B43112A197DCB0073EA1B /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -428,7 +487,9 @@
 				288780732A217E050038268E /* ChangePasswordView.swift in Sources */,
 				83F97EAE2A16F1AE000CB670 /* ListingController.swift in Sources */,
 				8348320C2A185FD600CE8E2D /* Listing.swift in Sources */,
+				F8FB72552A43EE620088E5B6 /* DelayController.swift in Sources */,
 				83F97E8E2A16E9C0000CB670 /* ContentView.swift in Sources */,
+				F813E74A2A66DC2700CFDD3B /* NotoficationView.swift in Sources */,
 				F81B0A2D2A36C286008C2942 /* ChatImageLogo.swift in Sources */,
 				F89F71312A312BED00051BFF /* OverlayApadater.swift in Sources */,
 				288780712A1EC0520038268E /* ManageAccountView.swift in Sources */,
@@ -447,6 +508,7 @@
 				F89F712D2A312B4F00051BFF /* ExpandbleTextView.swift in Sources */,
 				F89F71332A312C1000051BFF /* TruncationTextMask.swift in Sources */,
 				F871F7642A3018D4003E1019 /* SplashScreenView.swift in Sources */,
+				F813E7542A67816F00CFDD3B /* FollowedUser.swift in Sources */,
 				F81B0A2F2A36C7AB008C2942 /* NoChatView.swift in Sources */,
 				83F97ED62A16F7AF000CB670 /* MapView.swift in Sources */,
 				83F97EDA2A16F9E7000CB670 /* UserProfile.swift in Sources */,
@@ -463,6 +525,7 @@
 				83F97EC92A16F36E000CB670 /* FavoritesView.swift in Sources */,
 				F871F7652A302BD2003E1019 /* ProductDetailsView.swift in Sources */,
 				83678CC52A21B5CC00C50603 /* ConversationView.swift in Sources */,
+				288780872A5F6E0E0038268E /* Favorites.swift in Sources */,
 				288780832A32912A0038268E /* UserPublicProfileView.swift in Sources */,
 				288780772A29B7E80038268E /* SoldListingsView.swift in Sources */,
 				83F97ED22A16F3E4000CB670 /* CommentView.swift in Sources */,
@@ -473,12 +536,15 @@
 				83F97ECB2A16F397000CB670 /* UserListingsView.swift in Sources */,
 				83F97ECD2A16F3AD000CB670 /* ProfileView.swift in Sources */,
 				83F97ED42A16F424000CB670 /* MessageDetailView.swift in Sources */,
+				F813E7522A67640C00CFDD3B /* Notification.swift in Sources */,
 				F81B0A312A36C7D7008C2942 /* ZeroChatView.swift in Sources */,
+				288780852A4FA21C0038268E /* ForgotPasswordView.swift in Sources */,
 				83F97EAC2A16F156000CB670 /* AuthController.swift in Sources */,
 				838A74772A1BCF0A00F09DB8 /* ImageController.swift in Sources */,
 				838A74792A1BDA9900F09DB8 /* RootView.swift in Sources */,
 				83678CBE2A219FC200C50603 /* message.swift in Sources */,
 				83678CC02A21B09900C50603 /* Chat.swift in Sources */,
+				F813E74C2A66DC4000CFDD3B /* FollowedUserView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -607,7 +673,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"hauler/Preview Content\"";
-				DEVELOPMENT_TEAM = XXVRQ5LRDV;
+				DEVELOPMENT_TEAM = 68NFY26D49;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_LSApplicationCategoryType = "";
@@ -640,7 +706,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"hauler/Preview Content\"";
-				DEVELOPMENT_TEAM = XXVRQ5LRDV;
+				DEVELOPMENT_TEAM = 68NFY26D49;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_LSApplicationCategoryType = "";
@@ -705,6 +771,14 @@
 				minimumVersion = 3.0.0;
 			};
 		};
+		F8FB72562A4480380088E5B6 /* XCRemoteSwiftPackageReference "PromiseKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/mxcl/PromiseKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -737,6 +811,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 83F97EA42A16F0EA000CB670 /* XCRemoteSwiftPackageReference "url-image" */;
 			productName = URLImage;
+		};
+		F8FB72572A4480380088E5B6 /* PromiseKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F8FB72562A4480380088E5B6 /* XCRemoteSwiftPackageReference "PromiseKit" */;
+			productName = PromiseKit;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

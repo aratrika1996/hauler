@@ -32,15 +32,15 @@ struct NoChatView: View{
                 HStack(alignment: .center){
                     Spacer()
                     Text("Login")
-                        .font(.title)
+                        .font(.system(size: 20))
                         .foregroundColor(.white)
-                        .padding()
                     Spacer()
                 }
                 .background(Color("HaulerOrange"))
             }
-            .cornerRadius(40)
-            .padding(10)
+            .padding(.horizontal, 20)
+            .padding([.top], 10)
+            .buttonStyle(.borderedProminent)
             
             HStack {
                 Text("Don't have an account? ")

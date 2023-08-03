@@ -39,19 +39,24 @@ struct SoldListingsView: View {
                                                     .fontWeight(.medium)
                                             }
                                             Spacer()
-                                            Text("now")
-                                                .font(.system(size: 14))
+//                                            Text("now")
+//                                                .font(.system(size: 14))
+                                            Image(systemName: "ellipsis")
+                                                .onTapGesture(perform: {
+                                                    self.isSheetPresent = true
+                                                    self.selectedListing = item
+                                                })
                                         }
                                         .padding(.bottom, 0.1)
                                         HStack {
                                             Text("Posted in " + item.category.rawValue)
                                                 .font(.system(size: 14))
                                             Spacer()
-                                            Image(systemName: "ellipsis")
-                                                .onTapGesture(perform: {
-                                                    self.isSheetPresent = true
-                                                    self.selectedListing = item
-                                                })
+//                                            Image(systemName: "ellipsis")
+//                                                .onTapGesture(perform: {
+//                                                    self.isSheetPresent = true
+//                                                    self.selectedListing = item
+//                                                })
                                         }
                                     }
                                     
