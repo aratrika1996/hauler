@@ -138,21 +138,39 @@ struct ContentView: View {
                                 .strokeBorder(Color(red: 220/255, green: 220/255, blue: 220/255), lineWidth: 1)
                                 .frame(width: 45, height: 45)
                                 .overlay{
-                                    Image(uiImage: UIImage(systemName: "bell")!)
-                                        .resizable()
-                                        .padding(15)
-                                        .scaleEffect(isAnimating ? 1.2 : 1.0)
-                                        .transition(.scale)
-                                        .onAppear {
-                                            (self.userProfileController.userProfile.uNotifications.count > 0 ? withAnimation(Animation.spring().repeatForever()) {
-                                                isAnimating = true
-                                            } : ())
+                                    if self.userProfileController.userProfile.uNotifications.count > 0 {
+                                        Image(systemName: "bell.badge")
+                                            .resizable()
+                                            .foregroundStyle(Color("HaulerOrange"), .black)
+                                            .padding(15)
+                                            .scaleEffect(isAnimating ? 1.2 : 1.0)
+                                            .transition(.scale)
+//
                                             
-                                        }
+                                            .onAppear {
+                                                (self.userProfileController.userProfile.uNotifications.count > 0 ? withAnimation(Animation.spring().repeatForever()) {
+                                                    isAnimating = true
+                                                } : ())
+
+                                            }
+                                    }
+                                    else {
+                                        Image(uiImage: UIImage(systemName: "bell")!)
+                                            .resizable()
+                                            .padding(15)
+                                            .scaleEffect(isAnimating ? 1.2 : 1.0)
+                                            .transition(.scale)
+                                            .onAppear {
+                                                (self.userProfileController.userProfile.uNotifications.count > 0 ? withAnimation(Animation.spring().repeatForever()) {
+                                                    isAnimating = true
+                                                } : ())
+                                                
+                                            }
+                                    }
+
                                 }
-                            
-                            Text("\(self.userProfileController.userProfile.uNotifications.count.formatted())")
                         }
+                        
                         
                     }
                      :

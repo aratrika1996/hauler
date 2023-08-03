@@ -140,7 +140,7 @@ struct ProfileView: View {
                         NavigationLink(destination: ManageAccountView(rootScreen: $rootScreen)) {
                             Text("Manage account")
                         }
-                        Text("Notification preferences")
+//                        Text("Notification preferences")
                     }
                     
                     Section(header: Text("Following")){
@@ -154,7 +154,7 @@ struct ProfileView: View {
 //                        Text("Privacy policy")
 //                        Text("Help")
 //                    }
-//                    
+//
 //                    Section(header: Text("Display settings")) {
 //                        Text("App theme")
 //                    }

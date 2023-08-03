@@ -52,6 +52,7 @@ struct MainView: View {
                 }
             }else{
                 SplashScreenView()
+//                ProgressView()
             }
             
         }
