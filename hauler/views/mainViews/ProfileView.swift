@@ -122,7 +122,9 @@ struct ProfileView: View {
 //                                    Text("5.0")
 //                                    Text("(8)")
 //                                }
-                                Text("+1\(self.userProfileController.userProfile.uPhone)")
+                                if self.userProfileController.userProfile.uPhone != "" {
+                                    Text("+1\(self.userProfileController.userProfile.uPhone)")
+                                }
                             }
                             .padding(.leading, 10)
                         }//HStack ends

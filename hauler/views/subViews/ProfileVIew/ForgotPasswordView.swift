@@ -11,6 +11,9 @@ struct ForgotPasswordView: View {
     @EnvironmentObject var authController : AuthController
     @State private var email : String = ""
     @State private var isSheetPresent = false
+    @State private var showAlert : Bool = false
+    @State private var isUserInputValid : Bool = false
+    @State private var errorMessage = ""
     @Binding var rootScreen :RootView
     @Environment(\.dismiss) var dismiss
     
@@ -30,6 +33,12 @@ struct ForgotPasswordView: View {
                         .foregroundColor(Color.red)
                 }
                 .frame(maxWidth: .infinity, alignment: .center)
+                .alert(isPresented: self.$showAlert) {
+                    Alert(title: Text("Validation error"),
+                                 message: Text("\(self.errorMessage)"),
+                                 dismissButton: .default(Text("OK")) {
+                           })
+                }
             }
         }
         .sheet(isPresented: self.$isSheetPresent, onDismiss: goToLogin) {
@@ -55,8 +64,26 @@ struct ForgotPasswordView: View {
     }
     
     func resetPassword() {
-        self.authController.sendPasswordReset(withEmail: self.email) {_ in
-            self.isSheetPresent = true
+        if self.email.isEmpty {
+            self.errorMessage = "Email can not be empty"
+            self.isUserInputValid = false
+            self.showAlert = true
+        }
+        else {
+            let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
+            
+            let emailPred = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
+            if emailPred.evaluate(with: email) {
+                self.isUserInputValid = true
+                self.authController.sendPasswordReset(withEmail: self.email) {_ in
+                    self.isSheetPresent = true
+                }
+            }
+            else {
+                self.errorMessage = "Invalid email id"
+                self.isUserInputValid = false
+                self.showAlert = true
+            }
         }
     }
     
