@@ -11,6 +11,7 @@ import FirebaseFirestore
 struct SignUpView: View {
     @EnvironmentObject var authController : AuthController
     @EnvironmentObject var userProfileController : UserProfileController
+    @EnvironmentObject var chatController : ChatController
     @Environment(\.presentationMode) var presentationMode
     
     @Binding var rootScreen :RootView
@@ -144,6 +145,22 @@ struct SignUpView: View {
                     print("data retrieved")
                 }
                 userProfileController.updateLoggedInUser()
+                if chatController.chatRef == nil{
+                    chatController.fetchChats(completion: {keys in
+                        print("keys return from fetch chat count = \(self.chatController.chatDict.count)")
+                        keys.forEach{
+                            userProfileController.getUserByEmail(email: $0, completion: {up,_ in
+                                print(up?.uName)
+                            })
+                        }
+                    })
+                }else{
+                    chatController.chatDict.keys.forEach{key in
+                        userProfileController.getUserByEmail(email: key, completion: {up,_ in
+                            print(up?.uName)
+                        })
+                    }
+                }
                 presentationMode.wrappedValue.dismiss()
             case .failure(let error):
                 // Display error message
