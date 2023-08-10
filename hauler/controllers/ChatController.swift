@@ -55,7 +55,7 @@ class ChatController: ObservableObject {
     }
     
     func logoutClear(){
-        chatRef!.remove()
+        chatRef?.remove()
         chatRef = nil
         chatDict.removeAll()
         sortedKeyDict.removeAll()
@@ -150,6 +150,7 @@ class ChatController: ObservableObject {
     
     func fetchChats(completion: @escaping ([String]) -> Void){
         loggedInUserEmail = Auth.auth().currentUser?.email ?? UserDefaults.standard.string(forKey: "KEY_EMAIL")
+        print("who am i@ fetch chat? = \(loggedInUserEmail)")
         guard let userId = loggedInUserEmail else {
             return
         }

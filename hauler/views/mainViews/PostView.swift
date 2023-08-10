@@ -304,7 +304,34 @@ struct PostView: View {
                 .padding(.horizontal, 10)
                 .disabled(selectedImage == nil || !valueValid || !descValid || !titleValid)
             }
-            
+            else{
+                Text("Oops, looks like you are not logged in!!")
+                    .padding(.bottom, 0.5)
+                    .font(.system(size: 20))
+                Text("Log in to see your listings.")
+                
+                NavigationLink(destination: LoginView(rootScreen: $rootScreen).environmentObject(authController).environmentObject(userProfileController)) {
+                    Text("Login")
+                        .font(.system(size: 20))
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                    
+                }
+                .padding(.horizontal, 20)
+                .padding([.top], 10)
+                .buttonStyle(.borderedProminent)
+                .tint(Color(UIColor(named: "HaulerOrange") ?? .blue))
+                
+                HStack {
+                    Text("Don't have an account? ")
+                    NavigationLink(destination: SignUpView(rootScreen: $rootScreen).environmentObject(authController).environmentObject(userProfileController)) {
+                        Text("SignUp")
+                            .foregroundColor(Color(UIColor(named: "HaulerOrange") ?? .blue))
+                            .fontWeight(.medium)
+                    }
+                }//HStack ends
+                .padding([.top], 10)
+            }
             
         }
         .onAppear{
@@ -375,6 +402,7 @@ struct PostView: View {
         guard titleValid && descValid && valueValid else{
             return
         }
+        self.listing.email = self.userProfileController.loggedInUserEmail
         self.listing.title = self.listingTitle
         self.listing.desc = self.listingDesc
         self.listing.price = Double(self.listingValue)!
